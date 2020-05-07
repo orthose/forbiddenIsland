@@ -1,0 +1,1 @@
+This is the forbidden island project of 2020 object programming course (L2 INFO 224 Paris-Saclay - Thibaut Balabonski).
