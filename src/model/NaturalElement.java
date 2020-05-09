@@ -9,32 +9,32 @@ public enum NaturalElement {
 	AIR {
 		@Override
 		public String toString() {
-			return "A";
+			return StringMap.encode("AIR");
 		}
 	}, 
 	WATER {
 		@Override
 		public String toString() {
-			return "W";
+			return StringMap.encode("WATER");
 		}
 		
 	}, 
 	EARTH {
 		@Override
 		public String toString() {
-			return "E";
+			return StringMap.encode("EARTH");
 		}
 	}, 
 	FIRE {
 		@Override
 		public String toString() {
-			return "F";
+			return StringMap.encode("FIRE");
 		}
 	}, 
 	NONE {
 		@Override
 		public String toString() {
-			return "";
+			return StringMap.encode("NONE");
 		}
 	};
 	

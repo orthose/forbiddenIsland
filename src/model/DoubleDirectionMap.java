@@ -32,6 +32,7 @@ public class DoubleDirectionMap<K, V> {
 	 * @apiNote Encode la clé donnée
 	 * @param key: Clé à encoder
 	 * @return value associée
+	 * null si aucune valeur associée
 	 */
 	public V encode(K key) {
 		for(Pair pair : this.map) {
@@ -46,6 +47,7 @@ public class DoubleDirectionMap<K, V> {
 	 * @apiNote Décode la valeur donnée
 	 * @param value: Valeur à décoder
 	 * @return key associée
+	 * null si aucune clé associée
 	 */
 	public K decode(V value) {
 		for(Pair pair : this.map) {
@@ -54,6 +56,15 @@ public class DoubleDirectionMap<K, V> {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		String res = "";
+		for(Pair pair : this.map) {
+			res += pair.toString() + "\n";
+		}
+		return res;
 	}
 	
 	/**

@@ -10,17 +10,6 @@ public class Zone {
 	private NaturalElement el;
 	private boolean heliport;
 	
-	private static final DoubleDirectionMap<String, String> toStringTable 
-	= new DoubleDirectionMap<>();
-	// Modifier value de DoubleDirectionMap::put(key, value)
-	// pour modifier le symbole du Zone::toString() correspondant
-	{ 
-		toStringTable.put("NormalLevel", "-");
-		toStringTable.put("FloodedLevel", "~");
-		toStringTable.put("SubmergedLevel", "*");
-		toStringTable.put("heliport", "H");
-	}
-	
 	/**
 	 * @apiNote Instancie une zone normale (asséchée)
 	 * @param m: Référence au modèle de l'île
@@ -30,6 +19,53 @@ public class Zone {
 		this.wl = new NormalLevel();
 		this.el = NaturalElement.NONE;
 		this.heliport = false;
+	}
+	
+	/**
+	 * @apiNote Instancie une zone selon un symbole
+	 * @param m: Référence au modèle de l'île
+	 * @param symbol: Symbole se référer à StringMap
+	 */
+	public Zone(IslandModel m, String symbol) {
+		new Zone(m);
+		String mean = StringMap.decode(symbol);
+		if(mean != null) {
+			if(mean != "SubmergedLevel") {
+				if(mean == "heliport") {
+					this.heliport = true;
+				}
+				else if(! this.heliport) {
+					for(NaturalElement el : NaturalElement.values()) {
+						if(mean == el.name()) {
+							this.el = el;
+						}
+					}
+				}
+				else {
+					this.wl = this.createWaterLevel(mean); 
+				}
+			}
+			else {
+				this.wl = this.createWaterLevel(mean);
+			}
+		}
+		else {
+			throw new IllegalArgumentException("Incorrect symbol in Zone() constructor");
+		}
+	}
+	
+	/**
+	 * @apiNote Crée le niveau d'eau spécifié
+	 * @param className: Nom du niveau d'eau
+	 * @return Le niveau d'eau ou null
+	 */
+	public WaterLevel createWaterLevel(String className) {
+		switch(className) {
+			case "NormalLevel": return new NormalLevel();
+			case "FloodedLevel": return new FloodedLevel();
+			case "SubmergedLevel": return new SubmergedLevel();
+			default: return null;
+		}
 	}
 	
 	/**
@@ -91,9 +127,9 @@ public class Zone {
 	@Override
 	public String toString() {
 		String wlString = this.wl.toString();
-		if (wlString != toStringTable.encode("SubmergedLevel")) {
+		if (wlString != StringMap.encode("SubmergedLevel")) {
 			if (this.heliport) {
-				return toStringTable.encode("heliport");
+				return StringMap.encode("heliport");
 			}
 			else if (this.el != NaturalElement.NONE) {
 				return this.el.toString();
@@ -133,6 +169,7 @@ public class Zone {
 		 * @return true si submergable false sinon
 		 */
 		public abstract boolean isSubmergeable();
+		
 	}
 	
 	/**
@@ -159,7 +196,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return toStringTable.encode("NormalLevel");
+			return StringMap.encode("NormalLevel");
 		}
 	}
 	
@@ -187,7 +224,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return toStringTable.encode("FloodedLevel");
+			return StringMap.encode("FloodedLevel");
 		}
 	}
 	
@@ -215,7 +252,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return toStringTable.encode("SubmergedLevel");
+			return StringMap.encode("SubmergedLevel");
 		}
 	}
 }
