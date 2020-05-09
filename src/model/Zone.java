@@ -10,6 +10,17 @@ public class Zone {
 	private NaturalElement el;
 	private boolean heliport;
 	
+	private static final DoubleDirectionMap<String, String> toStringTable 
+	= new DoubleDirectionMap<>();
+	// Modifier value de DoubleDirectionMap::put(key, value)
+	// pour modifier le symbole du Zone::toString() correspondant
+	{ 
+		toStringTable.put("NormalLevel", "-");
+		toStringTable.put("FloodedLevel", "~");
+		toStringTable.put("SubmergedLevel", "*");
+		toStringTable.put("heliport", "H");
+	}
+	
 	/**
 	 * @apiNote Instancie une zone normale (asséchée)
 	 * @param m: Référence au modèle de l'île
@@ -80,9 +91,9 @@ public class Zone {
 	@Override
 	public String toString() {
 		String wlString = this.wl.toString();
-		if (wlString != "*") {
+		if (wlString != toStringTable.encode("SubmergedLevel")) {
 			if (this.heliport) {
-				return "H";
+				return toStringTable.encode("heliport");
 			}
 			else if (this.el != NaturalElement.NONE) {
 				return this.el.toString();
@@ -148,7 +159,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return "-";
+			return toStringTable.encode("NormalLevel");
 		}
 	}
 	
@@ -176,7 +187,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return "~";
+			return toStringTable.encode("FloodedLevel");
 		}
 	}
 	
@@ -204,7 +215,7 @@ public class Zone {
 		
 		@Override
 		public String toString() {
-			return "*";
+			return toStringTable.encode("SubmergedLevel");
 		}
 	}
 }
