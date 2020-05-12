@@ -28,43 +28,28 @@ public class Zone {
 	 */
 	public Zone(IslandModel m, String symbol) {
 		new Zone(m);
-		String mean = StringMap.decode(symbol);
-		if(mean != null) {
-			if(mean != "SubmergedLevel") {
-				if(mean == "heliport") {
-					this.heliport = true;
-				}
-				else if(! this.heliport) {
+		String mean[] = StringMap.decode(symbol).split("&");
+		if(mean[0] != null) {
+			switch(mean[0]) {
+				case "NormalLevel": this.wl = new NormalLevel(); break;
+				case "FloodedLevel": this.wl = new FloodedLevel(); break;
+				case "SubmergedLevel": this.wl = new SubmergedLevel(); break;
+				case "heliport": this.heliport = true; break;
+				default:
 					for(NaturalElement el : NaturalElement.values()) {
-						if(mean == el.name()) {
+						if(mean[0] == el.name()) {
 							this.el = el;
 						}
-					}
-				}
-				else {
-					this.wl = this.createWaterLevel(mean); 
-				}
+					} break;
 			}
-			else {
-				this.wl = this.createWaterLevel(mean);
+		}
+		if(mean[1] != null) {
+			switch(mean[1]) {
+				case "FloodedLevel": this.wl = new FloodedLevel();
 			}
 		}
 		else {
 			throw new IllegalArgumentException("Incorrect symbol in Zone() constructor");
-		}
-	}
-	
-	/**
-	 * @apiNote Crée le niveau d'eau spécifié
-	 * @param className: Nom du niveau d'eau
-	 * @return Le niveau d'eau ou null
-	 */
-	public WaterLevel createWaterLevel(String className) {
-		switch(className) {
-			case "NormalLevel": return new NormalLevel();
-			case "FloodedLevel": return new FloodedLevel();
-			case "SubmergedLevel": return new SubmergedLevel();
-			default: return null;
 		}
 	}
 	
@@ -129,9 +114,15 @@ public class Zone {
 		String wlString = this.wl.toString();
 		if (wlString != StringMap.encode("SubmergedLevel")) {
 			if (this.heliport) {
+				if(wlString == StringMap.encode("FloodedLevel")) {
+					return StringMap.encode("heliport&FloodedLevel");
+				}
 				return StringMap.encode("heliport");
 			}
 			else if (this.el != NaturalElement.NONE) {
+				if(wlString == StringMap.encode("FloodedLevel")) {
+					return StringMap.encode(this.el.name() + "&FloodedLevel");
+				}
 				return this.el.toString();
 			}
 		}
