@@ -11,10 +11,9 @@ public class ZoneTest {
 	public void floodTest() {
 		Zone z = new Zone(null, "-");
 		z.flood();
-		assertEquals(z.toString(), StringMap.decode("FloodedLevel"));
+		assertEquals(StringMap.decode("FloodedLevel"), z.toString());
 		z.flood();
-		assertEquals(z.toString(), StringMap.decode("SubmergedLevel"));
-		
+		assertEquals(StringMap.decode("SubmergedLevel"), z.toString());
 	}
 
 }
