@@ -4,6 +4,11 @@ import model.DoubleDirectionMap;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+/**
+ * @author maxime
+ * @apiNote Tests unitaires automatiques
+ * de la classe DoubleDirectionMap
+ */
 public class DoubleDirectionMapTest {
 	
 	DoubleDirectionMap<Integer, Integer> map1;
@@ -97,6 +102,8 @@ public class DoubleDirectionMapTest {
 		String mean[] = map3.decode("h").split("&");
 		assertEquals("heliport", mean[0]);
 		assertEquals("FloodedLevel", mean[1]);
+		mean = map3.decode("H").split("&");
+		assertEquals("heliport", mean[0]);
 		assertNull(map3.decode("A"));
 		assertNull(map3.decode("F"));
 		

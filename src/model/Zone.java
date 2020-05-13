@@ -27,8 +27,10 @@ public class Zone {
 	 * @param symbol: Symbole se référer à StringMap
 	 */
 	public Zone(IslandModel m, String symbol) {
-		new Zone(m);
+		this(m);
+		// Token potentiellement en 2 parties
 		String mean[] = StringMap.decode(symbol).split("&");
+		// Partie 1 du token
 		if(mean[0] != null) {
 			switch(mean[0]) {
 				case "NormalLevel": this.wl = new NormalLevel(); break;
@@ -37,19 +39,22 @@ public class Zone {
 				case "heliport": this.heliport = true; break;
 				default:
 					for(NaturalElement el : NaturalElement.values()) {
-						if(mean[0] == el.name()) {
+						if(mean[0].equals(el.name())) {
 							this.el = el;
 						}
 					} break;
 			}
 		}
-		if(mean[1] != null) {
+		// Symbole non-reconnu
+		else {
+			throw new IllegalArgumentException("Incorrect symbol in Zone() constructor");
+		}
+		
+		// Partie 2 du token
+		if(mean.length > 1 && mean[1] != null) {
 			switch(mean[1]) {
 				case "FloodedLevel": this.wl = new FloodedLevel();
 			}
-		}
-		else {
-			throw new IllegalArgumentException("Incorrect symbol in Zone() constructor");
 		}
 	}
 	
@@ -114,13 +119,13 @@ public class Zone {
 		String wlString = this.wl.toString();
 		if (wlString != StringMap.encode("SubmergedLevel")) {
 			if (this.heliport) {
-				if(wlString == StringMap.encode("FloodedLevel")) {
+				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode("heliport&FloodedLevel");
 				}
 				return StringMap.encode("heliport");
 			}
 			else if (this.el != NaturalElement.NONE) {
-				if(wlString == StringMap.encode("FloodedLevel")) {
+				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode(this.el.name() + "&FloodedLevel");
 				}
 				return this.el.toString();

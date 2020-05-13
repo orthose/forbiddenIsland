@@ -5,12 +5,15 @@ package model;
  * @apiNote Centralise le dictionnaire
  * des toString des classes de model
  */
-public class StringMap {
+public final class StringMap {
+	
 	private static final DoubleDirectionMap<String, String> map 
 	= new DoubleDirectionMap<>();
-	// Modifier value de DoubleDirectionMap::put(key, value)
-	// pour modifier le symbole du Class::toString() correspondant
-	{ 
+	
+	// Instanciation impossible depuis l'extérieur
+	private StringMap() {
+		// Modifier value de DoubleDirectionMap::put(key, value)
+		// pour modifier le symbole du Class::toString() correspondant
 		map.put("NormalLevel", "-");
 		map.put("FloodedLevel", "~");
 		map.put("SubmergedLevel", "*");
@@ -28,10 +31,12 @@ public class StringMap {
 	}
 	
 	public static String encode(String key) {
+		new StringMap();
 		return map.encode(key);
 	}
 	
 	public static String decode(String value) {
+		new StringMap();
 		return map.decode(value);
 	}
 }

@@ -4,6 +4,11 @@ import model.IslandModel;
 import static org.junit.Assert.*;
 import org.junit.*;
 
+/**
+ * @author maxime
+ * @apiNote Tests unitaires automatiques
+ * de la classe IslandModel
+ */
 public class IslandModelTest {
 	
 	String map1 = "*********************\n"
