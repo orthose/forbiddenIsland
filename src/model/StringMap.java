@@ -28,6 +28,8 @@ public final class StringMap {
 		map.put("FIRE", "F");
 		map.put("FIRE&FloodedLevel", "f");
 		map.put("NONE", "");
+		map.put("Player", "P");
+		map.put("Player&FloodedLevel", "p");
 	}
 	
 	public static String encode(String key) {

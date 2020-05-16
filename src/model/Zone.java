@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 /**
  * @author maxime
  * @apiNote Une zone est une composante de l'île
@@ -9,6 +11,7 @@ public class Zone {
 	private WaterLevel wl;
 	private NaturalElement el;
 	private boolean heliport;
+	private ArrayList<Player> players;
 	public final int x, y;
 	
 	/**
@@ -24,6 +27,7 @@ public class Zone {
 		this.wl = new NormalLevel();
 		this.el = NaturalElement.NONE;
 		this.heliport = false;
+		this.players = new ArrayList<Player>();
 	}
 	
 	/**
@@ -154,17 +158,39 @@ public class Zone {
 		return this.wl.isSubmergeable();
 	}
 	
+	/**
+	 * @apiNote Ajoute un joueur sur la zone
+	 * @param player: Joueur à ajouter
+	 */
+	public void addPlayer(Player player) {
+		this.players.add(player);
+	}
+	
+	/**
+	 * @apiNote Supprimer un joueur de la zone
+	 * @param player: Joueur à supprimer
+	 */
+	public void removePlayer(Player player) {
+		this.players.remove(player);
+	}
+	
 	@Override
 	public String toString() {
 		String wlString = this.wl.toString();
 		if (wlString != StringMap.encode("SubmergedLevel")) {
-			if (this.heliport) {
+			if(! this.players.isEmpty()) {
+				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
+					return StringMap.encode("Player&FloodedLevel");
+				}
+				return StringMap.encode("Player");
+			}
+			else if(this.heliport) {
 				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode("heliport&FloodedLevel");
 				}
 				return StringMap.encode("heliport");
 			}
-			else if (this.el != NaturalElement.NONE) {
+			else if(this.el != NaturalElement.NONE) {
 				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode(this.el.name() + "&FloodedLevel");
 				}

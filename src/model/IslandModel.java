@@ -7,8 +7,9 @@ import java.util.Observable;
  * @apiNote Modèle de l'île le plateau de jeu
  */
 public class IslandModel extends Observable {
-	public final int width, height; 
-	private ArrayList<ArrayList<Zone>> zones;
+	public final int WIDTH, HEIGHT; 
+	protected ArrayList<ArrayList<Zone>> zones;
+	private ArrayList<Player> players;
 	
 	/**
 	 * @apiNote Crée une île
@@ -32,8 +33,65 @@ public class IslandModel extends Observable {
 				throw new IllegalArgumentException("Incorrect map size in IslandModel() constructor");
 			}
 		}
-		this.width = lineSize;
-		this.height = this.zones.size();
+		this.WIDTH = lineSize;
+		this.HEIGHT = this.zones.size();
+		this.players = new ArrayList<Player>();
+	}
+	
+	/**
+	 * @apiNote Ajoute un joueur à la partie
+	 * @param player: Joueur à ajouter
+	 */
+	public void addPlayer(Player player) {
+		this.players.add(player);
+	}
+	
+	/**
+	 * @apiNote Permet de déplacer un joueur
+	 * @param order: Numéro du joueur
+	 * @param move: Déplacement souhaité
+	 * @throws Player.InvalidOrder: Si le déplacement
+	 * dépasse les bords de l'île
+	 */
+	public void movePlayer(int order, Move move) throws Player.InvalidOrder {
+		if(Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			Zone newPosition = player.position;
+			switch(move) {
+				case UP: 
+					if(player.position.y > 0) {
+						newPosition = zones.get(player.position.y - 1).get(player.position.x);
+					} break;
+				case DOWN:
+					if(player.position.y < this.HEIGHT - 1) {
+						newPosition = zones.get(player.position.y + 1).get(player.position.x);
+					} break;
+				case RIGHT:
+					if(player.position.x > 0) {
+						newPosition = zones.get(player.position.y).get(player.position.x + 1);
+					} break;
+				case LEFT:
+					if(player.position.x < this.WIDTH - 1) {
+						newPosition = zones.get(player.position.y).get(player.position.x - 1);
+					} break;
+			}
+			player.move(newPosition);
+		}
+		else {
+			throw new Player.InvalidOrder(order);
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String res = "";
+		for(int i = 0; i < this.WIDTH; i++) {
+			for(int j = 0; j < this.HEIGHT; j++) {
+				res += zones.get(j).get(i).toString();
+			}
+			if(i != this.WIDTH - 1) { res += "\n"; }
+		}
+		return res;
 	}
 
 }
