@@ -263,7 +263,102 @@ public class ZoneTest {
 	@Test
 	public void dryTest() {
 		
+		//-------------------------------------------------------------//
+		
+		assertTrue(z1.isNormalLevel());
+		z1.dry();
+		// Assécher une zone normal ne change pas le niveau
+		assertTrue(z1.isNormalLevel());
+		assertFalse(z1.isFloodedLevel());
+		assertFalse(z1.isSubmergedLevel());
+		
+		//-------------------------------------------------------------//
+		
+		assertTrue(z2.isFloodedLevel());
+		z2.dry();
+		assertTrue(z2.isNormalLevel());
+		assertFalse(z2.isFloodedLevel());
+		assertFalse(z2.isSubmergedLevel());
+		
+		//-------------------------------------------------------------//
+		
+		assertTrue(z3.isSubmergedLevel());
+		z3.dry();
+		// On ne peut pas assécher une zone submergée
+		assertTrue(z3.isSubmergedLevel());
+		assertFalse(z3.isNormalLevel());
+		assertFalse(z3.isFloodedLevel());
+		
+		//-------------------------------------------------------------//
 	}
 	
+	@Test
+	public void floodAndDryTest() {
+
+		//-------------------------------------------------------------//
+
+		assertTrue(z1.isNormalLevel());
+		z1.flood();
+		assertTrue(z1.isFloodedLevel());
+		assertFalse(z1.isNormalLevel());
+		assertFalse(z1.isSubmergedLevel());
+		z1.dry();
+		assertTrue(z1.isNormalLevel());
+		assertFalse(z1.isFloodedLevel());
+		assertFalse(z1.isSubmergedLevel());
+		
+
+		//-------------------------------------------------------------//
+
+		assertTrue(z2.isFloodedLevel());
+		z2.dry();
+		assertTrue(z2.isNormalLevel());
+		assertFalse(z2.isFloodedLevel());
+		assertFalse(z2.isSubmergedLevel());
+		z2.flood();
+		assertTrue(z2.isFloodedLevel());
+		assertFalse(z2.isNormalLevel());
+		assertFalse(z2.isSubmergedLevel());
+
+		//-------------------------------------------------------------//
+
+		assertTrue(z3.isSubmergedLevel());
+		z3.dry();
+		// On ne peut pas assécher une zone submergée
+		assertTrue(z3.isSubmergedLevel());
+		assertFalse(z3.isNormalLevel());
+		assertFalse(z3.isFloodedLevel());
+		// Inonder une zone submergée ne change pas le niveau d'eau
+		z3.flood();
+		assertTrue(z3.isSubmergedLevel());
+		assertFalse(z3.isNormalLevel());
+		assertFalse(z3.isFloodedLevel());
+
+		//-------------------------------------------------------------//
+	}
+	
+	@Test
+	public void isCrossableAndIsSubmergeableTest() {
+		
+		assertTrue(z1.isNormalLevel());
+		assertTrue(z1.isCrossable());
+		assertFalse(z1.isSubmergeable());
+		
+		z1.flood();
+		
+		assertTrue(z1.isFloodedLevel());
+		assertFalse(z1.isNormalLevel());
+		assertFalse(z1.isSubmergedLevel());
+		assertTrue(z1.isCrossable());
+		assertTrue(z1.isSubmergeable());
+		
+		z1.flood();
+		
+		assertFalse(z1.isNormalLevel());
+		assertFalse(z1.isFloodedLevel());
+		assertTrue(z1.isSubmergedLevel());
+		assertFalse(z1.isCrossable());
+		assertTrue(z1.isSubmergeable());
+	}
 
 }
