@@ -22,7 +22,7 @@ public class IslandModel extends Observable {
 			String line = mapLine[i];
 			zones.add(new ArrayList<Zone>());
 			for(int j = 0; j < line.length(); j++) {
-				zones.get(i).add(new Zone(this, String.valueOf(line.charAt(j))));
+				zones.get(i).add(new Zone(this, String.valueOf(line.charAt(j)), i, j));
 			}
 		}
 		// Vérification que la grille est complète

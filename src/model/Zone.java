@@ -9,13 +9,18 @@ public class Zone {
 	private WaterLevel wl;
 	private NaturalElement el;
 	private boolean heliport;
+	public final int x, y;
 	
 	/**
 	 * @apiNote Instancie une zone normale (asséchée)
 	 * @param m: Référence au modèle de l'île
+	 * @param x: Coordonnée en x
+	 * @param y: Coordonnée en y
 	 */
-	public Zone(IslandModel m) {
+	public Zone(IslandModel m, int x, int y) {
 		this.m = m;
+		this.x = x;
+		this.y = y;
 		this.wl = new NormalLevel();
 		this.el = NaturalElement.NONE;
 		this.heliport = false;
@@ -25,9 +30,11 @@ public class Zone {
 	 * @apiNote Instancie une zone selon un symbole
 	 * @param m: Référence au modèle de l'île
 	 * @param symbol: Symbole se référer à StringMap
+	 * @param x: Coordonnée en x
+	 * @param y: Coordonnée en y
 	 */
-	public Zone(IslandModel m, String symbol) {
-		this(m);
+	public Zone(IslandModel m, String symbol, int x, int y) {
+		this(m, x, y);
 		// Token potentiellement en 2 parties
 		String mean[] = StringMap.decode(symbol).split("&");
 		// Partie 1 du token
@@ -110,6 +117,39 @@ public class Zone {
 		return this.wl.isSafe();
 	}
 	
+	/**
+	 * @apiNote Vérifie que le niveau d'eau
+	 * de la zone est normal
+	 * @return true si niveau normal false sinon
+	 */
+	public boolean isNormalLevel() {
+		return this.wl.isNormalLevel();
+	}
+	
+	/**
+	 * @apiNote Vérifie que le niveau d'eau
+	 * de la zone est inondé
+	 * @return true si niveau inondé false sinon
+	 */
+	public boolean isFloodedLevel() {
+		return this.wl.isFloodedLevel();
+	}
+	
+	/**
+	 * @apiNote Vérifie que le niveau d'eau
+	 * de la zone est submergé
+	 * @return true si niveau submergé false sinon
+	 */
+	public boolean isSubmergedLevel() {
+		return this.wl.isSubmergedLevel();
+	}
+	
+	/**
+	 * @apiNote Vérifie si la zone est submergable
+	 * (elle passe à l'état submergé lors du prochain
+	 * appel Zone::flood())
+	 * @return true si submergable false sinon
+	 */
 	public boolean isSubmergeable() {
 		return this.wl.isSubmergeable();
 	}
@@ -153,10 +193,33 @@ public class Zone {
 		public abstract WaterLevel reduce();
 		
 		/**
+		 * @apiNote Vérifie que le niveau d'eau
+		 * de la zone est normal
+		 * @return true si niveau normal false sinon
+		 */
+		public abstract boolean isNormalLevel();
+		
+		/**
+		 * @apiNote Vérifie que le niveau d'eau
+		 * de la zone est inondé
+		 * @return true si niveau inondé false sinon
+		 */
+		public abstract boolean isFloodedLevel();
+		
+		/**
+		 * @apiNote Vérifie que le niveau d'eau
+		 * de la zone est submergé
+		 * @return true si niveau submergé false sinon
+		 */
+		public abstract boolean isSubmergedLevel();
+		
+		/**
 		 * @apiNote Vérifie que le niveau de l'eau est viable
 		 * @return true si viable false sinon
 		 */
-		public abstract boolean isSafe();
+		public boolean isSafe() {
+			return this.isNormalLevel() || this.isFloodedLevel();
+		}
 		
 		/**
 		 * @apiNote Vérifie si la zone est submergable
@@ -164,7 +227,9 @@ public class Zone {
 		 * appel Zone::flood())
 		 * @return true si submergable false sinon
 		 */
-		public abstract boolean isSubmergeable();
+		public boolean isSubmergeable() {
+			return this.isFloodedLevel() || this.isSubmergedLevel();
+		}
 		
 	}
 	
@@ -182,11 +247,15 @@ public class Zone {
 			return this;
 		}
 		
-		public boolean isSafe() {
+		public boolean isNormalLevel() {
 			return true;
 		}
 		
-		public boolean isSubmergeable() {
+		public boolean isFloodedLevel() {
+			return false;
+		}
+		
+		public boolean isSubmergedLevel() {
 			return false;
 		}
 		
@@ -210,12 +279,16 @@ public class Zone {
 			return new NormalLevel();
 		}
 		
-		public boolean isSafe() {
+		public boolean isNormalLevel() {
+			return false;
+		}
+		
+		public boolean isFloodedLevel() {
 			return true;
 		}
 		
-		public boolean isSubmergeable() {
-			return true;
+		public boolean isSubmergedLevel() {
+			return false;
 		}
 		
 		@Override
@@ -238,11 +311,15 @@ public class Zone {
 			return this;
 		}
 		
-		public boolean isSafe() {
+		public boolean isNormalLevel() {
 			return false;
 		}
 		
-		public boolean isSubmergeable() {
+		public boolean isFloodedLevel() {
+			return false;
+		}
+		
+		public boolean isSubmergedLevel() {
 			return true;
 		}
 		
