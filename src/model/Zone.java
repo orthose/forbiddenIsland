@@ -174,6 +174,36 @@ public class Zone {
 		this.players.remove(player);
 	}
 	
+	/**
+	 * @apiNote Renvoie la case voisine
+	 * de la case courante
+	 * @param move: Déplacement pour aller
+	 * sur la case voisine
+	 * @return zone voisine
+	 */
+	public Zone neighbour(Move move) {
+		switch(move) {
+		case UP: 
+			if(this.y > 0) {
+				return m.zones[this.x][this.y - 1];
+			}
+		case DOWN:
+			if(this.y < this.m.HEIGHT - 1) {
+				return m.zones[this.x][this.y + 1];
+			}
+		case RIGHT:
+			if(this.x > 0) {
+				return m.zones[this.x + 1][this.y];
+			}
+		case LEFT:
+			if(this.x < this.m.WIDTH - 1) {
+				return m.zones[this.x - 1][this.y];
+			}
+		default:
+			return null;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		String wlString = this.wl.toString();
@@ -256,7 +286,6 @@ public class Zone {
 		public boolean isSubmergeable() {
 			return this.isFloodedLevel() || this.isSubmergedLevel();
 		}
-		
 	}
 	
 	/**

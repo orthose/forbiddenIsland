@@ -8,33 +8,35 @@ import java.util.Observable;
  */
 public class IslandModel extends Observable {
 	public final int WIDTH, HEIGHT; 
-	protected ArrayList<ArrayList<Zone>> zones;
+	protected Zone[][] zones;
 	private ArrayList<Player> players;
 	
 	/**
-	 * @apiNote Crée une île
+	 * @apiNote Crée une île selon une carte
+	 * Si une des lignes est de taille différente
+	 * de la première ligne les lignes suivantes
+	 * ne sont pas chargées
 	 * @param map: Carte initiale qui sera chargée
 	 * Les symboles sont détaillés dans StringMap
 	 */
 	public IslandModel(String map) {
-		// Chargement des zones
+		super();
+		// Découpe des lignes
 		String[] mapLine = map.split("\n");
-		for(int i = 0; i < mapLine.length; i++) {
+		this.WIDTH = mapLine[0].length();
+		this.HEIGHT = mapLine.length;
+		// Chargement des zones
+		int i = 0;
+		int currentWidth = 0;
+		do {
 			String line = mapLine[i];
-			zones.add(new ArrayList<Zone>());
-			for(int j = 0; j < line.length(); j++) {
-				zones.get(i).add(new Zone(this, String.valueOf(line.charAt(j)), i, j));
+			currentWidth = line.length();
+			for(int j = 0; j < currentWidth; j++) {
+				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(j)), i, j);
 			}
-		}
-		// Vérification que la grille est complète
-		int lineSize = zones.get(0).size();
-		for(ArrayList<Zone> lineZone : this.zones) {
-			if(lineSize != lineZone.size()) {
-				throw new IllegalArgumentException("Incorrect map size in IslandModel() constructor");
-			}
-		}
-		this.WIDTH = lineSize;
-		this.HEIGHT = this.zones.size();
+			i++;
+			
+		} while(this.WIDTH == currentWidth && i < this.HEIGHT);
 		this.players = new ArrayList<Player>();
 	}
 	
@@ -44,6 +46,7 @@ public class IslandModel extends Observable {
 	 */
 	public void addPlayer(Player player) {
 		this.players.add(player);
+		super.notifyObservers();
 	}
 	
 	/**
@@ -56,30 +59,12 @@ public class IslandModel extends Observable {
 	public void movePlayer(int order, Move move) throws Player.InvalidOrder {
 		if(Player.isPlayerOrder(order)) {
 			Player player = players.get(order);
-			Zone newPosition = player.position;
-			switch(move) {
-				case UP: 
-					if(player.position.y > 0) {
-						newPosition = zones.get(player.position.y - 1).get(player.position.x);
-					} break;
-				case DOWN:
-					if(player.position.y < this.HEIGHT - 1) {
-						newPosition = zones.get(player.position.y + 1).get(player.position.x);
-					} break;
-				case RIGHT:
-					if(player.position.x > 0) {
-						newPosition = zones.get(player.position.y).get(player.position.x + 1);
-					} break;
-				case LEFT:
-					if(player.position.x < this.WIDTH - 1) {
-						newPosition = zones.get(player.position.y).get(player.position.x - 1);
-					} break;
-			}
-			player.move(newPosition);
+			player.move(player.position.neighbour(move));
 		}
 		else {
 			throw new Player.InvalidOrder(order);
 		}
+		super.notifyObservers();
 	}
 	
 	@Override
@@ -87,7 +72,7 @@ public class IslandModel extends Observable {
 		String res = "";
 		for(int i = 0; i < this.WIDTH; i++) {
 			for(int j = 0; j < this.HEIGHT; j++) {
-				res += zones.get(j).get(i).toString();
+				res += this.zones[i][j].toString();
 			}
 			if(i != this.WIDTH - 1) { res += "\n"; }
 		}
