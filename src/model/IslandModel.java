@@ -1,6 +1,7 @@
 package model;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.Random;
 
 import model.Player.InvalidOrder;
 
@@ -9,9 +10,12 @@ import model.Player.InvalidOrder;
  * @apiNote Modèle de l'île le plateau de jeu
  */
 public class IslandModel extends Observable {
+	public static final Random rand = new Random();
 	public final int WIDTH, HEIGHT; 
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
+	// Paramètres modifiables même à l'exécution
+	protected float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	
 	/**
 	 * @apiNote Crée une île selon une carte
@@ -40,6 +44,32 @@ public class IslandModel extends Observable {
 			
 		} while(this.WIDTH == currentWidth && i < this.HEIGHT);
 		this.players = new ArrayList<Player>();
+	}
+	
+	/**
+	 * @apiNote Permet d'accéder à une zone
+	 * depuis la vue
+	 * @param x: Coordonnée en x
+	 * @param y: Coordonnée en y
+	 * @return zone aux coordonnées spécifiées
+	 */
+	public Zone getZone(int x, int y) {
+		return this.zones[x][y];
+	}
+	
+	/**
+	 * @apiNote Permet d'accéder à un joueur
+	 * depuis la vue
+	 * @param order: Numéro du joueur
+	 * @return le joueur spécifié
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public Player getPlayer(int order) throws Player.InvalidOrder {
+		if(Player.isPlayerOrder(order)) {
+			return this.players.get(order);
+		}
+		throw new Player.InvalidOrder(order);
 	}
 	
 	/**
@@ -73,9 +103,7 @@ public class IslandModel extends Observable {
 			if(success) { super.notifyObservers(); };
 			return success;
 		}
-		else {
-			throw new Player.InvalidOrder(order);
-		}
+		throw new Player.InvalidOrder(order);
 	}
 	
 	/**
@@ -91,9 +119,25 @@ public class IslandModel extends Observable {
 			Player player = players.get(order);
 			return new ArrayList<Zone>(player.movePossibilities());
 		}
-		else {
-			throw new Player.InvalidOrder(order);
+		throw new Player.InvalidOrder(order);
+	}
+	
+	/**
+	 * @apiNote Vérifie si le joueur spécifié peut
+	 * assécher une zone
+	 * @param order: Numéro du joueur
+	 * @param move: Cible à assécher par rapport
+	 * à la zone du joueur (peut être sa propre zone)
+	 * @return true si la zone peut être asséchée false sinon
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean canDryPlayer(int order, Move move) throws Player.InvalidOrder {
+		if(Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			return player.canDry(move);
 		}
+		throw new Player.InvalidOrder(order);
 	}
 	
 	/**
@@ -112,9 +156,111 @@ public class IslandModel extends Observable {
 			super.notifyObservers();
 			return success;
 		}
-		else {
-			throw new Player.InvalidOrder(order);
+		throw new Player.InvalidOrder(order);
+	}
+	
+	/**
+	 * @apiNote Inonde 3 zones aléatoirement
+	 * Si un joueur est piégé il est automatiquement tué
+	 * @return Liste des joueurs sur les zones
+	 * concernées et qui vont être submergées
+	 */
+	public ArrayList<Player> floodRandom() {
+		ArrayList<Player> res = new ArrayList<Player>();
+		for(int i = 0; i < 3; i++) {
+			int x = IslandModel.rand.nextInt(this.WIDTH);
+			int y = IslandModel.rand.nextInt(this.HEIGHT);
+			// Inondation de la zone
+			this.zones[x][y].flood();
+			// Si des joueurs sont sur cette zone
+			for (Player player : this.players) {
+				if(x == player.position.x && y == player.position.y 
+						&& player.position.isSubmergeable()) {
+					// Ajout du joueur à la liste des joueurs à déplacer
+					if (player.canEscape()) {
+						res.add(player);
+					}
+					// Joueur tué car il ne peut pas s'échapper
+					else {
+						player.kill();;
+					}
+				}
+			}
 		}
+		super.notifyObservers();
+		return res;
+	}
+	
+	/**
+	 * @apiNote Vérifie si le joueur peut rechercher
+	 * une clé
+	 * @param order: Numéro du joueur
+	 * @return true si la clé est recherchable false sinon
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean canFindKeyElementPlayer(int order) throws Player.InvalidOrder {
+		if (Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			return player.canFindKeyElement();
+		}
+		throw new Player.InvalidOrder(order);
+	}
+	
+	/**
+	 * @apiNote Le joueur spécifié cherche une clé
+	 * Cela peut mener à l'évènement spécial
+	 * de la montée des eaux
+	 * @param order: Numéro du joueur
+	 * @return true si la clé a été trouvée false sino
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean findKeyElementPlayer(int order) throws Player.InvalidOrder {
+		if (Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			boolean res = player.findKeyElement();
+			// Évènement spécial : Montée des eaux
+			if (! res) {
+				player.position.flood();
+				// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
+				if (! player.canEscape()) {
+					player.kill();
+				}
+			}
+			return res;
+		}
+		throw new Player.InvalidOrder(order);
+	}
+	
+	/**
+	 * @apiNote Vérifie si le joueur peut trouver un artefact
+	 * @param order: Numéro du joueur
+	 * @return true si un artefact peut être trouvé false sinon
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean canFindArtefactPlayer(int order) throws Player.InvalidOrder {
+		if (Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			return player.canFindArtefact();
+		}
+		throw new Player.InvalidOrder(order);
+	}
+	
+	/**
+	 * @apiNote Le joueur spécifié cherche un artefact
+	 * @param order: Numéro du joueur
+	 * @return true si l'artefact a été trouvé false sinon
+	 * @throws Player.InvalidOrder: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean findArtefactPlayer(int order) throws Player.InvalidOrder {
+		if (Player.isPlayerOrder(order)) {
+			Player player = players.get(order);
+			return player.findArtefact();
+		}
+		throw new Player.InvalidOrder(order);
 	}
 	
 	@Override
