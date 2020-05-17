@@ -6,5 +6,5 @@ package model;
  * pour un joueur
  */
 public enum Move {
-	UP, DOWN, RIGHT, LEFT
+	UP, DOWN, RIGHT, LEFT, NONE
 }

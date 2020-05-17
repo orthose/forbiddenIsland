@@ -175,33 +175,54 @@ public class Zone {
 	}
 	
 	/**
-	 * @apiNote Renvoie la case voisine
-	 * de la case courante
+	 * @apiNote Renvoie la zone voisine
+	 * de la zone courante
+	 * Si le déplacement n'est pas possible
+	 * c'est la zone courante qui est renvoyée
 	 * @param move: Déplacement pour aller
-	 * sur la case voisine
-	 * @return zone voisine
+	 * sur la zone voisine
+	 * @param success: true si déplacement réussi
+	 * false sinon
+	 * @return zone voisine ou zone courante
 	 */
-	public Zone neighbour(Move move) {
+	public Zone neighbour(Move move, Boolean success) {
 		switch(move) {
 		case UP: 
 			if(this.y > 0) {
+				success = true;
 				return m.zones[this.x][this.y - 1];
 			}
 		case DOWN:
 			if(this.y < this.m.HEIGHT - 1) {
+				success = true;
 				return m.zones[this.x][this.y + 1];
 			}
 		case RIGHT:
 			if(this.x > 0) {
+				success = true;
 				return m.zones[this.x + 1][this.y];
 			}
 		case LEFT:
 			if(this.x < this.m.WIDTH - 1) {
+				success = true;
 				return m.zones[this.x - 1][this.y];
 			}
+		case NONE:
+			success = true;
+			return this;
 		default:
-			return null;
+			success = false;
+			return this;
 		}
+	}
+	
+	/**
+	 * @apiNote Surcharge si l'on ne souhaite pas
+	 * savoir si le déplacement est valide
+	 */
+	public Zone neighbour(Move move) {
+		Boolean success = Boolean.valueOf(true);
+		return this.neighbour(move, success);
 	}
 	
 	@Override
