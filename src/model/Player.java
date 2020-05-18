@@ -10,34 +10,34 @@ import java.util.HashSet;
 public class Player {
 	private IslandModel m;
 	private String name;
-	private int order;
+	private int id;
 	protected Zone position;
 	private boolean alive;
 	private ArrayList<KeyElement> keys;
-	private static ArrayList<Integer> allOrders;
+	private static ArrayList<Integer> allPlayersId;
 	
 	/**
-	 * @param order: Ordre de passage du joueur
+	 * @param id: Identifiant du joueur
 	 * qui commence à 0 et chaque nouveau joueur
-	 * doit avoir l'ordre order+1
+	 * doit avoir l'identifiant id+1
 	 * @param m: Référence au modèle qui permet
 	 * l'ajout direct du joueur au modèle
 	 * @param name: Nom du joueur
 	 * @param position: zone de l'actuelle position
 	 * du joueur
-	 * @throws InvalidOrder: Si l'ordre de passage est déjà
-	 * enregistré ou que le premier joueur n'a pas l'ordre 0
+	 * @throws InvalidPlayerId: Si l'identifiant est déjà
+	 * enregistré ou que le premier joueur n'a pas l'identifiant 0
 	 */
-	public Player(IslandModel m, int order, String name, Zone position) throws InvalidOrder {
-		Integer lastOrder = Player.allOrders.get(Player.allOrders.size());
-		if (Player.allOrders.contains(Integer.valueOf(order)) || lastOrder + 1 != order) {
-			throw new InvalidOrder(order);
+	public Player(IslandModel m, int id, String name, Zone position) throws InvalidPlayerId {
+		Integer lastOrder = Player.allPlayersId.get(Player.allPlayersId.size());
+		if (Player.allPlayersId.contains(Integer.valueOf(id)) || lastOrder + 1 != id) {
+			throw new InvalidPlayerId(id);
 		}
-		if (Player.allOrders.isEmpty() && order != 0) {
-			throw new InvalidOrder(order);
+		if (Player.allPlayersId.isEmpty() && id != 0) {
+			throw new InvalidPlayerId(id);
 		}
-		this.order = order;
-		Player.allOrders.add(Integer.valueOf(order));
+		this.id = id;
+		Player.allPlayersId.add(Integer.valueOf(id));
 		this.name = name;
 		this.position = position;
 		this.position.addPlayer(this);
@@ -48,25 +48,39 @@ public class Player {
 	}
 	
 	// Exception si le numéro de joueur est invalide
-	public static class InvalidOrder extends Exception {
-		private int order;
-		public InvalidOrder(int order) {
+	public static class InvalidPlayerId extends Exception {
+		private int id;
+		public InvalidPlayerId(int id) {
 			super();
-			this.order = order;
+			this.id = id;
 		}
 		public int getOrder() {
-			return this.order;
+			return this.id;
 		}
+	}
+	
+	/**
+	 * @return Nom du joueur
+	 */
+	public String getName() {
+		return this.name;
+	}
+	
+	/**
+	 * @return Identifiant du joueur
+	 */
+	public int getId() {
+		return this.id;
 	}
 	
 	/**
 	 * @apiNote Vérifie que le numéro de joueur
 	 * est bien enregistré
-	 * @param order: Numéro de joueur
+	 * @param id: Numéro de joueur
 	 * @return true si ordre valide false sinon
 	 */
-	public static boolean isPlayerOrder(int order) {
-		return Player.allOrders.contains(Integer.valueOf(order));
+	public static boolean isPlayerId(int id) {
+		return Player.allPlayersId.contains(Integer.valueOf(id));
 	}
 	
 	/**

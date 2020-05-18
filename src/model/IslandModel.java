@@ -1,9 +1,9 @@
 package model;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Random;
-
-import model.Player.InvalidOrder;
+import model.Player.InvalidPlayerId;
 
 /**
  * @author maxime
@@ -60,16 +60,16 @@ public class IslandModel extends Observable {
 	/**
 	 * @apiNote Permet d'accéder à un joueur
 	 * depuis la vue
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @return le joueur spécifié
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public Player getPlayer(int order) throws Player.InvalidOrder {
-		if(Player.isPlayerOrder(order)) {
-			return this.players.get(order);
+	public Player getPlayer(int id) throws Player.InvalidPlayerId {
+		if(Player.isPlayerId(id)) {
+			return this.players.get(id);
 		}
-		throw new Player.InvalidOrder(order);
+		throw new Player.InvalidPlayerId(id);
 	}
 	
 	/**
@@ -83,80 +83,68 @@ public class IslandModel extends Observable {
 	
 	/**
 	 * @apiNote Permet de déplacer un joueur
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @param move: Déplacement souhaité
 	 * @return true si déplacement valide false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean movePlayer(int order, Move move) throws Player.InvalidOrder {
-		if(Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			Boolean success = Boolean.valueOf(true);
-			Zone newPosition = player.position.neighbour(move, success);
-			if(newPosition.isCrossable()) {
-				player.move(newPosition);
-			}
-			else {
-				success = false;
-			}
-			if(success) { super.notifyObservers(); };
-			return success;
+	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		Boolean success = Boolean.valueOf(true);
+		Zone newPosition = player.position.neighbour(move, success);
+		if(newPosition.isCrossable()) {
+			player.move(newPosition);
 		}
-		throw new Player.InvalidOrder(order);
+		else {
+			success = false;
+		}
+		if(success) { super.notifyObservers(); }
+		return success;
 	}
 	
 	/**
 	 * @apiNote Donne les possibilités de déplacements
 	 * pour le joueur spécifié
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @return Liste des déplacements possibles
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public ArrayList<Zone> movePossibilitiesPlayer(int order) throws Player.InvalidOrder {
-		if(Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			return new ArrayList<Zone>(player.movePossibilities());
-		}
-		throw new Player.InvalidOrder(order);
+	public ArrayList<Zone> movePossibilitiesPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return new ArrayList<Zone>(player.movePossibilities());
 	}
 	
 	/**
 	 * @apiNote Vérifie si le joueur spécifié peut
 	 * assécher une zone
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @param move: Cible à assécher par rapport
 	 * à la zone du joueur (peut être sa propre zone)
 	 * @return true si la zone peut être asséchée false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean canDryPlayer(int order, Move move) throws Player.InvalidOrder {
-		if(Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			return player.canDry(move);
-		}
-		throw new Player.InvalidOrder(order);
+	public boolean canDryPlayer(int id, Move move) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.canDry(move);
 	}
 	
 	/**
 	 * @apiNote Le joueur spécifié assèche une zone
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @param move: Cible à assécher par rapport
 	 * à la zone du joueur (peut être sa propre zone)
 	 * @return true si la zone a été asséchée false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean dryPlayer(int order, Move move) throws Player.InvalidOrder {
-		if(Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			boolean success = player.dry(move);
-			super.notifyObservers();
-			return success;
-		}
-		throw new Player.InvalidOrder(order);
+	public boolean dryPlayer(int id, Move move) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		boolean success = player.dry(move);
+		super.notifyObservers();
+		return success;
 	}
 	
 	/**
@@ -194,73 +182,61 @@ public class IslandModel extends Observable {
 	/**
 	 * @apiNote Vérifie si le joueur peut rechercher
 	 * une clé
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @return true si la clé est recherchable false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean canFindKeyElementPlayer(int order) throws Player.InvalidOrder {
-		if (Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			return player.canFindKeyElement();
-		}
-		throw new Player.InvalidOrder(order);
+	public boolean canFindKeyElementPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.canFindKeyElement();
 	}
 	
 	/**
 	 * @apiNote Le joueur spécifié cherche une clé
 	 * Cela peut mener à l'évènement spécial
 	 * de la montée des eaux
-	 * @param order: Numéro du joueur
-	 * @return true si la clé a été trouvée false sino
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @param id: Numéro du joueur
+	 * @return true si la clé a été trouvée false sinon
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean findKeyElementPlayer(int order) throws Player.InvalidOrder {
-		if (Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			boolean res = player.findKeyElement();
-			// Évènement spécial : Montée des eaux
-			if (! res) {
-				player.position.flood();
-				// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
-				if (! player.canEscape()) {
-					player.kill();
-				}
+	public boolean findKeyElementPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		boolean res = player.findKeyElement();
+		// Évènement spécial : Montée des eaux
+		if (! res) {
+			player.position.flood();
+			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
+			if (! player.canEscape()) {
+				player.kill();
 			}
-			return res;
 		}
-		throw new Player.InvalidOrder(order);
+		return res;
 	}
 	
 	/**
 	 * @apiNote Vérifie si le joueur peut trouver un artefact
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @return true si un artefact peut être trouvé false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean canFindArtefactPlayer(int order) throws Player.InvalidOrder {
-		if (Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			return player.canFindArtefact();
-		}
-		throw new Player.InvalidOrder(order);
+	public boolean canFindArtefactPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.canFindArtefact();
 	}
 	
 	/**
 	 * @apiNote Le joueur spécifié cherche un artefact
-	 * @param order: Numéro du joueur
+	 * @param id: Numéro du joueur
 	 * @return true si l'artefact a été trouvé false sinon
-	 * @throws Player.InvalidOrder: Si le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean findArtefactPlayer(int order) throws Player.InvalidOrder {
-		if (Player.isPlayerOrder(order)) {
-			Player player = players.get(order);
-			return player.findArtefact();
-		}
-		throw new Player.InvalidOrder(order);
+	public boolean findArtefactPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.findArtefact();
 	}
 	
 	@Override
