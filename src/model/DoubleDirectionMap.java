@@ -1,5 +1,6 @@
 package model;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author maxime
@@ -16,7 +17,7 @@ public class DoubleDirectionMap<K, V> {
 	 * @apiNote Crée un dictionnaire vide
 	 */
 	public DoubleDirectionMap() {
-		this.map = new ArrayList<>();
+		this.map = new ArrayList<Pair>();
 	}
 	
 	/**
@@ -63,6 +64,32 @@ public class DoubleDirectionMap<K, V> {
 		String res = "";
 		for(Pair pair : this.map) {
 			res += pair.toString() + "\n";
+		}
+		return res;
+	}
+	
+	/**
+	 * @apiNote Donne la liste interne
+	 * pour itérer dessus par exemple
+	 * @return Liste des clés
+	 */
+	public ArrayList<K> allKeys() {
+		ArrayList<K> res = new ArrayList<K>();
+		for (Pair pair : this.map) {
+			res.add(pair.key);
+		}
+		return res;
+	}
+	
+	/**
+	 * @apiNote Donne la liste interne
+	 * pour itérer dessus par exemple
+	 * @return Liste des valeurs
+	 */
+	public ArrayList<V> allValues() {
+		ArrayList<V> res = new ArrayList<V>();
+		for (Pair pair : this.map) {
+			res.add(pair.value);
 		}
 		return res;
 	}

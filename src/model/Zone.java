@@ -40,14 +40,17 @@ public class Zone {
 	public Zone(IslandModel m, String symbol, int x, int y) {
 		this(m, x, y);
 		// Token potentiellement en 2 parties
-		String mean[] = StringMap.decode(symbol).split("&");
+		String mean[] = new String[2]; 
+		mean[0] = StringMap.decode(symbol);
 		// Partie 1 du token
 		if(mean[0] != null) {
+			mean = mean[0].split("&");
 			switch(mean[0]) {
 				case "NormalLevel": this.wl = new NormalLevel(); break;
 				case "FloodedLevel": this.wl = new FloodedLevel(); break;
 				case "SubmergedLevel": this.wl = new SubmergedLevel(); break;
 				case "heliport": this.heliport = true; break;
+				case "Player": break;
 				default:
 					for(NaturalElement el : NaturalElement.values()) {
 						if(mean[0].equals(el.name())) {

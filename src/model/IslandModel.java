@@ -27,23 +27,24 @@ public class IslandModel extends Observable {
 	 */
 	public IslandModel(String map) {
 		super();
+		// Liste des joueurs
+		this.players = new ArrayList<Player>();
 		// Découpe des lignes
 		String[] mapLine = map.split("\n");
 		this.WIDTH = mapLine[0].length();
 		this.HEIGHT = mapLine.length;
+		this.zones = new Zone[this.WIDTH][this.HEIGHT];
 		// Chargement des zones
-		int i = 0;
-		int currentWidth = 0;
-		do {
-			String line = mapLine[i];
-			currentWidth = line.length();
-			for(int j = 0; j < currentWidth; j++) {
-				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(j)), i, j);
+		for (int j = 0; j < mapLine.length; j++) {
+			String line = mapLine[j];
+			int currentWidth = line.length();
+			if (currentWidth != this.WIDTH) { 
+				throw new IllegalArgumentException("Incorrect length line in IslandModel() constructor");
 			}
-			i++;
-			
-		} while(this.WIDTH == currentWidth && i < this.HEIGHT);
-		this.players = new ArrayList<Player>();
+			for (int i = 0; i < currentWidth; i++) {
+				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(i)), i, j);
+			}
+		}
 	}
 	
 	/**
@@ -242,11 +243,11 @@ public class IslandModel extends Observable {
 	@Override
 	public String toString() {
 		String res = "";
-		for(int i = 0; i < this.WIDTH; i++) {
-			for(int j = 0; j < this.HEIGHT; j++) {
+		for(int j = 0; j < this.HEIGHT; j++) {
+			for(int i = 0; i < this.WIDTH; i++) {
 				res += this.zones[i][j].toString();
 			}
-			if(i != this.WIDTH - 1) { res += "\n"; }
+			if(j != this.HEIGHT - 1) { res += "\n"; }
 		}
 		return res;
 	}
