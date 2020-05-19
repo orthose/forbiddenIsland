@@ -14,6 +14,9 @@ public class IslandModel extends Observable {
 	public final int WIDTH, HEIGHT; 
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
+	private int currentIdPlayer;
+	private final int firstIdPlayer;
+	private int turn;
 	// Paramètres modifiables même à l'exécution
 	protected float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	
@@ -28,7 +31,9 @@ public class IslandModel extends Observable {
 	public IslandModel(String map) {
 		super();
 		// Liste des joueurs
+		this.firstIdPlayer = IslandModel.rand.nextInt(this.players.size());
 		this.players = new ArrayList<Player>();
+		this.turn = 0;
 		// Découpe des lignes
 		String[] mapLine = map.split("\n");
 		this.WIDTH = mapLine[0].length();
@@ -45,6 +50,28 @@ public class IslandModel extends Observable {
 				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(i)), i, j);
 			}
 		}
+	}
+	
+	/**
+	 * @apiNote Donne k''identifiant du prochain
+	 * joueur à jouer tout en modifiant en interne
+	 * l'identifiant du joueur courant
+	 * @return L'identifiant du joueur qui doit
+	 * à présent jouer
+	 */
+	public int nextIdPlayer() {
+		this.currentIdPlayer = (turn + this.firstIdPlayer) % this.players.size();
+		this.turn++;
+		return this.currentIdPlayer;
+	}
+	
+	/**
+	 * @apiNote Donne l'identifiant du joueur
+	 * qui est en train de joueur
+	 * @return L'identifiant du joueur courant
+	 */
+	public int getCurrentIdPlayer() {
+		return this.currentIdPlayer;
 	}
 	
 	/**
@@ -71,6 +98,18 @@ public class IslandModel extends Observable {
 			return this.players.get(id);
 		}
 		throw new Player.InvalidPlayerId(id);
+	}
+	
+	/**
+	 * @apiNote Donne la position du joueur spécifié
+	 * @param id: Identifiant du joueur
+	 * @return La zone sur laquelle est le joueur
+	 * @throws Player.InvalidPlayerId: Si le joueur
+	 * n'existe pas
+	 */
+	public Zone getPositionPlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.position;
 	}
 	
 	/**
