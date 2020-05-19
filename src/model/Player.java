@@ -14,12 +14,13 @@ public class Player {
 	protected Zone position;
 	private boolean alive;
 	private ArrayList<KeyElement> keys;
-	private static ArrayList<Integer> allPlayersId;
+	private static ArrayList<Integer> allPlayersId =
+		new ArrayList<Integer>();
 	
 	/**
-	 * @param id: Identifiant du joueur
-	 * qui commence à 0 et chaque nouveau joueur
-	 * doit avoir l'identifiant id+1
+	 * @apiNote L'identifiant du premier joueur
+	 * est 0 et chaque nouveau joueur
+	 * aura l'identifiant id+1
 	 * @param m: Référence au modèle qui permet
 	 * l'ajout direct du joueur au modèle
 	 * @param name: Nom du joueur
@@ -28,16 +29,18 @@ public class Player {
 	 * @throws InvalidPlayerId: Si l'identifiant est déjà
 	 * enregistré ou que le premier joueur n'a pas l'identifiant 0
 	 */
-	public Player(IslandModel m, int id, String name, Zone position) throws InvalidPlayerId {
-		Integer lastOrder = Player.allPlayersId.get(Player.allPlayersId.size());
-		if (Player.allPlayersId.contains(Integer.valueOf(id)) || lastOrder + 1 != id) {
-			throw new InvalidPlayerId(id);
+	public Player(IslandModel m, String name, Zone position) {
+		// Premier joueur
+		if (Player.allPlayersId.isEmpty()) {
+			this.id = 0;
+			Player.allPlayersId.add(Integer.valueOf(0));
 		}
-		if (Player.allPlayersId.isEmpty() && id != 0) {
-			throw new InvalidPlayerId(id);
+		// Joueurs suivants
+		else {
+			Integer lastId = Player.allPlayersId.get(Player.allPlayersId.size() - 1);
+			this.id = lastId + 1;
+			Player.allPlayersId.add(Integer.valueOf(this.id));
 		}
-		this.id = id;
-		Player.allPlayersId.add(Integer.valueOf(id));
 		this.name = name;
 		this.position = position;
 		this.position.addPlayer(this);
@@ -50,13 +53,21 @@ public class Player {
 	// Exception si le numéro de joueur est invalide
 	public static class InvalidPlayerId extends Exception {
 		private int id;
+		
 		public InvalidPlayerId(int id) {
 			super();
 			this.id = id;
 		}
-		public int getOrder() {
+		
+		public int getId() {
 			return this.id;
 		}
+		
+		@Override
+		public String toString() {
+			return "Invalid Player id for id="+this.id;
+		}
+		
 	}
 	
 	/**
@@ -152,7 +163,7 @@ public class Player {
 	 */
 	public boolean canEscape() {
 		ArrayList<Zone> escapes = new ArrayList<>(this.movePossibilities());
-		return ! escapes.isEmpty();
+		return ! (escapes.size() == 1 && escapes.contains(this.position));
 	}
 	
 	/**
@@ -230,6 +241,14 @@ public class Player {
 			}
 		}
 		return res;
+	}
+	
+	/**
+	 * @apiNote Supprime tous les identifiants
+	 * de joueurs
+	 */
+	public static void reset() {
+		Player.allPlayersId = new ArrayList<Integer>();
 	}
 	
 }

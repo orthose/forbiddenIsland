@@ -5,7 +5,7 @@ import java.util.Iterator;
 /**
  * @author maxime
  * @apiNote Dictionnaire pour encoder
- * et décoder des données
+ * et décoder des données (dans les 2 sens)
  * @param <K> Type de la clé
  * @param <V> Type de la valeur
  */
@@ -97,8 +97,6 @@ public class DoubleDirectionMap<K, V> {
 	/**
 	 * @author maxime
 	 * @apiNote Un couple de deux valeurs
-	 * @param <K> Type de la clé
-	 * @param <V> Type de la valeur
 	 */
 	public class Pair {
 		private final K key;

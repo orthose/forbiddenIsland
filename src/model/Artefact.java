@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * On ne peut en créer que 4 au maximum
  */
 public class Artefact {
-	private static int found;
+	private static int found = 0;
 	private static Artefact artefacts[] = new Artefact[4];
 	private NaturalElement el;
 	
@@ -80,5 +80,11 @@ public class Artefact {
 		return res;
 	}
 	
-	
+	/**
+	 * @apiNote Supprime tous les artefacts trouvés
+	 */
+	public static void reset() {
+		Artefact.found = 0;
+		Artefact.artefacts = new Artefact[4];
+	}
 }
