@@ -251,5 +251,14 @@ public class IslandModel extends Observable {
 		}
 		return res;
 	}
+	
+	/**
+	 * @apiNote Méthode à appeler avant de
+	 * recommencer une partie
+	 */
+	public static void reset() {
+		Player.reset();
+		Artefact.reset();
+	}
 
 }

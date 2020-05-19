@@ -1,6 +1,9 @@
 package test;
 
 import model.IslandModel;
+import model.Player;
+import model.Player.InvalidPlayerId;
+
 import static org.junit.Assert.*;
 import org.junit.*;
 import model.DoubleDirectionMap;
@@ -158,7 +161,60 @@ public class IslandModelTest {
 			assertEquals(mapWidth, m.WIDTH);
 			assertEquals(mapHeight, m.HEIGHT);
 			assertTrue(map.equals(m.toString()));
+		}	
+	}
+	
+	@Test
+	public void addPlayerTest() throws InvalidPlayerId {
+		
+		// Ajout de joueurs au modèle m1
+		Player p0 = new Player(m1, "Maxime", m1.getZone(10, 5));
+		System.out.println(m1+"\n");
+		assertEquals(0, m1.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		Player p1 = new Player(m1, "Baptiste", m1.getZone(12, 5));
+		System.out.println(m1+"\n");
+		assertEquals(1, m1.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		Player p2 = new Player(m1, "Ludisia", m1.getZone(14, 5));
+		System.out.println(m1+"\n");
+		assertEquals(2, m1.getPlayer(2).getId());
+		assertEquals(2, p2.getId());
+		
+		// Accès à un joueur n'existant pas
+		int res = 0;
+		try {
+			Player p3 = m1.getPlayer(3);
 		}
+		catch (InvalidPlayerId e) {
+			System.out.println(e+"\n");
+			res++;
+		}
+		assertEquals(1, res);
+		
+		// Ajout d'un joueur au modèle m5
+		// On constate que l'id suit ceux
+		// des joueurs précédemment créés
+		// Mais que le joueur est enregistré
+		// comme premier joueur du modèle m5
+		Player p3 = new Player(m5, "Amélie", m5.getZone(10, 5));
+		System.out.println(m5);
+		assertEquals(3, m5.getPlayer(0).getId());
+		assertEquals(3, p3.getId());
+		
+		// Pour remédier à cela si l'on recommence 
+		// une partie on peut supprimer tous les joueurs
+		// En utilisant l'interface statique de IslandModel
+		// On se place dans le modèle m4
+		IslandModel.reset();
+		Player p4 = new Player(m4, "Amélie", m4.getZone(10, 5));
+		System.out.println(m4);
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p4.getId());
+	}
+	
+	@Test
+	public void movePlayerTest() {
 		
 	}
 
