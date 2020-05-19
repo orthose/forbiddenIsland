@@ -163,7 +163,7 @@ public class Player {
 	 */
 	public boolean canEscape() {
 		ArrayList<Zone> escapes = new ArrayList<>(this.movePossibilities());
-		return ! escapes.isEmpty();
+		return ! (escapes.size() == 1 && escapes.contains(this.position));
 	}
 	
 	/**

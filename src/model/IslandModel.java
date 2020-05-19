@@ -15,7 +15,7 @@ public class IslandModel extends Observable {
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
 	private int currentIdPlayer;
-	private final int firstIdPlayer;
+	private int firstIdPlayer;
 	private int turn;
 	// Paramètres modifiables même à l'exécution
 	protected float keyLuck = 0.2f; // Dans ]0.0;1.0[
@@ -31,7 +31,6 @@ public class IslandModel extends Observable {
 	public IslandModel(String map) {
 		super();
 		// Liste des joueurs
-		this.firstIdPlayer = IslandModel.rand.nextInt(this.players.size());
 		this.players = new ArrayList<Player>();
 		this.turn = 0;
 		// Découpe des lignes
@@ -53,13 +52,17 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
-	 * @apiNote Donne k''identifiant du prochain
+	 * @apiNote Donne l'identifiant du prochain
 	 * joueur à jouer tout en modifiant en interne
 	 * l'identifiant du joueur courant
 	 * @return L'identifiant du joueur qui doit
 	 * à présent jouer
 	 */
 	public int nextIdPlayer() {
+		// Initialisation du premier joueur
+		if (turn == 0) {
+			this.firstIdPlayer = IslandModel.rand.nextInt(this.players.size());
+		}
 		this.currentIdPlayer = (turn + this.firstIdPlayer) % this.players.size();
 		this.turn++;
 		return this.currentIdPlayer;
@@ -119,6 +122,19 @@ public class IslandModel extends Observable {
 	protected void addPlayer(Player player) {
 		this.players.add(player);
 		super.notifyObservers();
+	}
+	
+	/**
+	 * @apiNote Vérifie que le joueur spécifié
+	 * peut s'échapper sur l'une des cases adjacentes
+	 * @param id: Identifiant du joueur
+	 * @return true s'il peut d'échapper false sinon
+	 * @throws Player.InvalidPlayerId: Si le joueur
+	 * n'existe pas
+	 */
+	public boolean canEscapePlayer(int id) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		return player.canEscape();
 	}
 	
 	/**
