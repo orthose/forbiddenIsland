@@ -8,9 +8,18 @@ import view.IslandView;
  */
 public class Game {
 	public static void main(String[] args) {
-		String map = "a remplir avec une méthode dédié";
+		String map = "*********************\n"
+	        	+ "********~~---~*******\n"
+	        	+ "*****~~--------~~****\n"
+	        	+ "***~~~--------~~~****\n"
+	        	+ "**~~~-----------~~~**\n"
+	        	+ "*~~~~~-----------~~~*\n"
+	        	+ "****~~------------~**\n"
+	        	+ "****~~----------~~***\n"
+	        	+ "*******~~---~~*******\n"
+	        	+ "*********************";
 				
 		IslandModel model = new IslandModel(map);
-		IslandView view = new IslandView(model);
+		IslandView view = new IslandView(model, 500, 500);
 	}
 }
