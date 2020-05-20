@@ -1,6 +1,10 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -14,29 +18,47 @@ public class IslandView {
 	// Contexte graphique
 	private JFrame frame;
 
-	// private VGrid grille;
+	// Taille de la fenêtre
+	public static int windowWidth;
+	public static int windowHeight;
+
+	private VGrid grille;
 	// private VControlleur commandes;
 
-	public IslandView(IslandModel model) {
-		/** Définition de la fenêtre principale. */
+	public IslandView(IslandModel model, int WindowWidth, int WindowHeight) {
+		// Définition de la fenêtre principale
+		IslandView.windowWidth = WindowWidth;
+		IslandView.windowHeight = WindowHeight;
 		frame = new JFrame();
-		frame.setTitle("Jeu de la vie de Conway");
+		frame.setTitle("ForbiddenIsland");
+		// frame.setLayout(new FlowLayout());
+		// frame.setLayout(new GridLayout() );
 
-		frame.setLayout(new FlowLayout());
+		Dimension windowSize = new Dimension(WindowWidth, WindowHeight);
+		// frame.setBounds(0, 0, WindowWidth, WindowHeight);
+		frame.setPreferredSize(windowSize);
 
-		/** Définition des deux vues et ajout à la fenêtre. */
-		// grille = new VueGrille(modele);
-		// frame.add(grille);
-		// commandes = new VueCommandes(modele);
-		// frame.add(commandes);
+		grille = new VGrid(model);
+		frame.add(grille);
+		// controller = new VController(model);
+		// frame.add(controller);
 
-		/**
-		 * Fin de la plomberie : - Ajustement de la taille de la fenêtre en fonction du
-		 * contenu. - Indiquer qu'on quitte l'application si la fenêtre est fermée. -
-		 * Préciser que la fenêtre doit bien apparaître à l'écran.
-		 */
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
 		frame.setVisible(true);
+		
+		// Obtention de la vrai taille de la zone d'affichage
+		Dimension actualSize = frame.getContentPane().getSize();
+
+		// Différence (taille théorique)/(vrai taille)
+		int extraHeight = WindowHeight - actualSize.height;
+		
+		// On met désormais la vrai taille
+		frame.setSize(WindowWidth, WindowHeight + extraHeight);
+	}
+
+	public IslandView(IslandModel model) {
+		this(model, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
 	}
 }
