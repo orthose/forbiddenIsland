@@ -201,12 +201,12 @@ public class Zone {
 				return m.zones[this.x][this.y + 1];
 			}
 		case RIGHT:
-			if(this.x > 0) {
+			if(this.x < this.m.WIDTH - 1) {
 				success = true;
 				return m.zones[this.x + 1][this.y];
 			}
 		case LEFT:
-			if(this.x < this.m.WIDTH - 1) {
+			if(this.x > 0) {
 				success = true;
 				return m.zones[this.x - 1][this.y];
 			}

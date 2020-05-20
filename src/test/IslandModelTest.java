@@ -4,7 +4,7 @@ import model.*;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import org.junit.*;
-import model.DoubleDirectionMap;
+
 import model.Player.InvalidPlayerId;
 
 /**
@@ -15,7 +15,18 @@ import model.Player.InvalidPlayerId;
 public class IslandModelTest {
 	
 	final int mapWidth = 21, mapHeight = 10;
-	IslandModel m1, m2, m3, m4, m5;
+	IslandModel m0, m1, m2, m3, m4, m5;
+	
+	String map0 = "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------\n"
+	        	+ "---------------------";
 	
 	String map1 = "*********************\n"
 		        + "**********---********\n"
@@ -136,6 +147,7 @@ public class IslandModelTest {
 	
 	@Before
 	public void initializeModel() {
+		m0 = new IslandModel(map0);
 		m1 = new IslandModel(map1);
 		m2 = new IslandModel(map2);
 		m3 = new IslandModel(map3);
@@ -148,6 +160,7 @@ public class IslandModelTest {
 		
 		DoubleDirectionMap<String, IslandModel> allModels = 
 				new DoubleDirectionMap<String, IslandModel>();
+		allModels.put(map0, m0);
 		allModels.put(map1, m1);
 		allModels.put(map2, m2);
 		allModels.put(map3, m3);
@@ -331,6 +344,113 @@ public class IslandModelTest {
 		assertFalse(possibilities.contains(m4.getZone(x - 1, y)));
 		assertTrue(possibilities.contains(m4.getZone(x, y)));
 		assertFalse(m4.canEscapePlayer(0));
+		
+		IslandModel.reset();
+		
+		//------------------------------------------------------------//
+		// Tests des cas limites sur les bords de la carte            //
+		//------------------------------------------------------------//
+		
+		// Ajout d'un joueur au modèle m0 en haut à gauche
+		new Player(m0, "Amélie", m0.getZone(0, 0));
+		//System.out.println(m0);
+		x = 0; y = 0;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(3, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y + 1)));
+		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur en haut à droite
+		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, 0));
+		//System.out.println(m0+"\n");
+		x = mapWidth - 1; y = 0;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(3, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y + 1)));
+		assertTrue(possibilities.contains(m0.getZone(x - 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur en bas à gauche
+		m0.getPlayer(0).move(m0.getZone(0, mapHeight - 1));
+		//System.out.println(m0+"\n");
+		x = 0; y = mapHeight - 1;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(3, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y - 1)));
+		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur en bas à droite
+		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, mapHeight - 1));
+		//System.out.println(m0+"\n");
+		x = mapWidth - 1; y = mapHeight - 1;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(3, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y - 1)));
+		assertTrue(possibilities.contains(m0.getZone(x - 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur sur le bord du haut
+		m0.getPlayer(0).move(m0.getZone(mapWidth / 2, 0));
+		//System.out.println(m0+"\n");
+		x = mapWidth / 2; y = 0;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(4, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y + 1)));
+		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x - 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur sur le bord de gauche
+		m0.getPlayer(0).move(m0.getZone(0, mapHeight / 2));
+		//System.out.println(m0+"\n");
+		x = 0; y = mapHeight / 2;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(4, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y + 1)));
+		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y - 1)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur sur le bord de droite
+		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, mapHeight / 2));
+		//System.out.println(m0+"\n");
+		x = mapWidth - 1; y = mapHeight / 2;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(4, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y + 1)));
+		assertTrue(possibilities.contains(m0.getZone(x - 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y - 1)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
+		// Téléportation du joueur sur le bord du bas
+		m0.getPlayer(0).move(m0.getZone(mapWidth / 2, mapHeight - 1));
+		//System.out.println(m0 + "\n");
+		x = mapWidth / 2; y = mapHeight - 1;
+		
+		// Déplacements possibles
+		possibilities = m0.movePossibilitiesPlayer(0);
+		assertEquals(4, possibilities.size());
+		assertTrue(possibilities.contains(m0.getZone(x, y - 1)));
+		assertTrue(possibilities.contains(m0.getZone(x - 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
+		assertTrue(possibilities.contains(m0.getZone(x, y)));
+		
 		
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
