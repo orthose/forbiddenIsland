@@ -1,9 +1,9 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Random;
 import model.Player.InvalidPlayerId;
+import util.Observable;
 
 /**
  * @author maxime
