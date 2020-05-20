@@ -86,6 +86,14 @@ public class Player {
 	}
 	
 	/**
+	 * @apiNote Donne les clés trouvées par le joueur
+	 * @return Liste des clés
+	 */
+	public ArrayList<KeyElement> getKeys() {
+		return this.keys;
+	}
+	
+	/**
 	 * @apiNote Vérifie que le numéro de joueur
 	 * est bien enregistré
 	 * @param id: Numéro de joueur

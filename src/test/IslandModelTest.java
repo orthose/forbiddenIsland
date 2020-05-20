@@ -518,25 +518,97 @@ public class IslandModelTest {
 		
 		// Ajout d'un joueur au modèle m0
 		Player p0 = new Player(m1, "Maxime", m1.getZone(10, 5));
-		System.out.println(m1+"\n");
+		//System.out.println(m1+"\n");
 		assertEquals(0, m1.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		
 		// On inonde aléatoirement plusieurs fois
 		for (int i = 0; i < 100; i++) {
 			ArrayList<Player> threatenedPlayers = m1.floodRandom();
-			System.out.println(m1+"\n");
+			//System.out.println(m1+"\n");
 			if (! threatenedPlayers.isEmpty()) {
 			    assertTrue(m1.getPositionPlayer(0).isSubmergeable());
 			    assertTrue(m1.getPositionPlayer(0).isFloodedLevel());
 				p0.kill();
-				System.out.println(p0.getName() + " was killed !");
+				//System.out.println(p0.getName() + " was killed !");
 				break;
 			}
 		}
 		
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
+	}
+	
+	@Test
+	public void KeyAndArtefactTest() throws InvalidPlayerId {
+		
+		// Ajout d'un joueur au modèle m0
+		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));
+		//System.out.println(m4+"\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		
+		// On tente de récupérer plusieurs clés
+		boolean success = false;
+		do {
+			success = m4.findKeyElementPlayer(0);
+			
+		} while (! success);
+		
+		NaturalElement gotKey = p0.getKeys().get(0).getEl();
+		switch (gotKey) {
+		
+		case AIR: 
+			for (int i = 0; i < 2; i++) {
+				m4.movePlayer(0, Move.UP);
+			}
+			for (int i = 0; i < 4; i++) {
+				m4.movePlayer(0, Move.LEFT);
+			}
+			//System.out.println(m4);
+			assertEquals(NaturalElement.AIR, m4.getPositionPlayer(0).getNaturalElement());
+			assertTrue(m4.findArtefactPlayer(0));
+			assertEquals(NaturalElement.AIR, Artefact.getFoundArtefacts().get(0).getNaturalElement());
+			break;
+			
+		case WATER:
+			for (int i = 0; i < 4; i++) {
+				m4.movePlayer(0, Move.RIGHT);
+			}
+			//System.out.println(m4);
+			assertEquals(NaturalElement.WATER, m4.getPositionPlayer(0).getNaturalElement());
+			assertTrue(m4.findArtefactPlayer(0));
+			assertEquals(NaturalElement.WATER, Artefact.getFoundArtefacts().get(0).getNaturalElement());
+			break;
+		
+		case EARTH:
+			for (int i = 0; i < 4; i++) {
+				m4.movePlayer(0, Move.UP);
+			}
+			m4.movePlayer(0, Move.RIGHT);
+			//System.out.println(m4);
+			assertEquals(NaturalElement.EARTH, m4.getPositionPlayer(0).getNaturalElement());
+			assertTrue(m4.findArtefactPlayer(0));
+			assertEquals(NaturalElement.EARTH, Artefact.getFoundArtefacts().get(0).getNaturalElement());
+			break;
+			
+		case FIRE:
+			for (int i = 0; i < 2; i++) {
+				m4.movePlayer(0, Move.DOWN);
+			}
+			for (int i = 0; i < 2; i++) {
+				m4.movePlayer(0, Move.LEFT);
+			}
+			//System.out.println(m4);
+			assertEquals(NaturalElement.FIRE, m4.getPositionPlayer(0).getNaturalElement());
+			assertTrue(m4.findArtefactPlayer(0));
+			assertEquals(NaturalElement.FIRE, Artefact.getFoundArtefacts().get(0).getNaturalElement());
+			break;
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+		
 	}
 
 }

@@ -274,6 +274,7 @@ public class IslandModel extends Observable {
 			if (! player.canEscape()) {
 				player.kill();
 			}
+			super.notifyObservers();
 		}
 		return res;
 	}
