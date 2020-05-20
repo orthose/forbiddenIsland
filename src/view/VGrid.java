@@ -1,13 +1,14 @@
 package view;
 
-import java.awt.Dimension;
+import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Graphics;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JPanel;
 
 import model.IslandModel;
+import model.Zone;
+import util.Observer;
 
 /**
  * @author baptiste
@@ -16,51 +17,43 @@ import model.IslandModel;
 public class VGrid extends JPanel implements Observer {
 	private IslandModel model;
 
-	// Définition d'une taille (en pixels) d'une zone 
-	private final static int TAILLE = 12;
+	private final int zoneWidth;
+	private final int zoneHeight;
 
-	// Constructeur 
+	// Constructeur
 	public VGrid(IslandModel model) {
 		this.model = model;
+		this.zoneWidth = IslandView.windowWidth / model.WIDTH;
+		this.zoneHeight = IslandView.windowHeight / model.HEIGHT;
+		
 		// On enregistre la vue [this] en tant qu'observateur de [modele]
 		model.addObserver(this);
-		
-		/**
-		 * Définition et application d'une taille fixe pour cette zone de l'interface,
-		 * calculée en fonction du nombre de cellules et de la taille d'affichage.
-		 */
-		Dimension dim = new Dimension(TAILLE * model.WIDTH, TAILLE * model.HEIGHT);
-		this.setPreferredSize(dim);
+
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
+	public void update() {
 		repaint();
-		
 	}
 
-
-	/*public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {
 		super.repaint();
-		for (int i = 1; i <= model.LARGEUR; i++) {
-			for (int j = 1; j <= model.HAUTEUR; j++) {
-				paint(g, model.getCellule(i, j), (i - 1) * TAILLE, (j - 1) * TAILLE);
+		for (int i = 0; i < model.WIDTH; i++) {
+			for (int j = 0; j < model.HEIGHT; j++) {
+				paint(g, model.getZone(i, j), i * zoneWidth, j * zoneHeight);
 			}
 		}
-	}*/
+	}
 
-	/**
-	 * Fonction auxiliaire de dessin d'une cellule. Ici, la classe [Cellule] ne peut
-	 * être désignée que par l'intermédiaire de la classe [CModele] à laquelle elle
-	 * est interne, d'où le type [CModele.Cellule]. Ceci serait impossible si
-	 * [Cellule] était déclarée privée dans [CModele].
-	 */
-	/*private void paint(Graphics g, Cellule c, int x, int y) {
-		if (c.estVivante()) {
-			g.setColor(Color.BLACK);
+
+	private void paint(Graphics g, Zone z, int x, int y) {
+
+		if(z.isNormalLevel()) {
+			g.setColor(new Color(255, 185, 30));
+		} else if (z.isFloodedLevel()) {
+			g.setColor(new Color(20, 30, 255));
 		} else {
-			g.setColor(Color.WHITE);
+			g.setColor(new Color(20, 30, 150));
 		}
-		g.fillRect(x, y, TAILLE, TAILLE);
-	}*/
+		g.fillRect(x, y, zoneWidth, zoneHeight);
+	}
 }
