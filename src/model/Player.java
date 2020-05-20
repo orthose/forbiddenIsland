@@ -16,6 +16,7 @@ public class Player {
 	private ArrayList<KeyElement> keys;
 	private static ArrayList<Integer> allPlayersId =
 		new ArrayList<Integer>();
+	private float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	
 	/**
 	 * @apiNote L'identifiant du premier joueur
@@ -183,11 +184,12 @@ public class Player {
 	 * @return true si la zone a été asséchée false sinon
 	 */
 	public boolean dry(Move move) {
+		boolean res = this.canDry(move);
 		if (this.alive) {
 			Zone target = this.position.neighbour(move);
 			target.dry();
 		}
-		return this.canDry(move);
+		return res;
 	}
 	
 	/**
@@ -205,7 +207,7 @@ public class Player {
 	 * @return true si la clé est trouvée false sinon
 	 */
 	public boolean findKeyElement() {
-		if (this.alive && IslandModel.rand.nextFloat() < this.m.keyLuck) {
+		if (this.alive && IslandModel.rand.nextFloat() < this.keyLuck) {
 			int i = IslandModel.rand.nextInt(4);
 			KeyElement key = new KeyElement(NaturalElement.values()[i]);
 			this.keys.add(key);

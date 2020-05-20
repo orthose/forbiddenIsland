@@ -451,6 +451,89 @@ public class IslandModelTest {
 		assertTrue(possibilities.contains(m0.getZone(x + 1, y)));
 		assertTrue(possibilities.contains(m0.getZone(x, y)));
 		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void dryPlayerTest() throws InvalidPlayerId {
+		
+		// Ajout d'un joueur au modèle m4
+		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));
+		//System.out.println(m4+"\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		
+		// Vérification des zones asséchables
+		assertFalse(m4.canDryPlayer(0, Move.UP));
+		assertFalse(m4.canDryPlayer(0, Move.DOWN));
+		assertFalse(m4.canDryPlayer(0, Move.LEFT));
+		assertFalse(m4.canDryPlayer(0, Move.RIGHT));
+		assertFalse(m4.canDryPlayer(0, Move.NONE));
+		
+		// Déplacement du joueur sur sa gauche 4 fois
+		for (int i = 0; i < 4; i++) {
+			assertTrue(m4.movePlayer(0, Move.LEFT));
+		}
+		//System.out.println(m4 + "\n");
+		
+		// Vérification des zones asséchables
+		assertFalse(m4.canDryPlayer(0, Move.UP));
+		assertFalse(m4.canDryPlayer(0, Move.DOWN));
+		assertTrue(m4.canDryPlayer(0, Move.LEFT));
+		assertFalse(m4.canDryPlayer(0, Move.RIGHT));
+		assertFalse(m4.canDryPlayer(0, Move.NONE));
+		
+		// On assèche la zone asséchable à gauche
+		// On tente d'assécher des zones déjà asséchées
+		assertFalse(m4.dryPlayer(0, Move.UP));
+		assertFalse(m4.dryPlayer(0, Move.DOWN));
+		assertTrue(m4.dryPlayer(0, Move.LEFT));
+		assertFalse(m4.dryPlayer(0, Move.RIGHT));
+		assertFalse(m4.dryPlayer(0, Move.NONE));
+		//System.out.println(m4 + "\n");
+		
+		// On inonde certaines zones
+		m4.getZone(6, 5).flood();
+		m4.getZone(5, 5).flood();
+		m4.getZone(5, 5).flood();
+		m4.getZone(6, 6).flood();
+		//System.out.println(m4 + "\n");
+		
+		// On assèche les zones asséchables
+		// On tente d'assécher des zones non-asséchable
+		assertFalse(m4.dryPlayer(0, Move.UP));
+		assertTrue(m4.dryPlayer(0, Move.DOWN));
+		assertFalse(m4.dryPlayer(0, Move.LEFT));
+		assertFalse(m4.dryPlayer(0, Move.RIGHT));
+		assertTrue(m4.dryPlayer(0, Move.NONE));
+		//System.out.println(m4 + "\n");
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void floodRandomTest() throws InvalidPlayerId {
+		
+		// Ajout d'un joueur au modèle m0
+		Player p0 = new Player(m1, "Maxime", m1.getZone(10, 5));
+		System.out.println(m1+"\n");
+		assertEquals(0, m1.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		
+		// On inonde aléatoirement plusieurs fois
+		for (int i = 0; i < 100; i++) {
+			ArrayList<Player> threatenedPlayers = m1.floodRandom();
+			System.out.println(m1+"\n");
+			if (! threatenedPlayers.isEmpty()) {
+			    assertTrue(m1.getPositionPlayer(0).isSubmergeable());
+			    assertTrue(m1.getPositionPlayer(0).isFloodedLevel());
+				p0.kill();
+				System.out.println(p0.getName() + " was killed !");
+				break;
+			}
+		}
 		
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();

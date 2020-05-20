@@ -17,8 +17,6 @@ public class IslandModel extends Observable {
 	private int currentIdPlayer;
 	private int firstIdPlayer;
 	private int turn;
-	// Paramètres modifiables même à l'exécution
-	protected float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	
 	/**
 	 * @apiNote Crée une île selon une carte
@@ -49,6 +47,15 @@ public class IslandModel extends Observable {
 				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(i)), i, j);
 			}
 		}
+	}
+	
+	/**
+	 * @apiNote Donne le tour en cours
+	 * @return Entier à partir de 0
+	 * pour le premier tour
+	 */
+	public int getTurn() {
+		return this.turn;
 	}
 	
 	/**
