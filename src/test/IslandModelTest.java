@@ -540,7 +540,7 @@ public class IslandModelTest {
 	}
 	
 	@Test
-	public void KeyAndArtefactTest() throws InvalidPlayerId {
+	public void keyAndArtefactTest() throws InvalidPlayerId {
 		
 		// Ajout d'un joueur au modèle m0
 		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));

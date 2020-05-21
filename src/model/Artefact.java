@@ -81,6 +81,20 @@ public class Artefact {
 	}
 	
 	/**
+	 * @apiNote Vérifie qu'un artefact a été trouvé
+	 * @param el: Élément associé à l'artefact
+	 * @return true si trouvé false sinon
+	 */
+	public static boolean isFound(NaturalElement el) {
+		for (int i = 0; i < Artefact.found; i++) {
+			if (Artefact.artefacts[i].getNaturalElement() == el) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * @apiNote Supprime tous les artefacts trouvés
 	 */
 	public static void reset() {

@@ -303,6 +303,102 @@ public class IslandModel extends Observable {
 		return player.findArtefact();
 	}
 	
+	/**
+	 * @apiNote Vérifie si le jeu est gagné
+	 * @return true si gagné false sinon
+	 */
+	public boolean gameIsWon() {
+		boolean firstCondition = true;
+		// Tous les joueurs sont vivants et sur un héliport
+		// pas forcément le même héliport
+		for (Player player : this.players) {
+			firstCondition = firstCondition && player.isAlive();
+			firstCondition = firstCondition && player.position.isHeliport();
+			if (! firstCondition) {
+				break;
+			}
+		}
+		// Tous les artefacts ont été trouvés
+		return firstCondition && Artefact.allArtefactsFound();
+	}
+	
+	/**
+	 * @apiNote Vérifie si le jeu est perdu
+	 * @return true si perdu false sinon
+	 */
+	public boolean gameIsLost() {
+		boolean condition = false;
+		// L'un des joueurs est mort ?
+		for (Player player : this.players) {
+			condition = condition || ! player.isAlive();
+			if (condition) {
+				break;
+			}
+		}
+		// Tous les héliports sont inaccessibles ?
+		if (! condition) {
+			int heliportZones = 0, heliportZonesSubmerged = 0;
+			for (int i = 0; i < this.WIDTH; i++) {
+				for (int j = 0; j < this.HEIGHT; j++) {
+					if (this.zones[i][j].isHeliport()) {
+						heliportZones++;
+						if (this.zones[i][j].isSubmergedLevel()) {
+							heliportZonesSubmerged++;
+						}
+					}
+				}
+			}
+			condition = (heliportZones == heliportZonesSubmerged);
+		}
+		// Toutes les zones d'un artefact non-trouvé
+		// sont submergées ?
+		if (! condition) {
+			boolean airArtefactFound = Artefact.isFound(NaturalElement.AIR);
+			boolean waterArtefactFound = Artefact.isFound(NaturalElement.WATER);
+			boolean earthArtefactFound = Artefact.isFound(NaturalElement.EARTH);
+			boolean fireArtefactFound = Artefact.isFound(NaturalElement.FIRE);
+			int airZones = 0, airZonesSubmerged = 0;
+			int waterZones = 0, waterZonesSubmerged = 0;
+			int earthZones = 0, earthZonesSubmerged = 0;
+			int fireZones = 0, fireZonesSubmerged = 0;
+			for (int i = 0; i < this.WIDTH; i++) {
+				for (int j = 0; j < this.HEIGHT; j++) {
+					NaturalElement zoneElement = this.zones[i][j].getNaturalElement();
+					boolean submerged = this.zones[i][j].isSubmergedLevel();
+					if (zoneElement == NaturalElement.AIR) {
+						airZones++;
+						if (submerged) {
+							airZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.WATER) {
+						waterZones++;
+						if (submerged) {
+							waterZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.EARTH) {
+						earthZones++;
+						if (submerged) {
+							earthZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.FIRE) {
+						fireZones++;
+						if (submerged) {
+							fireZonesSubmerged++;
+						}
+					}
+				}
+			}
+			condition = (! airArtefactFound && airZones == airZonesSubmerged)
+				|| (! waterArtefactFound && waterZones == waterZonesSubmerged) 
+				|| (! earthArtefactFound && earthZones == earthZonesSubmerged)
+				|| (! fireArtefactFound && fireZones == fireZonesSubmerged);
+		}
+		return condition;
+	}
+	
 	@Override
 	public String toString() {
 		String res = "";
