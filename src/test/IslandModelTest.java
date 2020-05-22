@@ -610,6 +610,235 @@ public class IslandModelTest {
 		IslandModel.reset();
 		
 	}
+	
+	@Test
+	public void turnTest() throws InvalidPlayerId {
+		
+		// Ajout de joueurs au modèle m4
+		Player p0 = new Player(m4, "Maxime", m4.getZone(10, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		Player p1 = new Player(m4, "Baptiste", m4.getZone(12, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		Player p2 = new Player(m4, "Ludisia", m4.getZone(14, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(2, m4.getPlayer(2).getId());
+		assertEquals(2, p2.getId());
+		Player p3 = new Player(m4, "Amélie", m4.getZone(8, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(3, m4.getPlayer(3).getId());
+		assertEquals(3, p3.getId());
+		
+		// Le premier tour est le tour 0
+		assertEquals(0, m4.getTurn());
+		int id = m4.nextIdPlayer();
+		assertTrue(0 <= id && id <= 3);
+
+		// Test des tours successifs
+		for (int i = 0; i < 50; i++) {
+			//System.out.println("id="+id);
+			assertTrue(0 <= id && id <= 3);
+			int nextId = m4.nextIdPlayer();
+			assertTrue(nextId == id + 1 || nextId == 0);
+			id = nextId;
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void gameIsWonAndLostTest() throws InvalidPlayerId {
+		
+		// Ajout de joueurs au modèle m4
+		Player p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
+		System.out.println(m4+"\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		Player p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
+		System.out.println(m4+"\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		Player p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
+		System.out.println(m4+"\n");
+		assertEquals(2, m4.getPlayer(2).getId());
+		assertEquals(2, p2.getId());
+		Player p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
+		System.out.println(m4+"\n");
+		assertEquals(3, m4.getPlayer(3).getId());
+		assertEquals(3, p3.getId());
+		
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// On donne des clés de manière artificielle aux joueurs
+		m4.getPlayer(0).getKeys().add(new KeyElement(NaturalElement.FIRE));
+		m4.getPlayer(1).getKeys().add(new KeyElement(NaturalElement.AIR));
+		m4.getPlayer(2).getKeys().add(new KeyElement(NaturalElement.EARTH));
+		m4.getPlayer(3).getKeys().add(new KeyElement(NaturalElement.WATER));
+		
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// On déplace les joueurs successivement
+		for (int i = 0; i < 2; i++) {
+			m4.movePlayer(0, Move.DOWN);
+			System.out.println(m4+"\n");
+		}
+		for (int i = 0; i < 2; i++) {
+			m4.movePlayer(1, Move.UP);
+			System.out.println(m4+"\n");
+		}
+		for (int i = 0; i < 4; i++) {
+			m4.movePlayer(1, Move.LEFT);
+			System.out.println(m4+"\n");
+		}
+		for (int i = 0; i < 4; i++) {
+			m4.movePlayer(2, Move.UP);
+			System.out.println(m4+"\n");
+		}
+		m4.movePlayer(2, Move.LEFT);
+		System.out.println(m4+"\n");
+		
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// Les joueurs récupèrent les artefacts
+		for (int i = 0; i < 4; i++) {
+			m4.findArtefactPlayer(i);
+		}
+		
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// Les joueurs sont téléportés à l'héliport artificiellement
+		Zone heliport = m4.getZone(10, 4);
+		for (int i = 0; i < 4; i++) {
+			m4.getPlayer(i).move(heliport);
+		}
+		System.out.println(m4);
+		
+		// Le jeu est gagné à ce stade !
+		assertFalse(m4.gameIsLost());
+		assertTrue(m4.gameIsWon());
+		
+		//----------------------------------------------------//
+		// Perdre à cause des joueurs qui meurrent            //
+		//----------------------------------------------------//
+		
+		// Tuer des joueurs fait perdre la partie ?
+		for (int i = 0; i < 4; i++) {
+			m4.getPlayer(i).kill();
+			
+			// Eh oui le jeu est perdu !
+			assertTrue(m4.gameIsLost());
+			assertFalse(m4.gameIsWon());
+		}
+		
+		// Réinitialisation du modèle
+		IslandModel.reset();
+		m4 = new IslandModel(map4);
+		
+		// Ajout de joueurs au modèle m4
+		p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(2, m4.getPlayer(2).getId());
+		assertEquals(2, p2.getId());
+		p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(3, m4.getPlayer(3).getId());
+		assertEquals(3, p3.getId());
+		
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		//----------------------------------------------------//
+		// Perdre à cause de l'héliport                       //
+		//----------------------------------------------------//
+		
+		// On innonde l'héliport artificiellement !
+		heliport = m4.getZone(10, 4); // Nécessaire car nouvelle instance de m4
+		heliport.flood();
+		System.out.println(m4+"\n");
+		heliport.flood();
+		System.out.println(m4+"\n");
+		assertTrue(heliport.isSubmergedLevel());
+		
+		// Le jeu est perdu on ne peut plus s'échapper !
+		assertTrue(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// Réinitialisation du modèle
+		IslandModel.reset();
+		m4 = new IslandModel(map4);
+
+		// Ajout de joueurs au modèle m4
+		p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(2, m4.getPlayer(2).getId());
+		assertEquals(2, p2.getId());
+		p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
+		System.out.println(m4 + "\n");
+		assertEquals(3, m4.getPlayer(3).getId());
+		assertEquals(3, p3.getId());
+
+		// Le jeu n'est ni perdu ni gagné
+		assertFalse(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+
+		//----------------------------------------------------//
+		// Perdre à cause d'un artefact perdu                 //
+		//----------------------------------------------------//
+		
+		// On inonde la zone de l'air
+		Zone airZone = m4.getZone(6, 3);
+		airZone.flood();
+		System.out.println(m4+"\n");
+		airZone.flood();
+		System.out.println(m4+"\n");
+		
+		// Le jeu est perdu !
+		assertTrue(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// On inonde la zone de la terre
+		Zone earthZone = m4.getZone(11, 1);
+		earthZone.flood();
+		System.out.println(m4+"\n");
+		earthZone.flood();
+		System.out.println(m4+"\n");
+		
+		// Le jeu est encore perdu !
+		assertTrue(m4.gameIsLost());
+		assertFalse(m4.gameIsWon());
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
 
 }
 

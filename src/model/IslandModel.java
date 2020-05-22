@@ -76,15 +76,6 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
-	 * @apiNote Donne l'identifiant du joueur
-	 * qui est en train de joueur
-	 * @return L'identifiant du joueur courant
-	 */
-	public int getCurrentIdPlayer() {
-		return this.currentIdPlayer;
-	}
-	
-	/**
 	 * @apiNote Permet d'accéder à une zone
 	 * depuis la vue
 	 * @param x: Coordonnée en x
