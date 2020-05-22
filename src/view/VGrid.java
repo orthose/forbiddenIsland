@@ -1,9 +1,14 @@
 package view;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import model.IslandModel;
@@ -16,6 +21,19 @@ import util.Observer;
  */
 public class VGrid extends JPanel implements Observer {
 	private IslandModel model;
+	// Images importées
+	private BufferedImage sand;
+	private BufferedImage water;
+	private BufferedImage deepWater;
+	// Animations
+	private Animation airAnim;
+	private Animation earthAnim;
+	private Animation fireAnim;
+	private Animation waterAnim;
+
+	// Boolean determinant le succès du chargement des images et par conséquent la
+	// méthode de dessin choisi
+	private boolean easyDraw = false;
 
 	private final int zoneWidth;
 	private final int zoneHeight;
@@ -25,8 +43,22 @@ public class VGrid extends JPanel implements Observer {
 		this.model = model;
 		this.zoneWidth = IslandView.windowWidth / model.WIDTH;
 		this.zoneHeight = IslandView.windowHeight / model.HEIGHT;
-		
-		// On enregistre la vue [this] en tant qu'observateur de [modele]
+
+		// Chargement des images
+		try {
+			sand = ImageIO.read(new File("assets/textures/sand.jpg"));
+			water = ImageIO.read(new File("assets/textures/water.jpg"));
+			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
+		} catch (IOException e) {
+			System.out.println("Failed to load images");
+			easyDraw = true;
+		}
+
+		// Chargement des animations
+		airAnim = new Animation("assets/animation/air/air");
+		fireAnim = new Animation("assets/animation/fire/fire");
+
+		// On enregistre la vue [this] en tant qu' observateur de [modele]
 		model.addObserver(this);
 
 	}
@@ -35,6 +67,9 @@ public class VGrid extends JPanel implements Observer {
 		repaint();
 	}
 
+	/**
+	 * Dessine toute les zones via l'appel un appel de dessin unitaire
+	 */
 	public void paintComponent(Graphics g) {
 		super.repaint();
 		for (int i = 0; i < model.WIDTH; i++) {
@@ -44,16 +79,80 @@ public class VGrid extends JPanel implements Observer {
 		}
 	}
 
-
+	/**
+	 * Desine une Zone spécifique à une coordonée donnée
+	 * 
+	 * @param g un Graphic
+	 * @param z une zone
+	 * @param x la position des abscisses
+	 * @param y la position des ordonnées
+	 */
 	private void paint(Graphics g, Zone z, int x, int y) {
+		// Graphics2D est utilisé pour la transparance d'image
+		Graphics2D g2d = (Graphics2D) g;
 
-		if(z.isNormalLevel()) {
-			g.setColor(new Color(255, 185, 30));
-		} else if (z.isFloodedLevel()) {
-			g.setColor(new Color(20, 30, 255));
-		} else {
-			g.setColor(new Color(20, 30, 150));
+		// Water level
+		if (!z.isSubmergedLevel()) {
+			// Niveau d'eau: normal
+			if(z.isNormalLevel()) {
+				// Sand
+				if (!easyDraw) {
+					g2d.drawImage(sand, x, y, zoneWidth, zoneHeight, this);
+				} else {
+					g.setColor(new Color(255, 185, 30));
+					g.fillRect(x, y, zoneWidth, zoneHeight);
+				}
+			} 
+			// Niveau d'eau: Inondé
+			else if(z.isFloodedLevel()) {
+				if (!easyDraw) {
+					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+					g2d.drawImage(sand, x, y, zoneWidth, zoneHeight, this);
+					g2d.drawImage(water, x, y, zoneWidth, zoneHeight, this);
+				} else {
+					g.setColor(new Color(20, 30, 255));
+					g.fillRect(x, y, zoneWidth, zoneHeight);
+				}
+			}
+			
+
+			// Element
+			switch (z.getNaturalElement()) {
+			case AIR:
+				if (!easyDraw) {
+					g.drawImage(airAnim.display(), x, y, zoneWidth, zoneHeight, this);
+				} else {
+
+				}
+				break;
+			case EARTH:
+				if (!easyDraw) {
+				} else {
+				}
+				break;
+			case FIRE:
+				if (!easyDraw) {
+					g.drawImage(fireAnim.display(), x, y, zoneWidth, zoneHeight, this);
+				} else {
+				}
+				break;
+			case WATER:
+				if (!easyDraw) {
+				} else {
+				}
+				break;
+			}
+
+		}  
+		// Niveau d'eau: Submergé
+		else  {
+			if (!easyDraw) {
+				g.drawImage(deepWater, x, y, zoneWidth, zoneHeight, this);
+			} else {
+				g.setColor(new Color(20, 30, 150));
+				g.fillRect(x, y, zoneWidth, zoneHeight);
+			}
 		}
-		g.fillRect(x, y, zoneWidth, zoneHeight);
+
 	}
 }
