@@ -119,6 +119,12 @@ public class IslandModelTest {
 				+ "*******~~---~~*******\n"
 				+ "*******************X*";
 	
+	//----------------------------------------------------//
+	// La valeur de verbose en début de méthode de test   //
+	// doit être passée à true pour avoir l'affichage     //
+	// console de la méthode concernée                    //
+	//----------------------------------------------------//
+	
 	@Test
 	public void invalidInitialization() {
 		// On ne peut pas initialiser un joueur directement
@@ -158,6 +164,8 @@ public class IslandModelTest {
 	@Test
 	public void verifyInitialization() {
 		
+		boolean verbose = false;
+		
 		DoubleDirectionMap<String, IslandModel> allModels = 
 				new DoubleDirectionMap<String, IslandModel>();
 		allModels.put(map0, m0);
@@ -169,7 +177,7 @@ public class IslandModelTest {
 		
 		for (String map : allModels.allKeys()) {
 			IslandModel m = allModels.encode(map);
-			//System.out.println(m+"\n");
+			if (verbose) System.out.println(m+"\n");
 			assertEquals(mapWidth, m.WIDTH);
 			assertEquals(mapHeight, m.HEIGHT);
 			assertTrue(map.equals(m.toString()));
@@ -179,17 +187,19 @@ public class IslandModelTest {
 	@Test
 	public void addPlayerTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout de joueurs au modèle m1
 		Player p0 = new Player(m1, "Maxime", m1.getZone(10, 5));
-		//System.out.println(m1+"\n");
+		if (verbose) System.out.println(m1+"\n");
 		assertEquals(0, m1.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		Player p1 = new Player(m1, "Baptiste", m1.getZone(12, 5));
-		//System.out.println(m1+"\n");
+		if (verbose) System.out.println(m1+"\n");
 		assertEquals(1, m1.getPlayer(1).getId());
 		assertEquals(1, p1.getId());
 		Player p2 = new Player(m1, "Ludisia", m1.getZone(14, 5));
-		//System.out.println(m1+"\n");
+		if (verbose) System.out.println(m1+"\n");
 		assertEquals(2, m1.getPlayer(2).getId());
 		assertEquals(2, p2.getId());
 		
@@ -199,7 +209,7 @@ public class IslandModelTest {
 			Player p3 = m1.getPlayer(3);
 		}
 		catch (InvalidPlayerId e) {
-			//System.out.println(e+"\n");
+			if (verbose) System.out.println(e+"\n");
 			res++;
 		}
 		assertEquals(1, res);
@@ -210,7 +220,7 @@ public class IslandModelTest {
 		// Mais que le joueur est enregistré
 		// comme premier joueur du modèle m5
 		Player p3 = new Player(m5, "Amélie", m5.getZone(10, 5));
-		//System.out.println(m5+"\n");
+		if (verbose) System.out.println(m5+"\n");
 		assertEquals(3, m5.getPlayer(0).getId());
 		assertEquals(3, p3.getId());
 		
@@ -220,7 +230,7 @@ public class IslandModelTest {
 		// On se place dans le modèle m4
 		IslandModel.reset();
 		Player p4 = new Player(m4, "Amélie", m4.getZone(10, 5));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p4.getId());
 		
@@ -231,9 +241,11 @@ public class IslandModelTest {
 	@Test
 	public void movePlayerTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout d'un joueur au modèle m4
 		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		
@@ -255,24 +267,24 @@ public class IslandModelTest {
 		assertTrue(m4.movePlayer(0, Move.UP));
 		assertTrue(m4.getZone(x, y - 1).equals(m4.getPositionPlayer(0)));
 		assertTrue(m4.getPositionPlayer(0).isHeliport());
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertTrue(m4.movePlayer(0, Move.DOWN));
 		assertTrue(m4.getZone(x, y).equals(m4.getPositionPlayer(0)));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertTrue(m4.movePlayer(0, Move.NONE));
 		assertTrue(m4.getZone(x, y).equals(m4.getPositionPlayer(0)));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertTrue(m4.movePlayer(0, Move.LEFT));
 		assertTrue(m4.getZone(x - 1, y).equals(m4.getPositionPlayer(0)));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertTrue(m4.movePlayer(0, Move.RIGHT));
 		assertTrue(m4.getZone(x, y).equals(m4.getPositionPlayer(0)));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Téléportation du joueur en bas de l'île
 		m4.getPlayer(0).move(m4.getZone(10, 8));
 		x = 10; y = 8;
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Déplacements possibles
 		possibilities = m4.movePossibilitiesPlayer(0);
@@ -286,7 +298,7 @@ public class IslandModelTest {
 		// On ne peut pas se déplacer dans la zone submergée
 		assertFalse(m4.movePlayer(0, Move.DOWN));
 		assertTrue(m4.getZone(x, y).equals(m4.getPositionPlayer(0)));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// En revanche on peut se déplacer dans une zone inondée
 		assertTrue(m4.movePlayer(0, Move.RIGHT)); x++;
@@ -294,14 +306,14 @@ public class IslandModelTest {
 		assertTrue(m4.movePlayer(0, Move.RIGHT)); x++;
 		assertTrue(m4.getZone(x, y).equals(m4.getPositionPlayer(0)));
 		assertTrue(m4.getPositionPlayer(0).isFloodedLevel());
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Inondation de la case adjacente en haut
 		m4.getZone(x, y - 1).flood();
 		assertTrue(m4.getZone(x, y - 1).isFloodedLevel());
 		m4.getZone(x, y - 1).flood();
 		assertTrue(m4.getZone(x, y - 1).isSubmergedLevel());
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Déplacements possibles
 		possibilities = m4.movePossibilitiesPlayer(0);
@@ -318,7 +330,7 @@ public class IslandModelTest {
 		assertTrue(m4.getZone(x - 1, y).isFloodedLevel());
 		m4.getZone(x - 1, y).flood();
 		assertTrue(m4.getZone(x - 1, y).isSubmergedLevel());
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Déplacements possibles
 		possibilities = m4.movePossibilitiesPlayer(0);
@@ -333,7 +345,7 @@ public class IslandModelTest {
 		// Inondation de la case adjacente droite
 		m4.getZone(x + 1, y).flood();
 		assertTrue(m4.getZone(x + 1, y).isSubmergedLevel());
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Déplacements possibles
 		possibilities = m4.movePossibilitiesPlayer(0);
@@ -353,7 +365,7 @@ public class IslandModelTest {
 		
 		// Ajout d'un joueur au modèle m0 en haut à gauche
 		new Player(m0, "Amélie", m0.getZone(0, 0));
-		//System.out.println(m0);
+		if (verbose) System.out.println(m0);
 		x = 0; y = 0;
 		
 		// Déplacements possibles
@@ -365,7 +377,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur en haut à droite
 		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, 0));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = mapWidth - 1; y = 0;
 		
 		// Déplacements possibles
@@ -377,7 +389,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur en bas à gauche
 		m0.getPlayer(0).move(m0.getZone(0, mapHeight - 1));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = 0; y = mapHeight - 1;
 		
 		// Déplacements possibles
@@ -389,7 +401,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur en bas à droite
 		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, mapHeight - 1));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = mapWidth - 1; y = mapHeight - 1;
 		
 		// Déplacements possibles
@@ -401,7 +413,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur sur le bord du haut
 		m0.getPlayer(0).move(m0.getZone(mapWidth / 2, 0));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = mapWidth / 2; y = 0;
 		
 		// Déplacements possibles
@@ -414,7 +426,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur sur le bord de gauche
 		m0.getPlayer(0).move(m0.getZone(0, mapHeight / 2));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = 0; y = mapHeight / 2;
 		
 		// Déplacements possibles
@@ -427,7 +439,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur sur le bord de droite
 		m0.getPlayer(0).move(m0.getZone(mapWidth - 1, mapHeight / 2));
-		//System.out.println(m0+"\n");
+		if (verbose) System.out.println(m0+"\n");
 		x = mapWidth - 1; y = mapHeight / 2;
 		
 		// Déplacements possibles
@@ -440,7 +452,7 @@ public class IslandModelTest {
 		
 		// Téléportation du joueur sur le bord du bas
 		m0.getPlayer(0).move(m0.getZone(mapWidth / 2, mapHeight - 1));
-		//System.out.println(m0 + "\n");
+		if (verbose) System.out.println(m0 + "\n");
 		x = mapWidth / 2; y = mapHeight - 1;
 		
 		// Déplacements possibles
@@ -458,9 +470,11 @@ public class IslandModelTest {
 	@Test
 	public void dryPlayerTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout d'un joueur au modèle m4
 		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		
@@ -475,7 +489,7 @@ public class IslandModelTest {
 		for (int i = 0; i < 4; i++) {
 			assertTrue(m4.movePlayer(0, Move.LEFT));
 		}
-		//System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		
 		// Vérification des zones asséchables
 		assertFalse(m4.canDryPlayer(0, Move.UP));
@@ -491,14 +505,14 @@ public class IslandModelTest {
 		assertTrue(m4.dryPlayer(0, Move.LEFT));
 		assertFalse(m4.dryPlayer(0, Move.RIGHT));
 		assertFalse(m4.dryPlayer(0, Move.NONE));
-		//System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		
 		// On inonde certaines zones
 		m4.getZone(6, 5).flood();
 		m4.getZone(5, 5).flood();
 		m4.getZone(5, 5).flood();
 		m4.getZone(6, 6).flood();
-		//System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		
 		// On assèche les zones asséchables
 		// On tente d'assécher des zones non-asséchable
@@ -507,7 +521,7 @@ public class IslandModelTest {
 		assertFalse(m4.dryPlayer(0, Move.LEFT));
 		assertFalse(m4.dryPlayer(0, Move.RIGHT));
 		assertTrue(m4.dryPlayer(0, Move.NONE));
-		//System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
@@ -516,21 +530,23 @@ public class IslandModelTest {
 	@Test
 	public void floodRandomTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout d'un joueur au modèle m0
 		Player p0 = new Player(m1, "Maxime", m1.getZone(10, 5));
-		//System.out.println(m1+"\n");
+		if (verbose) System.out.println(m1+"\n");
 		assertEquals(0, m1.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		
 		// On inonde aléatoirement plusieurs fois
 		for (int i = 0; i < 100; i++) {
 			ArrayList<Player> threatenedPlayers = m1.floodRandom();
-			//System.out.println(m1+"\n");
+			if (verbose) System.out.println(m1+"\n");
 			if (! threatenedPlayers.isEmpty()) {
 			    assertTrue(m1.getPositionPlayer(0).isSubmergeable());
 			    assertTrue(m1.getPositionPlayer(0).isFloodedLevel());
 				p0.kill();
-				//System.out.println(p0.getName() + " was killed !");
+				if (verbose) System.out.println(p0.getName() + " was killed !");
 				break;
 			}
 		}
@@ -542,9 +558,11 @@ public class IslandModelTest {
 	@Test
 	public void keyAndArtefactTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout d'un joueur au modèle m0
 		Player p0 = new Player(m4, "Amélie", m4.getZone(10, 5));
-		//System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		
@@ -565,7 +583,7 @@ public class IslandModelTest {
 			for (int i = 0; i < 4; i++) {
 				m4.movePlayer(0, Move.LEFT);
 			}
-			//System.out.println(m4);
+			if (verbose) System.out.println(m4);
 			assertEquals(NaturalElement.AIR, m4.getPositionPlayer(0).getNaturalElement());
 			assertTrue(m4.findArtefactPlayer(0));
 			assertEquals(NaturalElement.AIR, Artefact.getFoundArtefacts().get(0).getNaturalElement());
@@ -575,7 +593,7 @@ public class IslandModelTest {
 			for (int i = 0; i < 4; i++) {
 				m4.movePlayer(0, Move.RIGHT);
 			}
-			//System.out.println(m4);
+			if (verbose) System.out.println(m4);
 			assertEquals(NaturalElement.WATER, m4.getPositionPlayer(0).getNaturalElement());
 			assertTrue(m4.findArtefactPlayer(0));
 			assertEquals(NaturalElement.WATER, Artefact.getFoundArtefacts().get(0).getNaturalElement());
@@ -586,7 +604,7 @@ public class IslandModelTest {
 				m4.movePlayer(0, Move.UP);
 			}
 			m4.movePlayer(0, Move.RIGHT);
-			//System.out.println(m4);
+			if (verbose) System.out.println(m4);
 			assertEquals(NaturalElement.EARTH, m4.getPositionPlayer(0).getNaturalElement());
 			assertTrue(m4.findArtefactPlayer(0));
 			assertEquals(NaturalElement.EARTH, Artefact.getFoundArtefacts().get(0).getNaturalElement());
@@ -599,7 +617,7 @@ public class IslandModelTest {
 			for (int i = 0; i < 2; i++) {
 				m4.movePlayer(0, Move.LEFT);
 			}
-			//System.out.println(m4);
+			if (verbose) System.out.println(m4);
 			assertEquals(NaturalElement.FIRE, m4.getPositionPlayer(0).getNaturalElement());
 			assertTrue(m4.findArtefactPlayer(0));
 			assertEquals(NaturalElement.FIRE, Artefact.getFoundArtefacts().get(0).getNaturalElement());
@@ -614,21 +632,23 @@ public class IslandModelTest {
 	@Test
 	public void turnTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout de joueurs au modèle m4
 		Player p0 = new Player(m4, "Maxime", m4.getZone(10, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		Player p1 = new Player(m4, "Baptiste", m4.getZone(12, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(1, m4.getPlayer(1).getId());
 		assertEquals(1, p1.getId());
 		Player p2 = new Player(m4, "Ludisia", m4.getZone(14, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(2, m4.getPlayer(2).getId());
 		assertEquals(2, p2.getId());
 		Player p3 = new Player(m4, "Amélie", m4.getZone(8, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(3, m4.getPlayer(3).getId());
 		assertEquals(3, p3.getId());
 		
@@ -639,7 +659,7 @@ public class IslandModelTest {
 
 		// Test des tours successifs
 		for (int i = 0; i < 50; i++) {
-			//System.out.println("id="+id);
+			if (verbose) System.out.println("id="+id);
 			assertTrue(0 <= id && id <= 3);
 			int nextId = m4.nextIdPlayer();
 			assertTrue(nextId == id + 1 || nextId == 0);
@@ -653,21 +673,23 @@ public class IslandModelTest {
 	@Test
 	public void gameIsWonAndLostTest() throws InvalidPlayerId {
 		
+		boolean verbose = false;
+		
 		// Ajout de joueurs au modèle m4
 		Player p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		Player p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(1, m4.getPlayer(1).getId());
 		assertEquals(1, p1.getId());
 		Player p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(2, m4.getPlayer(2).getId());
 		assertEquals(2, p2.getId());
 		Player p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertEquals(3, m4.getPlayer(3).getId());
 		assertEquals(3, p3.getId());
 		
@@ -688,22 +710,22 @@ public class IslandModelTest {
 		// On déplace les joueurs successivement
 		for (int i = 0; i < 2; i++) {
 			m4.movePlayer(0, Move.DOWN);
-			System.out.println(m4+"\n");
+			if (verbose) System.out.println(m4+"\n");
 		}
 		for (int i = 0; i < 2; i++) {
 			m4.movePlayer(1, Move.UP);
-			System.out.println(m4+"\n");
+			if (verbose) System.out.println(m4+"\n");
 		}
 		for (int i = 0; i < 4; i++) {
 			m4.movePlayer(1, Move.LEFT);
-			System.out.println(m4+"\n");
+			if (verbose) System.out.println(m4+"\n");
 		}
 		for (int i = 0; i < 4; i++) {
 			m4.movePlayer(2, Move.UP);
-			System.out.println(m4+"\n");
+			if (verbose) System.out.println(m4+"\n");
 		}
 		m4.movePlayer(2, Move.LEFT);
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Le jeu n'est ni perdu ni gagné
 		assertFalse(m4.gameIsLost());
@@ -723,7 +745,7 @@ public class IslandModelTest {
 		for (int i = 0; i < 4; i++) {
 			m4.getPlayer(i).move(heliport);
 		}
-		System.out.println(m4);
+		if (verbose) System.out.println(m4);
 		
 		// Le jeu est gagné à ce stade !
 		assertFalse(m4.gameIsLost());
@@ -748,19 +770,16 @@ public class IslandModelTest {
 		
 		// Ajout de joueurs au modèle m4
 		p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(1, m4.getPlayer(1).getId());
 		assertEquals(1, p1.getId());
 		p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(2, m4.getPlayer(2).getId());
 		assertEquals(2, p2.getId());
 		p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(3, m4.getPlayer(3).getId());
 		assertEquals(3, p3.getId());
 		
@@ -775,9 +794,9 @@ public class IslandModelTest {
 		// On innonde l'héliport artificiellement !
 		heliport = m4.getZone(10, 4); // Nécessaire car nouvelle instance de m4
 		heliport.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		heliport.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		assertTrue(heliport.isSubmergedLevel());
 		
 		// Le jeu est perdu on ne peut plus s'échapper !
@@ -790,19 +809,16 @@ public class IslandModelTest {
 
 		// Ajout de joueurs au modèle m4
 		p0 = new Player(m4, "Amélie", m4.getZone(8, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(0, m4.getPlayer(0).getId());
 		assertEquals(0, p0.getId());
 		p1 = new Player(m4, "Maxime", m4.getZone(10, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(1, m4.getPlayer(1).getId());
 		assertEquals(1, p1.getId());
 		p2 = new Player(m4, "Baptiste", m4.getZone(12, 5));
-		System.out.println(m4 + "\n");
 		assertEquals(2, m4.getPlayer(2).getId());
 		assertEquals(2, p2.getId());
 		p3 = new Player(m4, "Ludisia", m4.getZone(14, 5));
-		System.out.println(m4 + "\n");
+		if (verbose) System.out.println(m4 + "\n");
 		assertEquals(3, m4.getPlayer(3).getId());
 		assertEquals(3, p3.getId());
 
@@ -817,9 +833,9 @@ public class IslandModelTest {
 		// On inonde la zone de l'air
 		Zone airZone = m4.getZone(6, 3);
 		airZone.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		airZone.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Le jeu est perdu !
 		assertTrue(m4.gameIsLost());
@@ -828,9 +844,9 @@ public class IslandModelTest {
 		// On inonde la zone de la terre
 		Zone earthZone = m4.getZone(11, 1);
 		earthZone.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		earthZone.flood();
-		System.out.println(m4+"\n");
+		if (verbose) System.out.println(m4+"\n");
 		
 		// Le jeu est encore perdu !
 		assertTrue(m4.gameIsLost());
