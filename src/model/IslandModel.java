@@ -15,7 +15,6 @@ public class IslandModel extends Observable {
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
 	private int currentIdPlayer;
-	private int firstIdPlayer;
 	private int turn;
 	
 	/**
@@ -68,9 +67,11 @@ public class IslandModel extends Observable {
 	public int nextIdPlayer() {
 		// Initialisation du premier joueur
 		if (turn == 0) {
-			this.firstIdPlayer = IslandModel.rand.nextInt(this.players.size());
+			this.currentIdPlayer = IslandModel.rand.nextInt(this.players.size());
+			this.turn++;
+			return this.currentIdPlayer;
 		}
-		this.currentIdPlayer = (turn + this.firstIdPlayer) % this.players.size();
+		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
 		return this.currentIdPlayer;
 	}

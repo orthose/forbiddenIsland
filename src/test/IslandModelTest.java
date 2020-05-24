@@ -658,7 +658,7 @@ public class IslandModelTest {
 		assertTrue(0 <= id && id <= 3);
 
 		// Test des tours successifs
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 10; i++) {
 			if (verbose) System.out.println("id="+id);
 			assertTrue(0 <= id && id <= 3);
 			int nextId = m4.nextIdPlayer();
