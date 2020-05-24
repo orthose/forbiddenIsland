@@ -57,6 +57,8 @@ public class VGrid extends JPanel implements Observer {
 		// Chargement des animations
 		airAnim = new Animation("assets/animation/air/air");
 		fireAnim = new Animation("assets/animation/fire/fire");
+		waterAnim = new Animation("assets/animation/water/water");
+		earthAnim = new Animation("assets/animation/earth/earth");
 
 		// On enregistre la vue [this] en tant qu' observateur de [modele]
 		model.addObserver(this);
@@ -127,6 +129,7 @@ public class VGrid extends JPanel implements Observer {
 				break;
 			case EARTH:
 				if (!easyDraw) {
+					g.drawImage(earthAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
 				}
 				break;
@@ -138,6 +141,7 @@ public class VGrid extends JPanel implements Observer {
 				break;
 			case WATER:
 				if (!easyDraw) {
+					g.drawImage(waterAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
 				}
 				break;
