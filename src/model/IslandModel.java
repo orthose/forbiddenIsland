@@ -393,13 +393,31 @@ public class IslandModel extends Observable {
 	@Override
 	public String toString() {
 		String res = "";
+		// Parcours des zones de l'île
 		for(int j = 0; j < this.HEIGHT; j++) {
 			for(int i = 0; i < this.WIDTH; i++) {
 				res += this.zones[i][j].toString();
 			}
 			if(j != this.HEIGHT - 1) { res += "\n"; }
 		}
-		return res;
+		// Buffer pour modifier un caractère à un index
+		StringBuffer buffer = new StringBuffer(res);
+		// Parcours des joueurs
+		for (Player player : this.players) {
+			int x = player.position.x;
+			int y = player.position.y;
+			// Niveau d'eau normal
+			if (player.position.isNormalLevel()) {
+				buffer.setCharAt((this.WIDTH + 1) * y + x, StringMap.encode("Player").charAt(0));
+			}
+			// Niveau d'eau inondé
+			if (player.position.isFloodedLevel()) {
+				buffer.setCharAt((this.WIDTH + 1) * y + x, StringMap.encode("Player&FloodedLevel").charAt(0));
+			}
+			// Dans le cas de la zone submergée le joueur n'est pas affiché
+			// car de toute manière il se noie
+		}
+		return buffer.toString();
 	}
 	
 	/**

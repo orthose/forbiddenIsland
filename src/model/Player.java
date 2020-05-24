@@ -44,7 +44,6 @@ public class Player {
 		}
 		this.name = name;
 		this.position = position;
-		this.position.addPlayer(this);
 		this.alive = true;
 		this.m = m;
 		this.m.addPlayer(this);
@@ -128,9 +127,7 @@ public class Player {
 	 */
 	public void move(Zone newPosition) {
 		if (this.alive) {
-			this.position.removePlayer(this);
 			this.position = newPosition;
-			this.position.addPlayer(this);
 		}
 	}
 	
