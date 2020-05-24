@@ -12,8 +12,8 @@ public class Game {
 	public static void main(String[] args) {
 		String map = "***********\n"
 	        	   + "*****--****\n"
-	        	   + "***~-W-****\n"
-	        	   + "**--EE--~**\n"
+	        	   + "**~w-W-****\n"
+	        	   + "**--EE--e~*\n"
 	        	   + "*~a-A---~**\n"
 	        	   + "*~~----~***\n"
 	        	   + "**--FF--~**\n"
