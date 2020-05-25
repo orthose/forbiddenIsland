@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import model.IslandModel;
+import model.Player.InvalidPlayerId;
 import model.Zone;
 import util.Observer;
 
@@ -25,6 +26,7 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage sand;
 	private BufferedImage water;
 	private BufferedImage deepWater;
+	private BufferedImage player;
 	// Animations
 	private Animation airAnim;
 	private Animation earthAnim;
@@ -49,6 +51,7 @@ public class VGrid extends JPanel implements Observer {
 			sand = ImageIO.read(new File("assets/textures/sand.jpg"));
 			water = ImageIO.read(new File("assets/textures/water.jpg"));
 			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
+			player = ImageIO.read(new File("assets/player/bob.png"));
 		} catch (IOException e) {
 			System.out.println("Failed to load images");
 			easyDraw = true;
@@ -88,6 +91,7 @@ public class VGrid extends JPanel implements Observer {
 	 * @param z une zone
 	 * @param x la position des abscisses
 	 * @param y la position des ordonnées
+	 * @throws  
 	 */
 	private void paint(Graphics g, Zone z, int x, int y) {
 		// Graphics2D est utilisé pour la transparance d'image
@@ -157,6 +161,14 @@ public class VGrid extends JPanel implements Observer {
 				g.fillRect(x, y, zoneWidth, zoneHeight);
 			}
 		}
+		
+		// Player
+		try {
+			g.drawImage(player, model.getPositionPlayer(0).x * zoneWidth, model.getPositionPlayer(0).y * zoneHeight, zoneWidth, zoneHeight, this);
+		} catch (Exception e) {
+			System.out.println("Error on Player ID");
+		}
+		
 
 	}
 }
