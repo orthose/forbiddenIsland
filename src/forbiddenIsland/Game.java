@@ -1,5 +1,6 @@
 package forbiddenIsland;
 import model.IslandModel;
+import model.Player;
 import view.IslandView;
 
 /**
@@ -22,6 +23,9 @@ public class Game {
 	        	   + "***********\n";
 				
 		IslandModel model = new IslandModel(map);
+		
+		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
+		
 		IslandView view = new IslandView(model, 1000, 1000);
 	}
 }
