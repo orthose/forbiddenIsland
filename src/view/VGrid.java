@@ -26,6 +26,7 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage sand;
 	private BufferedImage water;
 	private BufferedImage deepWater;
+	private BufferedImage heliport;
 	private BufferedImage player;
 	// Animations
 	private Animation airAnim;
@@ -51,6 +52,7 @@ public class VGrid extends JPanel implements Observer {
 			sand = ImageIO.read(new File("assets/textures/sand.jpg"));
 			water = ImageIO.read(new File("assets/textures/water.jpg"));
 			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
+			heliport = ImageIO.read(new File("assets/heliport.png"));
 			player = ImageIO.read(new File("assets/player/bob.png"));
 		} catch (IOException e) {
 			System.out.println("Failed to load images");
@@ -87,11 +89,8 @@ public class VGrid extends JPanel implements Observer {
 	/**
 	 * Desine une Zone spécifique à une coordonée donnée
 	 * 
-	 * @param g un Graphic
-	 * @param z une zone
-	 * @param x la position des abscisses
-	 * @param y la position des ordonnées
-	 * @throws  
+	 * @param g un Graphic @param z une zone @param x la position des
+	 * abscisses @param y la position des ordonnées @throws
 	 */
 	private void paint(Graphics g, Zone z, int x, int y) {
 		// Graphics2D est utilisé pour la transparance d'image
@@ -100,7 +99,7 @@ public class VGrid extends JPanel implements Observer {
 		// Water level
 		if (!z.isSubmergedLevel()) {
 			// Niveau d'eau: normal
-			if(z.isNormalLevel()) {
+			if (z.isNormalLevel()) {
 				// Sand
 				if (!easyDraw) {
 					g2d.drawImage(sand, x, y, zoneWidth, zoneHeight, this);
@@ -108,9 +107,9 @@ public class VGrid extends JPanel implements Observer {
 					g.setColor(new Color(255, 185, 30));
 					g.fillRect(x, y, zoneWidth, zoneHeight);
 				}
-			} 
+			}
 			// Niveau d'eau: Inondé
-			else if(z.isFloodedLevel()) {
+			else if (z.isFloodedLevel()) {
 				if (!easyDraw) {
 					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 					g2d.drawImage(sand, x, y, zoneWidth, zoneHeight, this);
@@ -120,7 +119,6 @@ public class VGrid extends JPanel implements Observer {
 					g.fillRect(x, y, zoneWidth, zoneHeight);
 				}
 			}
-			
 
 			// Element
 			switch (z.getNaturalElement()) {
@@ -151,9 +149,16 @@ public class VGrid extends JPanel implements Observer {
 				break;
 			}
 
-		}  
+			// Heliport
+			if (z.isHeliport()) {
+				if (!easyDraw) {
+					g.drawImage(heliport, x, y, zoneWidth, zoneHeight, this);
+				} else {
+				}
+			}
+		}
 		// Niveau d'eau: Submergé
-		else  {
+		else {
 			if (!easyDraw) {
 				g.drawImage(deepWater, x, y, zoneWidth, zoneHeight, this);
 			} else {
@@ -161,14 +166,16 @@ public class VGrid extends JPanel implements Observer {
 				g.fillRect(x, y, zoneWidth, zoneHeight);
 			}
 		}
-		
+
 		// Player
 		try {
-			g.drawImage(player, model.getPositionPlayer(0).x * zoneWidth, model.getPositionPlayer(0).y * zoneHeight, zoneWidth, zoneHeight, this);
+			if (!easyDraw) {
+				g.drawImage(player, model.getPositionPlayer(0).x * zoneWidth, model.getPositionPlayer(0).y * zoneHeight, zoneWidth, zoneHeight, this);
+			} else {
+			}
 		} catch (Exception e) {
 			System.out.println("Error on Player ID");
 		}
-		
 
 	}
 }
