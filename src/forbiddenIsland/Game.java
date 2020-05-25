@@ -1,11 +1,8 @@
 package forbiddenIsland;
 
 import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyListener;
-
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-
 import controller.Controller;
 import model.IslandModel;
 import model.Player;
