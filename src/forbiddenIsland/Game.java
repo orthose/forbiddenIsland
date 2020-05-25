@@ -1,4 +1,7 @@
 package forbiddenIsland;
+import javax.swing.JFrame;
+
+import controller.Controller;
 import model.IslandModel;
 import model.Player;
 import view.IslandView;
@@ -7,22 +10,24 @@ import view.IslandView;
  * @author maxime & baptiste
  * @apiNote Lance le jeu
  */
-public class Game {
+public class Game  {
 	public static final long BEGINTIME = System.nanoTime();
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		String map = "***********\n"
 	        	   + "*****--****\n"
 	        	   + "**~w-W-****\n"
 	        	   + "**--EE--e~*\n"
 	        	   + "*~a-A---~**\n"
-	        	   + "*~~----~***\n"
+	        	   + "*~~-H--~***\n"
 	        	   + "**--FF--~**\n"
 	        	   + "**~--F--***\n"
 	        	   + "****~-f****\n"
-	        	   + "***********\n";
-				
+	        	   + "***********\n";	
+		
 		IslandModel model = new IslandModel(map);
+		
+		Controller controller = new Controller(model);	
 		
 		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
 		
