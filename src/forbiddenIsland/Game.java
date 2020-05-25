@@ -1,5 +1,10 @@
 package forbiddenIsland;
+
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyListener;
+
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 import controller.Controller;
 import model.IslandModel;
@@ -10,9 +15,16 @@ import view.IslandView;
  * @author maxime & baptiste
  * @apiNote Lance le jeu
  */
-public class Game  {
+public class Game extends JFrame {
 	public static final long BEGINTIME = System.nanoTime();
 	
+	public Game(Controller controller) {
+		  add(new JTextField());
+	      System.out.println("test");
+	      KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+	      manager.addKeyEventDispatcher(controller);
+	}
+
 	public static void main(String[] args) {		
 		String map = "***********\n"
 	        	   + "*****--****\n"
@@ -32,5 +44,7 @@ public class Game  {
 		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
 		
 		IslandView view = new IslandView(model, 1000, 1000);
+		
+		Game game = new Game(controller);
 	}
 }
