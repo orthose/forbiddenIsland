@@ -11,7 +11,6 @@ public class Zone {
 	private WaterLevel wl;
 	private NaturalElement el;
 	private boolean heliport;
-	private ArrayList<Player> players;
 	public final int x, y;
 	
 	/**
@@ -27,7 +26,6 @@ public class Zone {
 		this.wl = new NormalLevel();
 		this.el = NaturalElement.NONE;
 		this.heliport = false;
-		this.players = new ArrayList<Player>();
 	}
 	
 	/**
@@ -162,22 +160,6 @@ public class Zone {
 	}
 	
 	/**
-	 * @apiNote Ajoute un joueur sur la zone
-	 * @param player: Joueur à ajouter
-	 */
-	public void addPlayer(Player player) {
-		this.players.add(player);
-	}
-	
-	/**
-	 * @apiNote Supprimer un joueur de la zone
-	 * @param player: Joueur à supprimer
-	 */
-	public void removePlayer(Player player) {
-		this.players.remove(player);
-	}
-	
-	/**
 	 * @apiNote Renvoie la zone voisine
 	 * de la zone courante
 	 * Si le déplacement n'est pas possible
@@ -201,12 +183,12 @@ public class Zone {
 				return m.zones[this.x][this.y + 1];
 			}
 		case RIGHT:
-			if(this.x > 0) {
+			if(this.x < this.m.WIDTH - 1) {
 				success = true;
 				return m.zones[this.x + 1][this.y];
 			}
 		case LEFT:
-			if(this.x < this.m.WIDTH - 1) {
+			if(this.x > 0) {
 				success = true;
 				return m.zones[this.x - 1][this.y];
 			}
@@ -232,13 +214,13 @@ public class Zone {
 	public String toString() {
 		String wlString = this.wl.toString();
 		if (wlString != StringMap.encode("SubmergedLevel")) {
-			if(! this.players.isEmpty()) {
+			/*if(! this.players.isEmpty()) {
 				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode("Player&FloodedLevel");
 				}
 				return StringMap.encode("Player");
-			}
-			else if(this.heliport) {
+			}*/
+			if(this.heliport) {
 				if(wlString.equals(StringMap.encode("FloodedLevel"))) {
 					return StringMap.encode("heliport&FloodedLevel");
 				}

@@ -12,6 +12,15 @@ public class KeyElement {
 		this.el = el;
 	}
 	
+	
+	/**
+	 * @apiNote Donne l'élément associé à la clé
+	 * @return Élément naturel associé à la clé
+	 */
+	public NaturalElement getEl() {
+		return this.el;
+	}
+	
 	/**
 	 * @apiNote Vérifie si la clé est compatible
 	 * avec la zone

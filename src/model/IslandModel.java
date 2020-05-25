@@ -15,10 +15,7 @@ public class IslandModel extends Observable {
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
 	private int currentIdPlayer;
-	private int firstIdPlayer;
 	private int turn;
-	// Paramètres modifiables même à l'exécution
-	protected float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	
 	/**
 	 * @apiNote Crée une île selon une carte
@@ -52,6 +49,15 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
+	 * @apiNote Donne le tour en cours
+	 * @return Entier à partir de 0
+	 * pour le premier tour
+	 */
+	public int getTurn() {
+		return this.turn;
+	}
+	
+	/**
 	 * @apiNote Donne l'identifiant du prochain
 	 * joueur à jouer tout en modifiant en interne
 	 * l'identifiant du joueur courant
@@ -61,19 +67,12 @@ public class IslandModel extends Observable {
 	public int nextIdPlayer() {
 		// Initialisation du premier joueur
 		if (turn == 0) {
-			this.firstIdPlayer = IslandModel.rand.nextInt(this.players.size());
+			this.currentIdPlayer = IslandModel.rand.nextInt(this.players.size());
+			this.turn++;
+			return this.currentIdPlayer;
 		}
-		this.currentIdPlayer = (turn + this.firstIdPlayer) % this.players.size();
+		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
-		return this.currentIdPlayer;
-	}
-	
-	/**
-	 * @apiNote Donne l'identifiant du joueur
-	 * qui est en train de joueur
-	 * @return L'identifiant du joueur courant
-	 */
-	public int getCurrentIdPlayer() {
 		return this.currentIdPlayer;
 	}
 	
@@ -267,6 +266,7 @@ public class IslandModel extends Observable {
 			if (! player.canEscape()) {
 				player.kill();
 			}
+			super.notifyObservers();
 		}
 		return res;
 	}
@@ -295,16 +295,130 @@ public class IslandModel extends Observable {
 		return player.findArtefact();
 	}
 	
+	/**
+	 * @apiNote Vérifie si le jeu est gagné
+	 * @return true si gagné false sinon
+	 */
+	public boolean gameIsWon() {
+		boolean firstCondition = true;
+		// Tous les joueurs sont vivants et sur un héliport
+		// pas forcément le même héliport
+		for (Player player : this.players) {
+			firstCondition = firstCondition && player.isAlive();
+			firstCondition = firstCondition && player.position.isHeliport();
+			if (! firstCondition) {
+				break;
+			}
+		}
+		// Tous les artefacts ont été trouvés
+		return firstCondition && Artefact.allArtefactsFound();
+	}
+	
+	/**
+	 * @apiNote Vérifie si le jeu est perdu
+	 * @return true si perdu false sinon
+	 */
+	public boolean gameIsLost() {
+		boolean condition = false;
+		// L'un des joueurs est mort ?
+		for (Player player : this.players) {
+			condition = condition || ! player.isAlive();
+			if (condition) {
+				break;
+			}
+		}
+		// Tous les héliports sont inaccessibles ?
+		if (! condition) {
+			int heliportZones = 0, heliportZonesSubmerged = 0;
+			for (int i = 0; i < this.WIDTH; i++) {
+				for (int j = 0; j < this.HEIGHT; j++) {
+					if (this.zones[i][j].isHeliport()) {
+						heliportZones++;
+						if (this.zones[i][j].isSubmergedLevel()) {
+							heliportZonesSubmerged++;
+						}
+					}
+				}
+			}
+			condition = (heliportZones == heliportZonesSubmerged);
+		}
+		// Toutes les zones d'un artefact non-trouvé
+		// sont submergées ?
+		if (! condition) {
+			boolean airArtefactFound = Artefact.isFound(NaturalElement.AIR);
+			boolean waterArtefactFound = Artefact.isFound(NaturalElement.WATER);
+			boolean earthArtefactFound = Artefact.isFound(NaturalElement.EARTH);
+			boolean fireArtefactFound = Artefact.isFound(NaturalElement.FIRE);
+			int airZones = 0, airZonesSubmerged = 0;
+			int waterZones = 0, waterZonesSubmerged = 0;
+			int earthZones = 0, earthZonesSubmerged = 0;
+			int fireZones = 0, fireZonesSubmerged = 0;
+			for (int i = 0; i < this.WIDTH; i++) {
+				for (int j = 0; j < this.HEIGHT; j++) {
+					NaturalElement zoneElement = this.zones[i][j].getNaturalElement();
+					boolean submerged = this.zones[i][j].isSubmergedLevel();
+					if (zoneElement == NaturalElement.AIR) {
+						airZones++;
+						if (submerged) {
+							airZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.WATER) {
+						waterZones++;
+						if (submerged) {
+							waterZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.EARTH) {
+						earthZones++;
+						if (submerged) {
+							earthZonesSubmerged++;
+						}
+					}
+					if (zoneElement == NaturalElement.FIRE) {
+						fireZones++;
+						if (submerged) {
+							fireZonesSubmerged++;
+						}
+					}
+				}
+			}
+			condition = (! airArtefactFound && airZones == airZonesSubmerged)
+				|| (! waterArtefactFound && waterZones == waterZonesSubmerged) 
+				|| (! earthArtefactFound && earthZones == earthZonesSubmerged)
+				|| (! fireArtefactFound && fireZones == fireZonesSubmerged);
+		}
+		return condition;
+	}
+	
 	@Override
 	public String toString() {
 		String res = "";
+		// Parcours des zones de l'île
 		for(int j = 0; j < this.HEIGHT; j++) {
 			for(int i = 0; i < this.WIDTH; i++) {
 				res += this.zones[i][j].toString();
 			}
 			if(j != this.HEIGHT - 1) { res += "\n"; }
 		}
-		return res;
+		// Buffer pour modifier un caractère à un index
+		StringBuffer buffer = new StringBuffer(res);
+		// Parcours des joueurs
+		for (Player player : this.players) {
+			int x = player.position.x;
+			int y = player.position.y;
+			// Niveau d'eau normal
+			if (player.position.isNormalLevel()) {
+				buffer.setCharAt((this.WIDTH + 1) * y + x, StringMap.encode("Player").charAt(0));
+			}
+			// Niveau d'eau inondé
+			if (player.position.isFloodedLevel()) {
+				buffer.setCharAt((this.WIDTH + 1) * y + x, StringMap.encode("Player&FloodedLevel").charAt(0));
+			}
+			// Dans le cas de la zone submergée le joueur n'est pas affiché
+			// car de toute manière il se noie
+		}
+		return buffer.toString();
 	}
 	
 	/**
