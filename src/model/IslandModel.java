@@ -76,15 +76,6 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
-	 * @apiNote Donne l'identifiant du joueur actuel
-	 * @return L'identifiant du joueur qui doit
-	 * à jouer
-	 */
-	public int getCurrentIdPlayer() {
-		return this.currentIdPlayer;
-	}
-	
-	/**
 	 * @apiNote Permet d'accéder à une zone
 	 * depuis la vue
 	 * @param x: Coordonnée en x
@@ -276,7 +267,9 @@ public class IslandModel extends Observable {
 		Player player = this.getPlayer(id);
 		boolean res = player.findKeyElement();
 		// Évènement spécial : Montée des eaux
-		if (! res) {
+		// seulement si la clé n'a pas été trouvée
+		// et qu'une clé pouvait être trouvée
+		if (! res && player.canFindKeyElement()) {
 			player.position.flood();
 			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
 			if (! player.canEscape()) {
