@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -28,6 +29,7 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage deepWater;
 	private BufferedImage heliport;
 	private BufferedImage player;
+	private BufferedImage border;
 	// Animations
 	private Animation airAnim;
 	private Animation earthAnim;
@@ -54,6 +56,7 @@ public class VGrid extends JPanel implements Observer {
 			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
 			heliport = ImageIO.read(new File("assets/heliport.png"));
 			player = ImageIO.read(new File("assets/player/bob.png"));
+			border = ImageIO.read(new File("assets/border.png"));
 		} catch (IOException e) {
 			System.out.println("Failed to load images");
 			easyDraw = true;
@@ -166,6 +169,14 @@ public class VGrid extends JPanel implements Observer {
 				g.fillRect(x, y, zoneWidth, zoneHeight);
 			}
 		}
+		
+		// Border
+		if(model.getCurrentPlayerNeighbors().contains(model.getZone(x/zoneWidth, y/zoneHeight))){
+			if (!easyDraw) {
+				g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
+			} else {
+			}
+		}
 
 		// Player
 		try {
@@ -180,4 +191,5 @@ public class VGrid extends JPanel implements Observer {
 		}
 
 	}
+	
 }
