@@ -31,13 +31,13 @@ public class Controller implements KeyEventDispatcher {
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
 			try {
-				if (e.getKeyCode() == e.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
+				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
 					m.movePlayer(m.getCurrentIdPlayer(), Move.UP);
-				} else if (e.getKeyCode() == e.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
+				} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
 					m.movePlayer(m.getCurrentIdPlayer(), Move.DOWN);
-				} else if (e.getKeyCode() == e.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
 					m.movePlayer(m.getCurrentIdPlayer(), Move.RIGHT);
-				} else if (e.getKeyCode() == e.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
+				} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
 					m.movePlayer(m.getCurrentIdPlayer(), Move.LEFT);
 				}
 			} catch (InvalidPlayerId e1) {
