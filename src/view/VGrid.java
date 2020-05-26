@@ -171,7 +171,7 @@ public class VGrid extends JPanel implements Observer {
 		}
 		
 		// Border
-		if(model.getCurrentPlayerNeighbors().contains(model.getZone(x/zoneWidth, y/zoneHeight))){
+		if(model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x/zoneWidth, y/zoneHeight))){
 			if (!easyDraw) {
 				g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
 			} else {

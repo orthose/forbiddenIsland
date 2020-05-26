@@ -15,7 +15,6 @@ public class IslandModel extends Observable {
 	public final int WIDTH, HEIGHT;
 	protected Zone[][] zones;
 	private ArrayList<Player> players;
-	private ArrayList<Zone> currentPlayerNeighbors;
 	private int currentIdPlayer;
 	private int turn;
 
@@ -67,22 +66,10 @@ public class IslandModel extends Observable {
 		if (turn == 0) {
 			this.currentIdPlayer = IslandModel.rand.nextInt(this.players.size());
 			this.turn++;
-			try {
-				currentPlayerNeighbors = movePossibilitiesPlayer(currentIdPlayer);
-			} catch (InvalidPlayerId e) {
-				e.printStackTrace();
-				System.out.println("Error on player Id");
-			}
 			return this.currentIdPlayer;
 		}
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
-		try {
-			currentPlayerNeighbors = movePossibilitiesPlayer(currentIdPlayer);
-		} catch (InvalidPlayerId e) {
-			e.printStackTrace();
-			System.out.println("Error on player Id");
-		}
 		return this.currentIdPlayer;
 	}
 
@@ -129,11 +116,22 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
-	 * @apiNote Donne les voisins du joueur courant
-	 * @return les voisins du joueur courant
+	 * @apiNote Donne les zones des déplacements possibles
+	 * pour le joueur courant
+	 * @return La liste des zones de déplacements possibles
 	 */
-	public ArrayList<Zone> getCurrentPlayerNeighbors(){
-		return this.currentPlayerNeighbors;
+	public ArrayList<Zone> getMovePossibilitiesCurrentPlayer(){
+		try {
+			Player player = this.getPlayer(this.currentIdPlayer);
+			return player.movePossibilities;
+		}
+		// Normalement impossible
+		catch (InvalidPlayerId e) {
+			e.printStackTrace();
+			System.out.println("Error on player Id");
+		}
+		// Normalement inaccessible
+		return null;
 	}
 
 	/**
@@ -171,12 +169,6 @@ public class IslandModel extends Observable {
 		Zone newPosition = player.position.neighbour(move, success);
 		if (newPosition.isCrossable()) {
 			player.move(newPosition);
-			try {
-				currentPlayerNeighbors = movePossibilitiesPlayer(currentIdPlayer);
-			} catch (InvalidPlayerId e) {
-				e.printStackTrace();
-				System.out.println("Error on player Id");
-			}
 		} else {
 			success = false;
 		}
