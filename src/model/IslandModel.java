@@ -260,7 +260,9 @@ public class IslandModel extends Observable {
 		Player player = this.getPlayer(id);
 		boolean res = player.findKeyElement();
 		// Évènement spécial : Montée des eaux
-		if (! res) {
+		// seulement si la clé n'a pas été trouvée
+		// et qu'une clé pouvait être trouvée
+		if (! res && player.canFindKeyElement()) {
 			player.position.flood();
 			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
 			if (! player.canEscape()) {

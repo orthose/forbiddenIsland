@@ -245,7 +245,7 @@ public class Player {
 	 * false sinon
 	 */
 	public boolean canFindKeyElement() {
-		return this.alive;
+		return this.alive && this.keys.size() < 4;
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public class Player {
 	 * @return true si la clé est trouvée false sinon
 	 */
 	public boolean findKeyElement() {
-		if (this.alive && IslandModel.rand.nextFloat() < this.keyLuck) {
+		if (this.canFindKeyElement() && IslandModel.rand.nextFloat() < this.keyLuck) {
 			int i = IslandModel.rand.nextInt(4);
 			KeyElement key = new KeyElement(NaturalElement.values()[i]);
 			this.keys.add(key);
