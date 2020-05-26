@@ -1,7 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-
 /**
  * @author maxime
  * @apiNote Une zone est une composante de l'île
