@@ -117,7 +117,7 @@ public class IslandModel extends Observable {
 	
 	/**
 	 * @apiNote Donne les zones des déplacements possibles
-	 * pour le joueur courant
+	 * pour le joueur courant sans recalculer à chaque appel
 	 * @return La liste des zones de déplacements possibles
 	 */
 	public ArrayList<Zone> getMovePossibilitiesCurrentPlayer(){
