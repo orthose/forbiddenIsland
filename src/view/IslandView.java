@@ -1,13 +1,9 @@
 package view;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
-
 import model.IslandModel;
 
 /**
@@ -40,8 +36,6 @@ public class IslandView {
 
 		grille = new VGrid(model);
 		frame.add(grille);
-		// controller = new VController(model);
-		// frame.add(controller);
 
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
