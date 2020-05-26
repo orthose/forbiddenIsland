@@ -2,7 +2,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Random;
-import model.Player.InvalidPlayerId;
 import util.Observable;
 
 /**
@@ -97,6 +96,14 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
+	 * @apiNote Renvoie le nombre de joueur
+	 * @return le nombre de joueur
+	 */
+	public int getNbPlayer() {
+		return players.size();
+	}
+	
+	/**
 	 * @apiNote Permet d'accéder à un joueur
 	 * depuis la vue
 	 * @param id: Numéro du joueur
@@ -153,7 +160,7 @@ public class IslandModel extends Observable {
 	 * @throws Player.InvalidPlayerId: Si le joueur
 	 * n'existe pas
 	 */
-	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {
+	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {;
 		Player player = this.getPlayer(id);
 		Boolean success = Boolean.valueOf(true);
 		Zone newPosition = player.position.neighbour(move, success);
