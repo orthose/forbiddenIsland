@@ -17,6 +17,7 @@ public class Player {
 	private static ArrayList<Integer> allPlayersId =
 		new ArrayList<Integer>();
 	private float keyLuck = 0.2f; // Dans ]0.0;1.0[
+	protected ArrayList<Zone> movePossibilities;
 	
 	/**
 	 * @apiNote L'identifiant du premier joueur
@@ -48,6 +49,7 @@ public class Player {
 		this.m = m;
 		this.m.addPlayer(this);
 		this.keys = new ArrayList<KeyElement>();
+		this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
 	}
 	
 	/**
@@ -134,6 +136,16 @@ public class Player {
 	}
 	
 	/**
+	 * @apiNote Donne la liste des zones de 
+	 * déplacements possibles pour le joueur 
+	 * sans la recalculer
+	 * @return Liste de zones accessibles
+	 */
+	public ArrayList<Zone> getMovePossibilities() {
+		return this.movePossibilities;
+	}
+	
+	/**
 	 * @apiNote Vérifie que le numéro de joueur
 	 * est bien enregistré
 	 * @param id: Numéro de joueur
@@ -169,6 +181,8 @@ public class Player {
 	public void move(Zone newPosition) {
 		if (this.alive) {
 			this.position = newPosition;
+			// Mise à jour de liste des déplacements possibles
+			this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
 		}
 	}
 	
