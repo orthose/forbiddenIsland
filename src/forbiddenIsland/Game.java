@@ -36,9 +36,10 @@ public class Game extends JFrame {
 		
 		IslandModel model = new IslandModel(map);
 		
-		Controller controller = new Controller(model);	
-		
 		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
+		Player p1 = new Player(model, "Alexis", model.getZone(3, 3));
+		
+		Controller controller = new Controller(model);	
 		
 		IslandView view = new IslandView(model, 1000, 1000);
 		
