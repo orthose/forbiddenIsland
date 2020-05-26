@@ -7,13 +7,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-
+import controller.Controller;
 import model.IslandModel;
-import model.Player.InvalidPlayerId;
 import model.Zone;
 import util.Observer;
 
@@ -93,7 +90,7 @@ public class VGrid extends JPanel implements Observer {
 	 * Desine une Zone spécifique à une coordonée donnée
 	 * 
 	 * @param g un Graphic @param z une zone @param x la position des
-	 * abscisses @param y la position des ordonnées @throws
+	 *          abscisses @param y la position des ordonnées @throws
 	 */
 	private void paint(Graphics g, Zone z, int x, int y) {
 		// Graphics2D est utilisé pour la transparance d'image
@@ -169,19 +166,21 @@ public class VGrid extends JPanel implements Observer {
 				g.fillRect(x, y, zoneWidth, zoneHeight);
 			}
 		}
-		
+
 		// Border
-		if(model.getCurrentPlayerNeighbors().contains(model.getZone(x/zoneWidth, y/zoneHeight))){
-			if (!easyDraw) {
-				g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
-			} else {
+		if (Controller.getNbAction()>0) {
+			if (model.getCurrentPlayerNeighbors().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+				if (!easyDraw) {
+					g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
+				} else {
+				}
 			}
 		}
 
 		// Player
 		try {
 			if (!easyDraw) {
-				for(int i = 0; i < model.getNbPlayer(); i++) {
+				for (int i = 0; i < model.getNbPlayer(); i++) {
 					g.drawImage(player, model.getPositionPlayer(i).x * zoneWidth, model.getPositionPlayer(i).y * zoneHeight, zoneWidth, zoneHeight, this);
 				}
 			} else {
@@ -191,5 +190,5 @@ public class VGrid extends JPanel implements Observer {
 		}
 
 	}
-	
+
 }
