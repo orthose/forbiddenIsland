@@ -50,6 +50,47 @@ public class Player {
 		this.keys = new ArrayList<KeyElement>();
 	}
 	
+	/**
+	 * @apiNote Constructeur allégé avec les coordonnées
+	 * x et y à indiquer
+	 * @param m: Référence au modèle
+	 * @param name: Nom du joueur
+	 * @param x: Coordonnée en x
+	 * @param y: Coordonnée en y
+	 */
+	public Player(IslandModel m, String name, int x, int y) {
+		this(m, name, m.getZone(x, y));
+	}
+	
+	/**
+	 * @apiNote Constructeur allégé qui initialise aléatoirement
+	 * la position initiale du joueur (mais elle est valide)
+	 * @param m: Référence au modèle
+	 * @param name: Nom du joueur
+	 */
+	public Player(IslandModel m, String name) {
+		this(m, name, 0, 0);
+		Zone randomZone;
+		do {
+			int x = IslandModel.rand.nextInt(this.m.WIDTH);
+			int y = IslandModel.rand.nextInt(this.m.HEIGHT);
+			randomZone = this.m.getZone(x, y);
+		} while (! this.validInitialPosition(randomZone));
+	}
+	
+	/**
+	 * @apiNote Vérifie que la position initiale du joueur
+	 * est valide c'est-à-dire que le joueur n'est pas piégé
+	 * et n'atterrit pas sur une zone submergée.
+	 * Le joueur est déplacé sur la zone en question.
+	 * @param zone: zone sur laquelle est déplacé le joueur
+	 * @return true si position valide false sinon
+	 */
+	private boolean validInitialPosition(Zone zone) {
+		this.move(zone);
+		return ! this.position.isSubmergedLevel() && this.canEscape();
+	}
+	
 	// Exception si le numéro de joueur est invalide
 	public static class InvalidPlayerId extends Exception {
 		private int id;
