@@ -170,7 +170,9 @@ public class VGrid extends JPanel implements Observer {
 		// Player
 		try {
 			if (!easyDraw) {
-				g.drawImage(player, model.getPositionPlayer(0).x * zoneWidth, model.getPositionPlayer(0).y * zoneHeight, zoneWidth, zoneHeight, this);
+				for(int i = 0; i < model.getNbPlayer(); i++) {
+					g.drawImage(player, model.getPositionPlayer(i).x * zoneWidth, model.getPositionPlayer(i).y * zoneHeight, zoneWidth, zoneHeight, this);
+				}
 			} else {
 			}
 		} catch (Exception e) {
