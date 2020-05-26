@@ -16,7 +16,7 @@ import model.Zone;
 public class Controller implements KeyEventDispatcher {
 
 	private IslandModel m; // Référence au modèle
-	private int nbAction;
+	private static int nbAction = 3;
 	private int currentIdPlayer;
 
 	/**
@@ -24,7 +24,6 @@ public class Controller implements KeyEventDispatcher {
 	 */
 	public Controller(IslandModel m) {
 		this.m = m;
-		this.nbAction = 3;
 		this.currentIdPlayer = m.nextIdPlayer();
 	}
 
@@ -106,10 +105,21 @@ public class Controller implements KeyEventDispatcher {
 			// Skip turn
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				nbAction = 3;
+				m.floodRandom();
+				try {
+					m.findKeyElementPlayer(currentIdPlayer);
+				} catch (InvalidPlayerId e1) {
+					e1.printStackTrace();
+					System.out.println("Error on player Id");
+				}
 				currentIdPlayer = m.nextIdPlayer();
 			}
 		}
 		return false;
+	}
+	
+	public static int getNbAction() {
+		return Controller.nbAction;
 	}
 
 }
