@@ -540,7 +540,8 @@ public class IslandModelTest {
 		
 		// On inonde aléatoirement plusieurs fois
 		for (int i = 0; i < 100; i++) {
-			ArrayList<Player> threatenedPlayers = m1.floodRandom();
+			m1.floodRandom();
+			ArrayList<Player> threatenedPlayers = m1.getPlayersToSave();
 			if (verbose) System.out.println(m1+"\n");
 			if (! threatenedPlayers.isEmpty()) {
 			    assertTrue(m1.getPositionPlayer(0).isSubmergeable());

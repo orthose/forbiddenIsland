@@ -1,8 +1,8 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
-
 import model.Player.InvalidPlayerId;
 import util.Observable;
 
@@ -18,6 +18,7 @@ public class IslandModel extends Observable {
 	private int currentIdPlayer;
 	private int turn;
 	protected boolean verbose = false;
+	private HashSet<Player> playersToSave;
 
 	/**
 	 * @apiNote Crée une île selon une carte Si une des lignes est de taille
@@ -30,6 +31,7 @@ public class IslandModel extends Observable {
 		super();
 		// Liste des joueurs
 		this.players = new ArrayList<Player>();
+		this.playersToSave = new HashSet<Player>();
 		this.turn = 0;
 		// Découpe des lignes
 		String[] mapLine = map.split("\n");
@@ -67,6 +69,16 @@ public class IslandModel extends Observable {
 	public int getTurn() {
 		return this.turn;
 	}
+	
+	/**
+	 * @apiNote Donne les joueurs à déplacer à la toute fin du tour
+	 * lorsque IslandModel::floodRandom() a été appelée
+	 * @return Liste des joueurs à déplacer pour les sauver
+	 * de la noyade
+	 */
+	public ArrayList<Player> getPlayersToSave() {
+		return new ArrayList<Player>(this.playersToSave);
+	}
 
 	/**
 	 * @apiNote Donne l'identifiant du prochain joueur à jouer tout en modifiant en
@@ -85,6 +97,19 @@ public class IslandModel extends Observable {
 			}
 			return this.currentIdPlayer;
 		}
+		// Joueur tué s'il ne s'est pas enfui d'une zone submergée
+		try {
+			Player player = this.getPlayer(this.currentIdPlayer);
+			if (player.position.isSubmergedLevel()) {
+				player.kill();
+				super.notifyObservers();
+			}
+		}
+		// Normalement impossible
+		catch (InvalidPlayerId e) {
+			e.printStackTrace();
+			System.out.println("Error on player Id");
+		}	
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
 		if (verbose) {
@@ -155,7 +180,7 @@ public class IslandModel extends Observable {
 		// Normalement inaccessible
 		return null;
 	}
-
+	
 	/**
 	 * @apiNote Ajoute un joueur à la partie
 	 * @param player: Joueur à ajouter
@@ -243,10 +268,8 @@ public class IslandModel extends Observable {
 	/**
 	 * @apiNote Inonde 3 zones aléatoirement Si un joueur est piégé il est
 	 *          automatiquement tué
-	 * @return Liste des joueurs sur les zones concernées et qui vont être
-	 *         submergées
 	 */
-	public ArrayList<Player> floodRandom() {
+	public void floodRandom() {
 		ArrayList<Player> res = new ArrayList<Player>();
 		for (int i = 0; i < 3; i++) {
 			int x = IslandModel.rand.nextInt(this.WIDTH);
@@ -259,9 +282,9 @@ public class IslandModel extends Observable {
 			// Si des joueurs sont sur cette zone
 			for (Player player : this.players) {
 				if (x == player.position.x && y == player.position.y && player.position.isSubmergeable()) {
-					// Ajout du joueur à la liste des joueurs à déplacer
+					// Ajout du joueur à la liste des joueurs à sauver
 					if (player.canEscape()) {
-						res.add(player);
+						this.playersToSave.add(player);
 						if (verbose) {
 							System.out.println(player+" doit s'échapper !");
 						}
@@ -275,7 +298,6 @@ public class IslandModel extends Observable {
 		}
 		super.notifyObservers();
 		if (verbose) System.out.print("\n");
-		return res;
 	}
 
 	/**
@@ -304,11 +326,18 @@ public class IslandModel extends Observable {
 		// et qu'une clé pouvait être trouvée
 		if (!res && player.canFindKeyElement()) {
 			player.position.flood();
-			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
-			if (!player.canEscape()) {
-				player.kill();
+			// Le joueur peut être sauvé
+			if (player.position.isSubmergedLevel() && player.canEscape()) {
+				this.playersToSave.add(player);
+				if (verbose) {
+					System.out.println(player+" doit s'échapper !");
+				}
 			}
-			super.notifyObservers();
+			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
+			else if (player.position.isSubmergedLevel() && !player.canEscape()) {
+				player.kill();
+				super.notifyObservers();
+			}
 		}
 		return res;
 	}
