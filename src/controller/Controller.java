@@ -122,7 +122,7 @@ public class Controller implements KeyEventDispatcher {
 			}
 
 			// Skip turn
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
 				nbAction = 0;
 				// Chercher une clef
 				try {
