@@ -2,6 +2,7 @@ package view;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -210,7 +211,7 @@ public class VGrid extends JPanel implements Observer {
 	}
 	
 	private void hud(Graphics g) {
-		paintTurn(g,10,15);
+		paintTurn(g,zoneWidth/4,zoneHeight/4);
 	}
 
 	/**
@@ -221,7 +222,8 @@ public class VGrid extends JPanel implements Observer {
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
 		g.setColor(new Color(255, 255, 255));
-		g.drawString("tour: " + Integer.toString(model.getTurn()), x, y);
+		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight/4)); 
+		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
 	}
 
 }
