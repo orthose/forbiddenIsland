@@ -101,4 +101,9 @@ public class Artefact {
 		Artefact.found = 0;
 		Artefact.artefacts = new Artefact[4];
 	}
+	
+	@Override
+	public String toString() {
+		return "Artefact de "+this.el.name();
+	}
 }

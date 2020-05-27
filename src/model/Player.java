@@ -169,6 +169,7 @@ public class Player {
 	 */
 	public void kill() {
 		this.alive = false;
+		if (this.m.verbose) System.out.println(this+" s'est noyé");
 	}
 	
 	/**
@@ -181,6 +182,9 @@ public class Player {
 	public void move(Zone newPosition) {
 		if (this.alive) {
 			this.position = newPosition;
+			if (this.m.verbose) {
+				System.out.println(this+" déplacé en ("+this.position.x+", "+this.position.y+")");
+			}
 			// Mise à jour de liste des déplacements possibles
 			this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
 		}
@@ -248,6 +252,9 @@ public class Player {
 		if (this.alive) {
 			Zone target = this.position.neighbour(move);
 			target.dry();
+			if (res && this.m.verbose) {
+				System.out.println(this+" a asséché ("+target.x+", "+target.y+")");
+			}
 		}
 		return res;
 	}
@@ -271,6 +278,9 @@ public class Player {
 			int i = IslandModel.rand.nextInt(4);
 			KeyElement key = new KeyElement(NaturalElement.values()[i]);
 			this.keys.add(key);
+			if (this.m.verbose) {
+				System.out.println(this+" a trouvé "+key);
+			}
 			return true;
 		}
 		return false;
@@ -302,7 +312,19 @@ public class Player {
 				res = res || Artefact.findNewArtefact(key, this.position);
 			}
 		}
+		if (this.m.verbose) {
+			System.out.println("Artefacts trouvés:");
+			for (Artefact a : Artefact.getFoundArtefacts()) {
+				System.out.print(a+" ");
+			}
+			System.out.print("\n");
+		}
 		return res;
+	}
+	
+	@Override
+	public String toString() {
+		return this.name + " id=" + this.id;
 	}
 	
 	/**

@@ -30,4 +30,9 @@ public class KeyElement {
 	public boolean tryKeyElement(Zone zone) {
 		return this.el == zone.getNaturalElement();
 	}
+	
+	@Override
+	public String toString() {
+		return "Clé de "+this.el.name();
+	}
 }

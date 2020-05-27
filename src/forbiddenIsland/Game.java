@@ -17,7 +17,7 @@ public class Game extends JFrame {
 	
 	public Game(Controller controller) {
 		  add(new JTextField());
-	      System.out.println("test");
+	      //System.out.println("test");
 	      KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 	      manager.addKeyEventDispatcher(controller);
 	}
@@ -35,6 +35,7 @@ public class Game extends JFrame {
 	        	   + "***********\n";	
 		
 		IslandModel model = new IslandModel(map);
+		model.setVerbose(true); // Affichage console
 		
 		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
 		Player p1 = new Player(model, "Alexis", model.getZone(3, 3));

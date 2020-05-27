@@ -17,6 +17,7 @@ public class IslandModel extends Observable {
 	private ArrayList<Player> players;
 	private int currentIdPlayer;
 	private int turn;
+	protected boolean verbose = false;
 
 	/**
 	 * @apiNote Crée une île selon une carte Si une des lignes est de taille
@@ -47,6 +48,17 @@ public class IslandModel extends Observable {
 			}
 		}
 	}
+	
+	/**
+	 * @apiNote Permet d'enclencher les affichages
+	 * console. Par défaut, les affichages sont
+	 * désactivés.
+	 * @param verbose: booléen à true pour activer
+	 * et false pour désactiver.
+	 */
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 
 	/**
 	 * @apiNote Donne le tour en cours
@@ -66,10 +78,20 @@ public class IslandModel extends Observable {
 		if (turn == 0) {
 			this.currentIdPlayer = IslandModel.rand.nextInt(this.players.size());
 			this.turn++;
+			if (verbose) {
+				System.out.println("id="+this.currentIdPlayer);
+				System.out.println("turn="+this.turn);
+				System.out.println(this+"\n");
+			}
 			return this.currentIdPlayer;
 		}
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
+		if (verbose) {
+			System.out.println("id="+this.currentIdPlayer);
+			System.out.println("turn="+this.turn);
+			System.out.println(this+"\n");
+		}
 		return this.currentIdPlayer;
 	}
 
@@ -140,6 +162,7 @@ public class IslandModel extends Observable {
 	 */
 	protected void addPlayer(Player player) {
 		this.players.add(player);
+		if (verbose) System.out.println(player+" ajouté");
 		super.notifyObservers();
 	}
 
@@ -230,22 +253,28 @@ public class IslandModel extends Observable {
 			int y = IslandModel.rand.nextInt(this.HEIGHT);
 			// Inondation de la zone
 			this.zones[x][y].flood();
+			if (verbose) {
+				System.out.println("Zone inondée en ("+x+", "+y+")");
+			}
 			// Si des joueurs sont sur cette zone
 			for (Player player : this.players) {
 				if (x == player.position.x && y == player.position.y && player.position.isSubmergeable()) {
 					// Ajout du joueur à la liste des joueurs à déplacer
 					if (player.canEscape()) {
 						res.add(player);
+						if (verbose) {
+							System.out.println(player+" doit s'échapper !");
+						}
 					}
 					// Joueur tué car il ne peut pas s'échapper
 					else {
 						player.kill();
-						;
 					}
 				}
 			}
 		}
 		super.notifyObservers();
+		if (verbose) System.out.print("\n");
 		return res;
 	}
 
@@ -322,7 +351,9 @@ public class IslandModel extends Observable {
 			}
 		}
 		// Tous les artefacts ont été trouvés
-		return firstCondition && Artefact.allArtefactsFound();
+		boolean res = firstCondition && Artefact.allArtefactsFound();
+		if (res && verbose) System.out.println("Le jeu est gagné !");
+		return res;
 	}
 
 	/**
@@ -397,6 +428,7 @@ public class IslandModel extends Observable {
 			condition = (!airArtefactFound && airZones == airZonesSubmerged) || (!waterArtefactFound && waterZones == waterZonesSubmerged) || (!earthArtefactFound && earthZones == earthZonesSubmerged)
 					|| (!fireArtefactFound && fireZones == fireZonesSubmerged);
 		}
+		if (condition && verbose) System.out.println("Le jeu est perdu !");
 		return condition;
 	}
 
