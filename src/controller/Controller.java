@@ -113,6 +113,7 @@ public class Controller implements KeyEventDispatcher {
 					System.out.println("Error on player Id");
 				}
 				currentIdPlayer = m.nextIdPlayer();
+				m.getPlayersToSave();
 			}
 		}
 		return false;
