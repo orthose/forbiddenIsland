@@ -9,6 +9,7 @@ import java.util.HashSet;
  */
 public class Player {
 	private IslandModel m;
+	private Sexe sexe;
 	private String name;
 	private int id;
 	protected Zone position;
@@ -44,6 +45,7 @@ public class Player {
 			Player.allPlayersId.add(Integer.valueOf(this.id));
 		}
 		this.name = name;
+		this.sexe = Sexe.MALE; // Par défaut
 		this.position = position;
 		this.alive = true;
 		this.m = m;
@@ -65,6 +67,20 @@ public class Player {
 	}
 	
 	/**
+	 * @apiNote Constructeur allégé avec les coordonnées
+	 * x et y à indiquer et le sexe du joueur
+	 * @param m: Référence au modèle
+	 * @param name: Nom du joueur
+	 * @param x: Coordonnée en x
+	 * @param y: Coordonnée en y
+	 * @param sexe: Sexe du joueur
+	 */
+	public Player(IslandModel m, String name, int x, int y, Sexe sexe) {
+		this(m, name, x, y);
+		this.sexe = sexe;
+	}
+	
+	/**
 	 * @apiNote Constructeur allégé qui initialise aléatoirement
 	 * la position initiale du joueur (mais elle est valide)
 	 * @param m: Référence au modèle
@@ -78,6 +94,18 @@ public class Player {
 			int y = IslandModel.rand.nextInt(this.m.HEIGHT);
 			randomZone = this.m.getZone(x, y);
 		} while (! this.validInitialPosition(randomZone));
+	}
+	
+	/**
+	 * @apiNote Constructeur allégé avec possibilité
+	 * de choisir le sexe
+	 * @param m: Référence au modèle
+	 * @param name: Nom du joueur
+	 * @param sexe: Sexe du joueur
+	 */
+	public Player(IslandModel m, String name, Sexe sexe) {
+		this(m, name);
+		this.sexe = sexe;
 	}
 	
 	/**
@@ -126,6 +154,15 @@ public class Player {
 	public int getId() {
 		return this.id;
 	}
+	
+	/**
+	 * @apiNote Donne le sexe du joueur
+	 * @return Sexe du joueur
+	 */
+	public Sexe getSexe() {
+		return this.sexe;
+	}
+	
 	
 	/**
 	 * @apiNote Donne les clés trouvées par le joueur
