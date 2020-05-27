@@ -8,3 +8,7 @@ Developers contact:
 ------------------
 Maxime Vincent -> maxime.vincent1@u-psud.fr
 Baptiste Maquet -> baptiste.maquet@u-psud.fr
+
+Acknowledgements:
+----------------
+Maéva Vincent for beautiful players drawing !
