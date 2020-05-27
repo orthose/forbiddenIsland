@@ -27,6 +27,7 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage heliport;
 	private BufferedImage player;
 	private BufferedImage border;
+	private BufferedImage escapeBorder;
 	// Animations
 	private Animation airAnim;
 	private Animation earthAnim;
@@ -54,6 +55,7 @@ public class VGrid extends JPanel implements Observer {
 			heliport = ImageIO.read(new File("assets/heliport.png"));
 			player = ImageIO.read(new File("assets/player/bob.png"));
 			border = ImageIO.read(new File("assets/border.png"));
+			escapeBorder = ImageIO.read(new File("assets/escapeBorder.png"));
 		} catch (IOException e) {
 			System.out.println("Failed to load images");
 			easyDraw = true;
@@ -70,6 +72,9 @@ public class VGrid extends JPanel implements Observer {
 
 	}
 
+	/**
+	 * Met à jour le dessin
+	 */
 	public void update() {
 		repaint();
 	}
@@ -84,6 +89,8 @@ public class VGrid extends JPanel implements Observer {
 				paint(g, model.getZone(i, j), i * zoneWidth, j * zoneHeight);
 			}
 		}
+		
+		hud(g);
 	}
 
 	/**
@@ -176,6 +183,16 @@ public class VGrid extends JPanel implements Observer {
 				}
 			}
 		}
+		
+		// Border escape
+		if (Controller.getRunFromDeath()) {
+			if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+				if (!easyDraw) {
+					g.drawImage(escapeBorder, x, y, zoneWidth, zoneHeight, this);
+				} else {
+				}
+			}
+		}
 
 		// Player
 		try {
@@ -190,7 +207,21 @@ public class VGrid extends JPanel implements Observer {
 		} catch (Exception e) {
 			System.out.println("Error on Player ID");
 		}
+	}
+	
+	private void hud(Graphics g) {
+		paintTurn(g,10,15);
+	}
 
+	/**
+	 * Draw the turn number on a specific position
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	private void paintTurn(Graphics g, int x, int y) {
+		g.setColor(new Color(255, 255, 255));
+		g.drawString("tour: " + Integer.toString(model.getTurn()), x, y);
 	}
 
 }
