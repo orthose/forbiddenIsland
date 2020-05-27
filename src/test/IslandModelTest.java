@@ -856,6 +856,49 @@ public class IslandModelTest {
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
 	}
+	
+	@Test
+	public void pilotTest() throws InvalidPlayerId {
+		
+		boolean verbose = true;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Pilot(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		
+		// Vérification des spécialités de pilote
+		int nbMovePossibilities = m4.getPlayer(0).movePossibilities().size();
+		assertTrue(nbMovePossibilities > 5);
+		if (verbose) System.out.println("nbMovePossibilities="+nbMovePossibilities);
+		nbMovePossibilities = m4.getPlayer(1).movePossibilities().size();
+		assertTrue(nbMovePossibilities <= 5);
+		if (verbose) System.out.println("nbMovePossibilities="+nbMovePossibilities);
+		
+		// Déplacement du pilote par la méthode de IslandModel
+		Zone zone = m4.getZone(10, 3);
+		assertTrue(m4.movePlayer(0, zone));
+		assertTrue(m4.getPositionPlayer(0).equals(zone));
+		// Tandis qu'un joueur normal ne peut pas réaliser cet exploit !
+		if (! (m4.getPositionPlayer(1).equals(zone)
+				|| m4.movePossibilitiesPlayer(1).contains(zone))) {
+			Zone currentZone = m4.getPositionPlayer(1);
+			assertTrue(m4.getPositionPlayer(1).equals(currentZone));
+			assertFalse(m4.movePlayer(1, zone));
+			assertTrue(m4.getPositionPlayer(1).equals(currentZone));
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
 
 }
 
