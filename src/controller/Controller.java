@@ -2,9 +2,11 @@ package controller;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import model.IslandModel;
 import model.Move;
+import model.Player;
 import model.Player.InvalidPlayerId;
 import model.Zone;
 
@@ -17,7 +19,10 @@ public class Controller implements KeyEventDispatcher {
 
 	private IslandModel m; // Référence au modèle
 	private static int nbAction = 3;
+	private static boolean runFromDeath = false;
 	private int currentIdPlayer;
+	private ArrayList<Player> playerInDanger;
+	private int playerInDangerIndex;
 
 	/**
 	 * @param m: Référence au modèle
@@ -25,6 +30,7 @@ public class Controller implements KeyEventDispatcher {
 	public Controller(IslandModel m) {
 		this.m = m;
 		this.currentIdPlayer = m.nextIdPlayer();
+		this.playerInDangerIndex = 0;
 	}
 
 	@Override
@@ -35,7 +41,7 @@ public class Controller implements KeyEventDispatcher {
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
 			// move
-			if (nbAction > 0) {
+			if (nbAction > 0 || runFromDeath) {
 				try {
 					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
 						if (m.movePlayer(currentIdPlayer, Move.UP)) {
@@ -54,12 +60,24 @@ public class Controller implements KeyEventDispatcher {
 							nbAction--;
 						}
 					}
+					// Escape from death
+					if (nbAction < 0) {
+						playerInDangerIndex++;
+						if (playerInDangerIndex >= playerInDanger.size()) {
+							nbAction = 3;
+							runFromDeath = false;
+							currentIdPlayer = m.nextIdPlayer();
+						} else {
+							currentIdPlayer = playerInDanger.get(playerInDangerIndex).getId();
+						}
+					}
+
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					System.out.println("Error while moving player in controller");
 				}
 			}
-			
+
 			// Dry
 			if (nbAction > 0) {
 				try {
@@ -89,38 +107,56 @@ public class Controller implements KeyEventDispatcher {
 					System.out.println("Error while drying a zone in controller");
 				}
 			}
-			
+
 			// Artefact
 			if (nbAction > 0) {
 				try {
 					if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') {
 						m.findArtefactPlayer(currentIdPlayer);
+						nbAction--;
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					System.out.println("Error while catching artefact in controller");
 				}
 			}
-			
+
 			// Skip turn
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				nbAction = 3;
-				m.floodRandom();
+				nbAction = 0;
+				// Chercher une clef
 				try {
 					m.findKeyElementPlayer(currentIdPlayer);
 				} catch (InvalidPlayerId e1) {
 					e1.printStackTrace();
 					System.out.println("Error on player Id");
 				}
-				currentIdPlayer = m.nextIdPlayer();
-				m.getPlayersToSave();
+				// Inondation
+				m.floodRandom();
+				// Liste des joueurs en danger
+				playerInDanger = m.getPlayersToSave();
+				if (playerInDanger.isEmpty()) {
+					// Reset le nombre d'action
+					nbAction = 3;
+					// Tour suivant
+					currentIdPlayer = m.nextIdPlayer();
+					runFromDeath = false;
+				} else {
+					currentIdPlayer = playerInDanger.get(0).getId();
+					runFromDeath = true;
+				}
+
 			}
 		}
 		return false;
 	}
-	
+
 	public static int getNbAction() {
 		return Controller.nbAction;
+	}
+
+	public static boolean getRunFromDeath() {
+		return Controller.runFromDeath;
 	}
 
 }
