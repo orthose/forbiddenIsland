@@ -2,7 +2,6 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-
 import javax.swing.JFrame;
 import model.IslandModel;
 
@@ -27,14 +26,14 @@ public class IslandView {
 		IslandView.windowHeight = WindowHeight;
 		frame = new JFrame();
 		frame.setTitle("ForbiddenIsland");
-		// frame.setLayout(new FlowLayout());
+	    //frame.setLayout(new FlowLayout());
 		// frame.setLayout(new GridLayout() );
 
 		Dimension windowSize = new Dimension(WindowWidth, WindowHeight);
 		// frame.setBounds(0, 0, WindowWidth, WindowHeight);
 		frame.setPreferredSize(windowSize);
 
-		grille = new VGrid(model);
+		this.grille = new VGrid(model);
 		frame.add(grille);
 
 		frame.pack();
