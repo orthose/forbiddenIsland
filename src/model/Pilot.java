@@ -5,7 +5,9 @@ import java.util.HashSet;
 /**
  * @author maxime
  * @apiNote Rôle de pilote qui peut être 
- * endossé par un joueur
+ * endossé par un joueur. Le pilote peut se
+ * déplacer sur n'importe quelle zone qui n'est
+ * pas submergée.
  */
 public class Pilot extends Player {
 	

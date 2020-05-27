@@ -20,6 +20,8 @@ public class Player {
 		new ArrayList<Integer>();
 	private float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	protected ArrayList<Zone> movePossibilities;
+	protected int nbAction;
+	public static final int nbActionMax = 3;
 	
 	/**
 	 * @apiNote L'identifiant du premier joueur
@@ -53,6 +55,7 @@ public class Player {
 		this.m.addPlayer(this);
 		this.keys = new ArrayList<KeyElement>();
 		this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
+		this.nbAction = Player.nbActionMax; // 3 actions par tour
 	}
 	
 	/**
@@ -164,6 +167,16 @@ public class Player {
 		return this.sexe;
 	}
 	
+	/**
+	 * @apiNote Permet d'obtenir le nombre
+	 * d'actions du joueur 
+	 * @return Entier correspondant au nombre
+	 * d'actions restant
+	 */
+	public int getNbAction() {
+		return this.nbAction;
+	}
+	
 	
 	/**
 	 * @apiNote Donne les clés trouvées par le joueur
@@ -225,6 +238,8 @@ public class Player {
 			}
 			// Mise à jour de liste des déplacements possibles
 			this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
+			// Perd 1 action
+			this.nbAction--;
 		}
 	}
 	
@@ -293,6 +308,8 @@ public class Player {
 			if (res && this.m.verbose) {
 				System.out.println(this+" a asséché ("+target.x+", "+target.y+")");
 			}
+			// Perd 1 action
+			this.nbAction--;
 		}
 		return res;
 	}
@@ -319,6 +336,8 @@ public class Player {
 			if (this.m.verbose) {
 				System.out.println(this+" a trouvé "+key);
 			}
+			// Perd 1 action
+			this.nbAction--;
 			return true;
 		}
 		return false;
@@ -357,6 +376,8 @@ public class Player {
 			}
 			System.out.print("\n");
 		}
+		// Perd 1 action
+		this.nbAction--;
 		return res;
 	}
 	

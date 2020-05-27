@@ -97,19 +97,23 @@ public class IslandModel extends Observable {
 			}
 			return this.currentIdPlayer;
 		}
-		// Joueur tué s'il ne s'est pas enfui d'une zone submergée
 		try {
 			Player player = this.getPlayer(this.currentIdPlayer);
+			// Joueur tué s'il ne s'est pas enfui d'une zone submergée
 			if (player.position.isSubmergedLevel()) {
 				player.kill();
 				super.notifyObservers();
+			}
+			// On redonne ses actions au joueur courant
+			else {
+				player.nbAction = Player.nbActionMax;
 			}
 		}
 		// Normalement impossible
 		catch (InvalidPlayerId e) {
 			e.printStackTrace();
 			System.out.println("Error on player Id");
-		}	
+		}
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
 		if (verbose) {
