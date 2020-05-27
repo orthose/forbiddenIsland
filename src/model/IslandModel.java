@@ -210,8 +210,7 @@ public class IslandModel extends Observable {
 	 * @return true si déplacement valide false sinon
 	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
 	 */
-	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {
-		;
+	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {	
 		Player player = this.getPlayer(id);
 		Boolean success = Boolean.valueOf(true);
 		Zone newPosition = player.position.neighbour(move, success);
@@ -224,6 +223,23 @@ public class IslandModel extends Observable {
 			super.notifyObservers();
 		}
 		return success;
+	}
+	
+	/**
+	 * @apiNote Surcharge de la méthode plus souple
+	 * @param id: Identifiant du joueur
+	 * @param zone: Zone sur laquelle déplacer le joueur
+	 * @return true si déplacement réussi false sinon
+	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
+	 */
+	public boolean movePlayer(int id, Zone zone) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		boolean res = player.movePossibilities.contains(zone);
+		if (res) {
+			player.move(zone);
+			super.notifyObservers();
+		}
+		return res;
 	}
 
 	/**

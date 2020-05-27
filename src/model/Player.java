@@ -6,9 +6,10 @@ import java.util.HashSet;
 /**
  * @author maxime
  * @apiNote Joueur et ses actions
+ * Correspond au rôle par défaut
  */
 public class Player {
-	private IslandModel m;
+	protected IslandModel m;
 	private Sexe sexe;
 	private String name;
 	private int id;
