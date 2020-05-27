@@ -122,6 +122,9 @@ public class Player {
 	 */
 	private boolean validInitialPosition(Zone zone) {
 		this.move(zone);
+		// On annule l'action dépensée
+		// car on est dans une phase d'initialisation
+		this.nbAction++;
 		return ! this.position.isSubmergedLevel() && this.canEscape();
 	}
 	

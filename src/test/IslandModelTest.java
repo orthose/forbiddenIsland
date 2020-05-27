@@ -860,7 +860,7 @@ public class IslandModelTest {
 	@Test
 	public void pilotTest() throws InvalidPlayerId {
 		
-		boolean verbose = true;
+		boolean verbose = false;
 		
 		// Ajout de joueurs au modèle m4
 		// avec positions initialisées aléatoirement
@@ -899,9 +899,82 @@ public class IslandModelTest {
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
 	}
+	
+	@Test
+	public void engineerTest() throws InvalidPlayerId {
+		
+		boolean verbose = false;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Engineer(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// Vérification des spécialités de l'ingénieur
+		int currentPlayerId = m4.nextIdPlayer();
+		assertTrue(0 <= currentPlayerId && currentPlayerId <= 1);
+		// On veut jouer avec l'ingénieur
+		if (currentPlayerId == 1) {
+			currentPlayerId = m4.nextIdPlayer();
+		}
+		assertEquals(0, currentPlayerId);
+		Player player = m4.getPlayer(currentPlayerId);
+		Zone position = m4.getPositionPlayer(currentPlayerId);
+		
+		if (position.isNormalLevel()) {
+			for (int i = 0; i < Engineer.nbActionDryAllowed; i++) {
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				position.flood();
+				assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+				assertEquals(Player.nbActionMax, player.getNbAction());
+			}
+			position.flood();
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		else if (position.isFloodedLevel()){
+			for (int i = 0; i < Engineer.nbActionDryAllowed; i++) {
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				position.flood();
+			}
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		
+		// Si on fait la même chose avec un joueur normal
+		// chaque assèchement coûte bien une action
+		currentPlayerId = m4.nextIdPlayer();
+		assertEquals(1, currentPlayerId);
+		player = m4.getPlayer(currentPlayerId);
+		position = m4.getPositionPlayer(currentPlayerId);
+		assertEquals(Player.nbActionMax, player.getNbAction());
+		if (position.isNormalLevel()) {
+			position.flood();
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		else if (position.isFloodedLevel()) {
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
 
 }
-
 
 
 

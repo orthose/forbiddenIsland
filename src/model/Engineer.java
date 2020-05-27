@@ -9,7 +9,7 @@ package model;
 public class Engineer extends Player {
 	
 	private int nbActionDry;
-	private static final int nbActionDryAllowed = 2;
+	public static final int nbActionDryAllowed = 2;
 	
 	/**
 	 * @apiNote Constructeur à la fois léger et complet
@@ -32,6 +32,10 @@ public class Engineer extends Player {
 		// est automatiquement décrémenté
 		if (res && this.nbActionDry > 0) {
 			super.nbAction++;
+			this.nbActionDry--;
+		}
+		else if (super.nbAction > 0 && this.nbAction == 0){
+			this.nbActionDry = Engineer.nbActionDryAllowed;
 		}
 		return res;
 	}
