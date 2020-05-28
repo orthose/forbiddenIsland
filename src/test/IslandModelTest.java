@@ -973,6 +973,41 @@ public class IslandModelTest {
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
 	}
+	
+	@Test
+	public void sailorTest() throws InvalidPlayerId {
+		
+		boolean verbose = false;
+		
+		// Ajout de joueurs au modèle m4
+		Player p0 = new Sailor(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// On donne des postions fixes aux joueurs artificiellement
+		p0.move(m4.getZone(10, 3));
+		p1.move(m4.getZone(11, 3));
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// Vérification de la spécialité du navigateur
+		assertTrue(p0 instanceof Sailor);
+		assertFalse(((Sailor)p0).movePlayerSailorPower(0, Move.UP));
+		if (verbose) System.out.println(m4 + "\n");
+		assertTrue(((Sailor)p0).movePlayerSailorPower(1, Move.UP));
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
 
 }
 
