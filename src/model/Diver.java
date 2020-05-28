@@ -26,10 +26,10 @@ public class Diver extends Player {
 		// Déplacements normaux possibles
 		HashSet<Zone> res = super.movePossibilities();
 		if (super.alive) {
-			Zone up = this.position.neighbour(Move.UP);
-			Zone down = this.position.neighbour(Move.DOWN);
-			Zone right = this.position.neighbour(Move.RIGHT);
-			Zone left = this.position.neighbour(Move.LEFT);
+			Zone up = super.position.neighbour(Move.UP);
+			Zone down = super.position.neighbour(Move.DOWN);
+			Zone right = super.position.neighbour(Move.RIGHT);
+			Zone left = super.position.neighbour(Move.LEFT);
 			
 			// La zone du haut est submergée ?
 			// On peut donc la franchir si la
@@ -63,14 +63,29 @@ public class Diver extends Player {
 	private void diverPower(HashSet<Zone> res, Zone zone, Move move) {
 		// La zone est submergée
 		if (zone.isSubmergedLevel()) {
-			Boolean success = false;
+			MutableBoolean success = new MutableBoolean(false);
 			// Déplacement 2 fois dans la même direction
 			Zone zonezone = zone.neighbour(move, success);
 			// Zone franchissable à l'arrivée
-			if (success && zonezone.isCrossable()) {
+			if (success.value && zonezone.isCrossable()) {
 				res.add(zonezone);
 			}
 		}
+	}
+	
+	// Surcharge pour permettre un
+	// déplacement directionnel
+	public boolean move(Move move) {
+		MutableBoolean success = new MutableBoolean(false);
+		Zone zone = super.position.neighbour(move, success);
+		if (success.value && zone.isSubmergedLevel()) {
+			Zone zonezone = zone.neighbour(move, success);
+			success.value = success.value && zonezone.isCrossable();
+			if (success.value) {
+				super.move(zonezone);
+			}
+		}
+		return success.value;
 	}
 	
 	@Override

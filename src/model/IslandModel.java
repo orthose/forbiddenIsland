@@ -216,17 +216,22 @@ public class IslandModel extends Observable {
 	 */
 	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {	
 		Player player = this.getPlayer(id);
-		Boolean success = Boolean.valueOf(true);
+		// Cas particulier du plongeur
+		// pouvant sauter les cases submergées
+		if (player instanceof Diver) {
+			return ((Diver)player).move(move);
+		}
+		MutableBoolean success = new MutableBoolean(true);
 		Zone newPosition = player.position.neighbour(move, success);
 		if (newPosition.isCrossable()) {
 			player.move(newPosition);
 		} else {
-			success = false;
+			success.value = false;
 		}
-		if (success) {
+		if (success.value) {
 			super.notifyObservers();
 		}
-		return success;
+		return success.value;
 	}
 	
 	/**
