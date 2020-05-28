@@ -10,11 +10,11 @@ import java.util.HashSet;
  */
 public class Player {
 	protected IslandModel m;
-	private Sexe sexe;
+	protected Sexe sexe;
 	private String name;
 	private int id;
 	protected Zone position;
-	private boolean alive;
+	protected boolean alive;
 	private ArrayList<KeyElement> keys;
 	private static ArrayList<Integer> allPlayersId =
 		new ArrayList<Integer>();
@@ -258,19 +258,19 @@ public class Player {
 			Zone down = this.position.neighbour(Move.DOWN);
 			Zone right = this.position.neighbour(Move.RIGHT);
 			Zone left = this.position.neighbour(Move.LEFT);
-			if (!up.isSubmergedLevel()) {
+			if (up.isCrossable()) {
 				res.add(up);
 			}
-			if (!down.isSubmergedLevel()) {
+			if (down.isCrossable()) {
 				res.add(down);
 			}
-			if (!right.isSubmergedLevel()) {
+			if (right.isCrossable()) {
 				res.add(right);
 			}
-			if (!left.isSubmergedLevel()) {
+			if (left.isCrossable()) {
 				res.add(left);
 			}
-			if (!this.position.isSubmergedLevel()) {
+			if (this.position.isCrossable()) {
 				res.add(this.position);
 			}
 		}
@@ -387,6 +387,20 @@ public class Player {
 	@Override
 	public String toString() {
 		return this.name + " id=" + this.id;
+	}
+	
+	/**
+	 * @apiNote Méthode pour connaître
+	 * le chemin de l'image à utiliser
+	 * pour l'affichage graphique
+	 * @return chemin d'accès à la ressource
+	 */
+	public String pathImage() {
+		switch (this.sexe) {
+		case MALE: return "assets/player/bob.png";
+		case FEMALE: return "";
+		}
+		return "";
 	}
 	
 	/**

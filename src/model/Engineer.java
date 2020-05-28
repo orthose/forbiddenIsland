@@ -39,4 +39,13 @@ public class Engineer extends Player {
 		}
 		return res;
 	}
+	
+	@Override
+	public String pathImage() {
+		switch (super.sexe) {
+		case MALE: return "";
+		case FEMALE: return "";
+		}
+		return "";
+	}
 }
