@@ -6,19 +6,22 @@ import java.util.HashSet;
 /**
  * @author maxime
  * @apiNote Joueur et ses actions
+ * Correspond au rôle par défaut
  */
 public class Player {
-	private IslandModel m;
-	private Sexe sexe;
+	protected IslandModel m;
+	protected Sexe sexe;
 	private String name;
 	private int id;
 	protected Zone position;
-	private boolean alive;
+	protected boolean alive;
 	private ArrayList<KeyElement> keys;
 	private static ArrayList<Integer> allPlayersId =
 		new ArrayList<Integer>();
 	private float keyLuck = 0.2f; // Dans ]0.0;1.0[
 	protected ArrayList<Zone> movePossibilities;
+	protected int nbAction;
+	public static final int nbActionMax = 3;
 	
 	/**
 	 * @apiNote L'identifiant du premier joueur
@@ -52,6 +55,7 @@ public class Player {
 		this.m.addPlayer(this);
 		this.keys = new ArrayList<KeyElement>();
 		this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
+		this.nbAction = Player.nbActionMax; // 3 actions par tour
 	}
 	
 	/**
@@ -118,6 +122,9 @@ public class Player {
 	 */
 	private boolean validInitialPosition(Zone zone) {
 		this.move(zone);
+		// On annule l'action dépensée
+		// car on est dans une phase d'initialisation
+		this.nbAction++;
 		return ! this.position.isSubmergedLevel() && this.canEscape();
 	}
 	
@@ -161,6 +168,16 @@ public class Player {
 	 */
 	public Sexe getSexe() {
 		return this.sexe;
+	}
+	
+	/**
+	 * @apiNote Permet d'obtenir le nombre
+	 * d'actions du joueur 
+	 * @return Entier correspondant au nombre
+	 * d'actions restant
+	 */
+	public int getNbAction() {
+		return this.nbAction;
 	}
 	
 	
@@ -224,6 +241,8 @@ public class Player {
 			}
 			// Mise à jour de liste des déplacements possibles
 			this.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
+			// Perd 1 action
+			this.nbAction--;
 		}
 	}
 	
@@ -239,19 +258,19 @@ public class Player {
 			Zone down = this.position.neighbour(Move.DOWN);
 			Zone right = this.position.neighbour(Move.RIGHT);
 			Zone left = this.position.neighbour(Move.LEFT);
-			if (!up.isSubmergedLevel()) {
+			if (up.isCrossable()) {
 				res.add(up);
 			}
-			if (!down.isSubmergedLevel()) {
+			if (down.isCrossable()) {
 				res.add(down);
 			}
-			if (!right.isSubmergedLevel()) {
+			if (right.isCrossable()) {
 				res.add(right);
 			}
-			if (!left.isSubmergedLevel()) {
+			if (left.isCrossable()) {
 				res.add(left);
 			}
-			if (!this.position.isSubmergedLevel()) {
+			if (this.position.isCrossable()) {
 				res.add(this.position);
 			}
 		}
@@ -292,6 +311,8 @@ public class Player {
 			if (res && this.m.verbose) {
 				System.out.println(this+" a asséché ("+target.x+", "+target.y+")");
 			}
+			// Perd 1 action
+			this.nbAction--;
 		}
 		return res;
 	}
@@ -318,6 +339,8 @@ public class Player {
 			if (this.m.verbose) {
 				System.out.println(this+" a trouvé "+key);
 			}
+			// Perd 1 action
+			this.nbAction--;
 			return true;
 		}
 		return false;
@@ -356,12 +379,28 @@ public class Player {
 			}
 			System.out.print("\n");
 		}
+		// Perd 1 action
+		this.nbAction--;
 		return res;
 	}
 	
 	@Override
 	public String toString() {
 		return this.name + " id=" + this.id;
+	}
+	
+	/**
+	 * @apiNote Méthode pour connaître
+	 * le chemin de l'image à utiliser
+	 * pour l'affichage graphique
+	 * @return chemin d'accès à la ressource
+	 */
+	public String pathImage() {
+		switch (this.sexe) {
+		case MALE: return "assets/player/bob.png";
+		case FEMALE: return "";
+		}
+		return "";
 	}
 	
 	/**

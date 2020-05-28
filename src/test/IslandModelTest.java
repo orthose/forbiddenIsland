@@ -365,7 +365,7 @@ public class IslandModelTest {
 		
 		// Ajout d'un joueur au modèle m0 en haut à gauche
 		new Player(m0, "Amélie", m0.getZone(0, 0));
-		if (verbose) System.out.println(m0);
+		if (verbose) System.out.println(m0+"\n");
 		x = 0; y = 0;
 		
 		// Déplacements possibles
@@ -856,9 +856,243 @@ public class IslandModelTest {
 		// Pour ne pas perturber les autres tests
 		IslandModel.reset();
 	}
+	
+	@Test
+	public void pilotTest() throws InvalidPlayerId {
+		
+		boolean verbose = false;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Pilot(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// Vérification des spécialités de pilote
+		int nbMovePossibilities = m4.getPlayer(0).movePossibilities().size();
+		assertTrue(nbMovePossibilities > 5);
+		if (verbose) System.out.println("nbMovePossibilities="+nbMovePossibilities);
+		nbMovePossibilities = m4.getPlayer(1).movePossibilities().size();
+		assertTrue(nbMovePossibilities <= 5);
+		if (verbose) System.out.println("nbMovePossibilities="+nbMovePossibilities);
+		
+		// Déplacement du pilote par la méthode de IslandModel
+		Zone zone = m4.getZone(10, 3);
+		assertTrue(m4.movePlayer(0, zone));
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(0).getNbAction());
+		assertTrue(m4.getPositionPlayer(0).equals(zone));
+		// Tandis qu'un joueur normal ne peut pas réaliser cet exploit !
+		if (! (m4.getPositionPlayer(1).equals(zone)
+				|| m4.movePossibilitiesPlayer(1).contains(zone))) {
+			Zone currentZone = m4.getPositionPlayer(1);
+			assertTrue(m4.getPositionPlayer(1).equals(currentZone));
+			assertFalse(m4.movePlayer(1, zone));
+			assertTrue(m4.getPositionPlayer(1).equals(currentZone));
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void engineerTest() throws InvalidPlayerId {
+		
+		boolean verbose = false;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Engineer(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// Vérification des spécialités de l'ingénieur
+		int currentPlayerId = m4.nextIdPlayer();
+		assertTrue(0 <= currentPlayerId && currentPlayerId <= 1);
+		// On veut jouer avec l'ingénieur
+		if (currentPlayerId == 1) {
+			currentPlayerId = m4.nextIdPlayer();
+		}
+		assertEquals(0, currentPlayerId);
+		Player player = m4.getPlayer(currentPlayerId);
+		Zone position = m4.getPositionPlayer(currentPlayerId);
+		
+		if (position.isNormalLevel()) {
+			for (int i = 0; i < Engineer.nbActionDryAllowed; i++) {
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				position.flood();
+				assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+				assertEquals(Player.nbActionMax, player.getNbAction());
+			}
+			position.flood();
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		else if (position.isFloodedLevel()){
+			for (int i = 0; i < Engineer.nbActionDryAllowed; i++) {
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+				assertEquals(Player.nbActionMax, player.getNbAction());
+				position.flood();
+			}
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		
+		// Si on fait la même chose avec un joueur normal
+		// chaque assèchement coûte bien une action
+		currentPlayerId = m4.nextIdPlayer();
+		assertEquals(1, currentPlayerId);
+		player = m4.getPlayer(currentPlayerId);
+		position = m4.getPositionPlayer(currentPlayerId);
+		assertEquals(Player.nbActionMax, player.getNbAction());
+		if (position.isNormalLevel()) {
+			position.flood();
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		else if (position.isFloodedLevel()) {
+			assertTrue(m4.dryPlayer(currentPlayerId, Move.NONE));
+			assertEquals(Player.nbActionMax-1, player.getNbAction());
+		}
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void sailorTest() throws InvalidPlayerId {
+		
+		boolean verbose = false;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Sailor(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// On donne des postions fixes aux joueurs artificiellement
+		// Cela leur retire 1 action chacun malheureusement
+		p0.move(m4.getZone(10, 3));
+		p1.move(m4.getZone(11, 3));
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(0).getNbAction());
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(1).getNbAction());
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// Vérification de la spécialité du navigateur
+		assertTrue(p0 instanceof Sailor);
+		assertFalse(((Sailor)p0).movePlayerSailorPower(0, Move.UP));
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(0).getNbAction());
+		if (verbose) System.out.println(m4 + "\n");
+		assertTrue(((Sailor)p0).movePlayerSailorPower(1, Move.UP));
+		assertEquals(Player.nbActionMax-2, m4.getPlayer(0).getNbAction());
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
+	
+	@Test
+	public void diverTest() throws InvalidPlayerId {
+		
+		boolean verbose = true;
+		
+		// Ajout de joueurs au modèle m4
+		// avec positions initialisées aléatoirement
+		Player p0 = new Diver(m4, "Maxime", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(0, m4.getPlayer(0).getId());
+		assertEquals(0, p0.getId());
+		assertFalse(m4.getPositionPlayer(0).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(0).getNbAction());
+		Player p1 = new Player(m4, "Baptiste", Sexe.MALE);
+		if (verbose) System.out.println(m4 + "\n");
+		assertEquals(1, m4.getPlayer(1).getId());
+		assertEquals(1, p1.getId());
+		assertFalse(m4.getPositionPlayer(1).isSubmergedLevel());
+		assertEquals(Player.nbActionMax, m4.getPlayer(1).getNbAction());
+		
+		// On donne des postions fixes aux joueurs artificiellement
+		// Cela leur retire 1 action chacun malheureusement
+		p0.move(m4.getZone(10, 3));
+		p1.move(m4.getZone(11, 3));
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(0).getNbAction());
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(1).getNbAction());
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// On inonde des zones autour du plongeur
+		m4.getZone(10, 2).flood();
+		assertTrue(m4.getZone(10, 2).isFloodedLevel());
+		m4.getZone(10, 2).flood();
+		assertTrue(m4.getZone(10, 2).isSubmergedLevel());
+		m4.getZone(9, 3).flood();
+		assertTrue(m4.getZone(9, 3).isFloodedLevel());
+		m4.getZone(9, 3).flood();
+		assertTrue(m4.getZone(9, 3).isSubmergedLevel());
+		m4.getZone(8, 3).flood();
+		assertTrue(m4.getZone(8, 3).isFloodedLevel());
+		m4.getZone(8, 3).flood();
+		assertTrue(m4.getZone(8, 3).isSubmergedLevel());
+		if (verbose) System.out.println(m4 + "\n");
+		
+		// Vérification de la spécialité du plongeur
+		assertEquals(4, m4.getPlayer(0).movePossibilities().size());
+		if (verbose) {
+			for (Zone zone : m4.getPlayer(0).movePossibilities()) {
+				System.out.println("("+zone.x+", "+zone.y+")");
+			}
+			System.out.print("\n");
+		}
+		assertTrue(m4.getPlayer(0).movePossibilities().contains(m4.getZone(10, 1)));
+		assertFalse(m4.getPlayer(0).movePossibilities().contains(m4.getZone(8, 3)));
+		assertTrue(m4.getPlayer(0).movePossibilities().contains(m4.getZone(10, 3)));
+		assertTrue(m4.getPlayer(0).movePossibilities().contains(m4.getZone(11, 3)));
+		assertTrue(m4.getPlayer(0).movePossibilities().contains(m4.getZone(10, 4)));
+		
+		// On ne peut pas déplacer en (8, 3) le plongeur
+		assertFalse(m4.movePlayer(0, Move.LEFT));
+		assertFalse(m4.getPositionPlayer(0).equals(m4.getZone(8, 3)));
+		assertTrue(m4.getPositionPlayer(0).equals(m4.getZone(10, 3)));
+		assertEquals(Player.nbActionMax-1, m4.getPlayer(0).getNbAction());
+		if (verbose) System.out.println(m4+"\n");
+		
+		// On déplace en (10, 1) le plongeur
+		assertTrue(m4.movePlayer(0, Move.UP));
+		assertTrue(m4.getPositionPlayer(0).equals(m4.getZone(10, 1)));
+		assertEquals(Player.nbActionMax-2, m4.getPlayer(0).getNbAction());
+		if (verbose) System.out.println(m4+"\n");
+		
+		// Pour ne pas perturber les autres tests
+		IslandModel.reset();
+	}
 
 }
-
 
 
 

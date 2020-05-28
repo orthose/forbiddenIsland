@@ -97,19 +97,23 @@ public class IslandModel extends Observable {
 			}
 			return this.currentIdPlayer;
 		}
-		// Joueur tué s'il ne s'est pas enfui d'une zone submergée
 		try {
 			Player player = this.getPlayer(this.currentIdPlayer);
+			// Joueur tué s'il ne s'est pas enfui d'une zone submergée
 			if (player.position.isSubmergedLevel()) {
 				player.kill();
 				super.notifyObservers();
+			}
+			// On redonne ses actions au joueur courant
+			else {
+				player.nbAction = Player.nbActionMax;
 			}
 		}
 		// Normalement impossible
 		catch (InvalidPlayerId e) {
 			e.printStackTrace();
 			System.out.println("Error on player Id");
-		}	
+		}
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
 		if (verbose) {
@@ -212,20 +216,41 @@ public class IslandModel extends Observable {
 	 * @return true si déplacement valide false sinon
 	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
 	 */
-	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {
-		;
+	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {	
 		Player player = this.getPlayer(id);
-		Boolean success = Boolean.valueOf(true);
+		// Cas particulier du plongeur
+		// pouvant sauter les cases submergées
+		if (player instanceof Diver) {
+			return ((Diver)player).move(move);
+		}
+		MutableBoolean success = new MutableBoolean(true);
 		Zone newPosition = player.position.neighbour(move, success);
 		if (newPosition.isCrossable()) {
 			player.move(newPosition);
 		} else {
-			success = false;
+			success.value = false;
 		}
-		if (success) {
+		if (success.value) {
 			super.notifyObservers();
 		}
-		return success;
+		return success.value;
+	}
+	
+	/**
+	 * @apiNote Surcharge de la méthode plus souple
+	 * @param id: Identifiant du joueur
+	 * @param zone: Zone sur laquelle déplacer le joueur
+	 * @return true si déplacement réussi false sinon
+	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
+	 */
+	public boolean movePlayer(int id, Zone zone) throws Player.InvalidPlayerId {
+		Player player = this.getPlayer(id);
+		boolean res = player.movePossibilities.contains(zone);
+		if (res) {
+			player.move(zone);
+			super.notifyObservers();
+		}
+		return res;
 	}
 
 	/**
