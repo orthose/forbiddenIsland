@@ -117,6 +117,8 @@ public class IslandModel extends Observable {
 			System.out.println("turn="+this.turn);
 			System.out.println(this+"\n");
 		}
+		// Suppression des joueurs à sauver
+		this.playersToSave = new HashSet<Player>(this.players.size());
 		return this.currentIdPlayer;
 	}
 
