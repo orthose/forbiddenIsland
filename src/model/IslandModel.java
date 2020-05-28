@@ -93,6 +93,14 @@ public class IslandModel extends Observable {
 			if (verbose) {
 				System.out.println("id="+this.currentIdPlayer);
 				System.out.println("turn="+this.turn);
+				try {
+					Player player = this.getPlayer(this.currentIdPlayer);
+					System.out.println(player+" reste "+player.getNbAction()+" action(s)");
+				}
+				catch (InvalidPlayerId e) {
+					e.printStackTrace();
+					System.out.println("Error on player Id");
+				}
 				System.out.println(this+"\n");
 			}
 			return this.currentIdPlayer;
@@ -119,6 +127,14 @@ public class IslandModel extends Observable {
 		if (verbose) {
 			System.out.println("id="+this.currentIdPlayer);
 			System.out.println("turn="+this.turn);
+			try {
+				Player player = this.getPlayer(this.currentIdPlayer);
+				System.out.println(player+" reste "+player.getNbAction()+" action(s)");
+			}
+			catch (InvalidPlayerId e) {
+				e.printStackTrace();
+				System.out.println("Error on player Id");
+			}
 			System.out.println(this+"\n");
 		}
 		// Suppression des joueurs à sauver
@@ -221,7 +237,11 @@ public class IslandModel extends Observable {
 		// Cas particulier du plongeur
 		// pouvant sauter les cases submergées
 		if (player instanceof Diver) {
-			return ((Diver)player).move(move);
+			boolean res = ((Diver)player).move(move);
+			if (res) {
+				super.notifyObservers();
+			}
+			return res;
 		}
 		MutableBoolean success = new MutableBoolean(true);
 		Zone newPosition = player.position.neighbour(move, success);
@@ -288,7 +308,9 @@ public class IslandModel extends Observable {
 	public boolean dryPlayer(int id, Move move) throws Player.InvalidPlayerId {
 		Player player = this.getPlayer(id);
 		boolean success = player.dry(move);
-		super.notifyObservers();
+		if (success) {
+			super.notifyObservers();
+		}
 		return success;
 	}
 
