@@ -138,7 +138,7 @@ public class IslandModel extends Observable {
 			System.out.println(this+"\n");
 		}
 		// Suppression des joueurs à sauver
-		this.playersToSave = new HashSet<Player>(this.players.size());
+		this.playersToSave.clear();
 		return this.currentIdPlayer;
 	}
 
@@ -201,6 +201,14 @@ public class IslandModel extends Observable {
 		}
 		// Normalement inaccessible
 		return null;
+	}
+	
+	/**
+	 * Renvoie l'id du joueur courant
+	 * @return l'id du joueur courant
+	 */
+	public int getCurrentIdPlayer() {
+		return this.currentIdPlayer;
 	}
 	
 	/**
@@ -348,7 +356,7 @@ public class IslandModel extends Observable {
 			}
 			// Si des joueurs sont sur cette zone
 			for (Player player : this.players) {
-				if (x == player.position.x && y == player.position.y && player.position.isSubmergeable()) {
+				if (x == player.position.x && y == player.position.y && player.position.isSubmergedLevel()) {
 					// Ajout du joueur à la liste des joueurs à sauver
 					if (player.canEscape()) {
 						this.playersToSave.add(player);
