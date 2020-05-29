@@ -189,7 +189,7 @@ public class VGrid extends JPanel implements Observer {
 
 		// Border
 		try {
-			if (model.getPlayer(model.getCurrentIdPlayer()).getNbAction() > 0) {
+			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0) {
 				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
@@ -224,22 +224,39 @@ public class VGrid extends JPanel implements Observer {
 			}
 		} catch (Exception e) {
 			System.out.println("Error on Player ID");
+			e.printStackTrace();
 		}
 	}
 
 	private void hud(Graphics g) {
+		g.setColor(new Color(255, 255, 255));
+		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight / 4));
 		paintTurn(g, zoneWidth / 4, zoneHeight / 4);
+		paintNbAction(g, 2*zoneWidth, zoneHeight / 4);
+	}
+	
+	/**
+	 * Dessine le nombre d'action restante pour le joueur courant
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	private void paintNbAction(Graphics g, int x, int y) {
+		try {
+			g.drawString("Actions Left: " + Integer.toString(model.getPlayer(model.getCurrentIdPlayer()).getNbAction()), x, y);
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error on Player ID");
+			e.printStackTrace();
+		}
 	}
 
 	/**
-	 * Draw the turn number on a specific position
+	 * Dessine le nombre de tour a une coordonnée specific
 	 * 
 	 * @param x the x position
 	 * @param y the y position
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
-		g.setColor(new Color(255, 255, 255));
-		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight / 4));
 		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
 	}
 
