@@ -306,12 +306,12 @@ public class Player {
 	 */
 	public boolean dry(Move move) {
 		boolean res = this.canDry(move);
-		if (this.alive) {
+		if (this.alive && res) {
 			Zone target = this.position.neighbour(move);
 			target.dry();
 			// Perd 1 action
 			this.nbAction--;
-			if (res && this.m.verbose) {
+			if (this.m.verbose) {
 				System.out.println(this+" a asséché ("+target.x+", "+target.y+")");
 				System.out.println(this+" reste "+this.getNbAction()+" action(s)");
 			}
