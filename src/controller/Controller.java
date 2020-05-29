@@ -83,7 +83,7 @@ public class Controller implements KeyEventDispatcher {
 
 			// Dry
 			try {
-				if (m.getPlayer(currentIdPlayer).getNbAction() > 0) {
+				if (m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) {
 					try {
 						if (e.getKeyChar() == '5') {
 							m.dryPlayer(currentIdPlayer, Move.NONE);
@@ -108,7 +108,7 @@ public class Controller implements KeyEventDispatcher {
 
 			// Artefact
 			try {
-				if (m.getPlayer(currentIdPlayer).getNbAction() > 0) {
+				if (m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) {
 					try {
 						if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') {
 							m.findArtefactPlayer(currentIdPlayer);
