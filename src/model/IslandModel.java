@@ -185,6 +185,14 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
+	 * @apiNote Donne l'ID du joueur courant
+	 * @return l'id du joueur courant
+	 */
+	public int getCurrentIdPlayer() {
+		return this.currentIdPlayer;
+	}
+	
+	/**
 	 * @apiNote Donne les zones des déplacements possibles
 	 * pour le joueur courant sans recalculer à chaque appel
 	 * @return La liste des zones de déplacements possibles
@@ -200,6 +208,24 @@ public class IslandModel extends Observable {
 			System.out.println("Error on player Id");
 		}
 		// Normalement inaccessible
+		return null;
+	}
+	
+	/**
+	 * @apiNote Donne les zones des déplacements possibles
+	 * pour un joueur spécifique sans recalculer à chaque appel
+	 * @param id: Id du Joueur
+	 * @return La liste des zones de déplacements possibles
+	 */
+	public ArrayList<Zone> getMovePossibilitiesPlayer(int id){
+		try {
+			Player player = this.getPlayer(id);
+			return player.movePossibilities;
+		}
+		catch (InvalidPlayerId e) {
+			e.printStackTrace();
+			System.out.println("Error on player Id");
+		}
 		return null;
 	}
 	
