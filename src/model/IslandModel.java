@@ -185,14 +185,6 @@ public class IslandModel extends Observable {
 	}
 	
 	/**
-	 * @apiNote Donne l'ID du joueur courant
-	 * @return l'id du joueur courant
-	 */
-	public int getCurrentIdPlayer() {
-		return this.currentIdPlayer;
-	}
-	
-	/**
 	 * @apiNote Donne les zones des déplacements possibles
 	 * pour le joueur courant sans recalculer à chaque appel
 	 * @return La liste des zones de déplacements possibles
