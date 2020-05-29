@@ -61,7 +61,7 @@ public class VGrid extends JPanel implements Observer {
 			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
 			heliport = ImageIO.read(new File("assets/heliport.png"));
 			for (int i = 0; i < player.length; i++) {
-				player[0] = ImageIO.read(new File(model.getPlayer(i).pathImage()));
+				player[i] = ImageIO.read(new File(model.getPlayer(i).pathImage()));
 			}
 			border = ImageIO.read(new File("assets/border.png"));
 			escapeBorder = ImageIO.read(new File("assets/escapeBorder.png"));
