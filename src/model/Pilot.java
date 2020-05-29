@@ -40,8 +40,8 @@ public class Pilot extends Player {
 	@Override
 	public String pathImage() {
 		switch (super.sexe) {
-		case MALE: return "";
-		case FEMALE: return "";
+		case MALE: return "assets/player/pilot_M";
+		case FEMALE: return "assets/player/pilot_F";
 		}
 		return "";
 	}

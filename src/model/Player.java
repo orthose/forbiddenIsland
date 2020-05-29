@@ -402,7 +402,7 @@ public class Player {
 	public String pathImage() {
 		switch (this.sexe) {
 		case MALE: return "assets/player/bob.png";
-		case FEMALE: return "";
+		case FEMALE: return "assets/player/bobette.png";
 		}
 		return "";
 	}
