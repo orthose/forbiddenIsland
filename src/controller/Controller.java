@@ -8,7 +8,6 @@ import model.IslandModel;
 import model.Move;
 import model.Player;
 import model.Player.InvalidPlayerId;
-import model.Zone;
 
 /**
  * @author maxime et baptiste
@@ -18,7 +17,6 @@ import model.Zone;
 public class Controller implements KeyEventDispatcher {
 
 	private IslandModel m; // Référence au modèle
-	private static int nbAction;
 	private static boolean runFromDeath = false;
 	private int currentIdPlayer;
 	private ArrayList<Player> playerInDanger;
@@ -39,99 +37,95 @@ public class Controller implements KeyEventDispatcher {
 	 * @param e: Évènement à traiter
 	 */
 	public boolean dispatchKeyEvent(KeyEvent e) {
-		// Récupération du nombre d'actions du joueur courant
-		try {
-			Controller.nbAction = this.m.getPlayer(this.currentIdPlayer).getNbAction();
-		}
-		catch (InvalidPlayerId e1) {
-			e1.printStackTrace();
-			System.out.println("Error on player Id");
-		}
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
-			// move
-			if (nbAction > 0 || runFromDeath) {
-				try {
-					if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
-						if (m.movePlayer(currentIdPlayer, Move.UP)) {
-							//nbAction--;
+			// Move
+			try {
+				if (m.getPlayer(currentIdPlayer).getNbAction() > 0/* nbAction > 0 */ || runFromDeath) {
+					try {
+						boolean move = false;
+						if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
+							if (m.movePlayer(currentIdPlayer, Move.UP)) {
+								move = true;
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
+							if (m.movePlayer(currentIdPlayer, Move.DOWN)) {
+								move = true;
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+							if (m.movePlayer(currentIdPlayer, Move.RIGHT)) {
+								move = true;
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
+							if (m.movePlayer(currentIdPlayer, Move.LEFT)) {
+								move = true;
+							}
 						}
-					} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
-						if (m.movePlayer(currentIdPlayer, Move.DOWN)) {
-							//nbAction--;
+						// Escape from death
+						if (runFromDeath && move) {
+							playerInDangerIndex++;
+							if (playerInDangerIndex >= playerInDanger.size()) {
+								runFromDeath = false;
+								currentIdPlayer = m.nextIdPlayer();
+							} else {
+								currentIdPlayer = playerInDanger.get(playerInDangerIndex).getId();
+							}
 						}
-					} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
-						if (m.movePlayer(currentIdPlayer, Move.RIGHT)) {
-							//nbAction--;
-						}
-					} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
-						if (m.movePlayer(currentIdPlayer, Move.LEFT)) {
-							//nbAction--;
-						}
-					}
-					// Escape from death
-					if (nbAction < 0) {
-						playerInDangerIndex++;
-						if (playerInDangerIndex >= playerInDanger.size()) {
-							nbAction = 3;
-							runFromDeath = false;
-							currentIdPlayer = m.nextIdPlayer();
-						} else {
-							currentIdPlayer = playerInDanger.get(playerInDangerIndex).getId();
-						}
-					}
 
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					System.out.println("Error while moving player in controller");
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.out.println("Error while moving player in controller");
+					}
 				}
+			} catch (InvalidPlayerId e2) {
+				System.out.println("Error width player ID");
+				e2.printStackTrace();
 			}
 
 			// Dry
-			if (nbAction > 0) {
-				try {
-					if (e.getKeyChar() == '5') {
-						if (m.dryPlayer(currentIdPlayer, Move.NONE)) {
-							//nbAction--;
+			try {
+				if (m.getPlayer(currentIdPlayer).getNbAction() > 0) {
+					try {
+						if (e.getKeyChar() == '5') {
+							m.dryPlayer(currentIdPlayer, Move.NONE);
+						} else if (e.getKeyChar() == '8') {
+							m.dryPlayer(currentIdPlayer, Move.UP);
+						} else if (e.getKeyChar() == '2') {
+							m.dryPlayer(currentIdPlayer, Move.DOWN);
+						} else if (e.getKeyChar() == '6') {
+							m.dryPlayer(currentIdPlayer, Move.RIGHT);
+						} else if (e.getKeyChar() == '4') {
+							m.dryPlayer(currentIdPlayer, Move.LEFT);
 						}
-					} else if (e.getKeyChar() == '8') {
-						if (m.dryPlayer(currentIdPlayer, Move.UP)) {
-							//nbAction--;
-						}
-					} else if (e.getKeyChar() == '2') {
-						if (m.dryPlayer(currentIdPlayer, Move.DOWN)) {
-							//nbAction--;
-						}
-					} else if (e.getKeyChar() == '6') {
-						if (m.dryPlayer(currentIdPlayer, Move.RIGHT)) {
-							//nbAction--;
-						}
-					} else if (e.getKeyChar() == '4') {
-						if (m.dryPlayer(currentIdPlayer, Move.LEFT)) {
-							//nbAction--;
-						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.out.println("Error while drying a zone in controller");
 					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					System.out.println("Error while drying a zone in controller");
 				}
+			} catch (InvalidPlayerId e3) {
+				System.out.println("Error width player ID");
+				e3.printStackTrace();
 			}
 
 			// Artefact
-			if (nbAction > 0) {
-				try {
-					if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') {
-						m.findArtefactPlayer(currentIdPlayer);
-						//nbAction--;
+			try {
+				if (m.getPlayer(currentIdPlayer).getNbAction() > 0) {
+					try {
+						if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') {
+							m.findArtefactPlayer(currentIdPlayer);
+							// nbAction--;
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						System.out.println("Error while catching artefact in controller");
 					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					System.out.println("Error while catching artefact in controller");
 				}
+			} catch (InvalidPlayerId e2) {
+				System.out.println("Error width player ID");
+				e2.printStackTrace();
 			}
 
 			// Skip turn
 			if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
-				nbAction = 0;
 				// Chercher une clef
 				try {
 					m.findKeyElementPlayer(currentIdPlayer);
@@ -144,12 +138,12 @@ public class Controller implements KeyEventDispatcher {
 				// Liste des joueurs en danger
 				playerInDanger = m.getPlayersToSave();
 				if (playerInDanger.isEmpty()) {
-					// Reset le nombre d'action
-					//nbAction = 3;
 					// Tour suivant
+					System.out.println("***END TURN***");
 					currentIdPlayer = m.nextIdPlayer();
 					runFromDeath = false;
 				} else {
+					System.out.println("***ID PLAYER IN DANGER***   " +  playerInDanger.get(0).getId());
 					currentIdPlayer = playerInDanger.get(0).getId();
 					runFromDeath = true;
 				}
@@ -159,12 +153,12 @@ public class Controller implements KeyEventDispatcher {
 		return false;
 	}
 
-	public static int getNbAction() {
-		return Controller.nbAction;
-	}
-
 	public static boolean getRunFromDeath() {
 		return Controller.runFromDeath;
+	}
+	
+	public int getCurrentIdPlayer() {
+		return this.currentIdPlayer;
 	}
 
 }

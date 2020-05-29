@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import controller.Controller;
 import model.IslandModel;
+import model.Player.InvalidPlayerId;
 import model.Zone;
 import util.Observer;
 
@@ -21,12 +22,13 @@ import util.Observer;
  */
 public class VGrid extends JPanel implements Observer {
 	private IslandModel model;
+	private Controller controller;
 	// Images importées
 	private BufferedImage sand;
 	private BufferedImage water;
 	private BufferedImage deepWater;
 	private BufferedImage heliport;
-	private BufferedImage player;
+	private BufferedImage[] player;
 	private BufferedImage border;
 	private BufferedImage escapeBorder;
 	// Animations
@@ -43,10 +45,14 @@ public class VGrid extends JPanel implements Observer {
 	private final int zoneHeight;
 
 	// Constructeur
-	public VGrid(IslandModel model) {
+	public VGrid(IslandModel model, Controller controller) {
 		this.model = model;
+		this.controller = controller;
 		this.zoneWidth = IslandView.windowWidth / model.WIDTH;
 		this.zoneHeight = IslandView.windowHeight / model.HEIGHT;
+
+		// Tableau représentant les images des joueurs
+		player = new BufferedImage[model.getNbPlayer()];
 
 		// Chargement des images
 		try {
@@ -54,12 +60,18 @@ public class VGrid extends JPanel implements Observer {
 			water = ImageIO.read(new File("assets/textures/water.jpg"));
 			deepWater = ImageIO.read(new File("assets/textures/deepWater.jpg"));
 			heliport = ImageIO.read(new File("assets/heliport.png"));
-			player = ImageIO.read(new File("assets/player/bob.png"));
+			for (int i = 0; i < player.length; i++) {
+				player[0] = ImageIO.read(new File(model.getPlayer(i).pathImage()));
+			}
 			border = ImageIO.read(new File("assets/border.png"));
 			escapeBorder = ImageIO.read(new File("assets/escapeBorder.png"));
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Failed to load images");
 			easyDraw = true;
+		} catch (InvalidPlayerId e) {
+			e.printStackTrace();
+			System.out.println("Failed to load images due to bad player ID");
 		}
 
 		// Chargement des animations
@@ -90,7 +102,7 @@ public class VGrid extends JPanel implements Observer {
 				paint(g, model.getZone(i, j), i * zoneWidth, j * zoneHeight);
 			}
 		}
-		
+
 		hud(g);
 	}
 
@@ -176,18 +188,23 @@ public class VGrid extends JPanel implements Observer {
 		}
 
 		// Border
-		if (Controller.getNbAction() > 0) {
-			if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
-				if (!easyDraw) {
-					g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
-				} else {
+		try {
+			if (model.getPlayer(model.getCurrentIdPlayer()).getNbAction() > 0) {
+				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+					if (!easyDraw) {
+						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
+					} else {
+					}
 				}
 			}
+		} catch (InvalidPlayerId e1) {
+			System.out.println("Error on player ID");
+			e1.printStackTrace();
 		}
-		
+
 		// Border escape
 		if (Controller.getRunFromDeath()) {
-			if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+			if (model.getMovePossibilitiesPlayer(controller.getCurrentIdPlayer()).contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 				if (!easyDraw) {
 					g.drawImage(escapeBorder, x, y, zoneWidth, zoneHeight, this);
 				} else {
@@ -200,7 +217,7 @@ public class VGrid extends JPanel implements Observer {
 			for (int i = 0; i < model.getNbPlayer(); i++) {
 				if (model.getPlayer(i).isAlive()) {
 					if (!easyDraw) {
-						g.drawImage(player, model.getPositionPlayer(i).x * zoneWidth, model.getPositionPlayer(i).y * zoneHeight, zoneWidth, zoneHeight, this);
+						g.drawImage(player[i], model.getPositionPlayer(i).x * zoneWidth, model.getPositionPlayer(i).y * zoneHeight, zoneWidth, zoneHeight, this);
 					} else {
 					}
 				}
@@ -209,9 +226,9 @@ public class VGrid extends JPanel implements Observer {
 			System.out.println("Error on Player ID");
 		}
 	}
-	
+
 	private void hud(Graphics g) {
-		paintTurn(g,zoneWidth/4,zoneHeight/4);
+		paintTurn(g, zoneWidth / 4, zoneHeight / 4);
 	}
 
 	/**
@@ -222,7 +239,7 @@ public class VGrid extends JPanel implements Observer {
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
 		g.setColor(new Color(255, 255, 255));
-		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight/4)); 
+		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight / 4));
 		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
 	}
 
