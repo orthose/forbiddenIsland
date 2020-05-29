@@ -3,6 +3,8 @@ package view;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
+
+import controller.Controller;
 import model.IslandModel;
 
 /**
@@ -18,9 +20,9 @@ public class IslandView {
 	public static int windowHeight;
 
 	private VGrid grille;
-	// private VControlleur commandes;
+	// private Controlleur commandes;
 
-	public IslandView(IslandModel model, int WindowWidth, int WindowHeight) {
+	public IslandView(IslandModel model, Controller controller, int WindowWidth, int WindowHeight) {
 		// Définition de la fenêtre principale
 		IslandView.windowWidth = WindowWidth;
 		IslandView.windowHeight = WindowHeight;
@@ -33,7 +35,7 @@ public class IslandView {
 		// frame.setBounds(0, 0, WindowWidth, WindowHeight);
 		frame.setPreferredSize(windowSize);
 
-		this.grille = new VGrid(model);
+		this.grille = new VGrid(model, controller);
 		frame.add(grille);
 
 		frame.pack();
@@ -51,7 +53,7 @@ public class IslandView {
 		frame.setSize(WindowWidth, WindowHeight + extraHeight);
 	}
 
-	public IslandView(IslandModel model) {
-		this(model, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+	public IslandView(IslandModel model, Controller controller) {
+		this(model, controller, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
 	}
 }

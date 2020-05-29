@@ -42,7 +42,7 @@ public class Game extends JFrame {
 		
 		Controller controller = new Controller(model);	
 		
-		IslandView view = new IslandView(model, 1000, 1000);
+		IslandView view = new IslandView(model, controller, 1000, 1000);
 		
 		Game game = new Game(controller);
 	}
