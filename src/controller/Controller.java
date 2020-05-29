@@ -139,11 +139,9 @@ public class Controller implements KeyEventDispatcher {
 				playerInDanger = m.getPlayersToSave();
 				if (playerInDanger.isEmpty()) {
 					// Tour suivant
-					System.out.println("***END TURN***");
 					currentIdPlayer = m.nextIdPlayer();
 					runFromDeath = false;
 				} else {
-					System.out.println("***ID PLAYER IN DANGER***   " +  playerInDanger.get(0).getId());
 					currentIdPlayer = playerInDanger.get(0).getId();
 					runFromDeath = true;
 				}
