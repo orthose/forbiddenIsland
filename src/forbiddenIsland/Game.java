@@ -5,10 +5,13 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import controller.Controller;
 import model.IslandModel;
+import model.Pilot;
 import model.Player;
 import model.Sexe;
 import util.LevelLoader;
 import util.MusicPlayer;
+import model.Sailor;
+import model.Sexe;
 import view.IslandView;
 
 /**
@@ -28,7 +31,7 @@ public class Game extends JFrame {
 	public static void main(String[] args) {		
 		
 		// Chargela carte du niveau spécifié
-		String map = LevelLoader.load(3);
+		String map = LevelLoader.load(0);
 		
 		// Joue la piste audio spécifiée
 		MusicPlayer.play(0);
@@ -40,8 +43,8 @@ public class Game extends JFrame {
 			model.setVerbose(true);
 		}
 		
-		Player p0 = new Player(model, "Bob", Sexe.MALE);
-		Player p1 = new Player(model, "Alexis", Sexe.MALE);
+		Player p0 = new Pilot(model, "Pilot", Sexe.MALE);
+		Player p1 = new Sailor(model, "Alexis", Sexe.FEMALE);
 		
 		Controller controller = new Controller(model);	
 		

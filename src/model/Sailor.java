@@ -36,8 +36,8 @@ public class Sailor extends Player {
 	@Override
 	public String pathImage() {
 		switch (super.sexe) {
-		case MALE: return "assets/player/sailor_M";
-		case FEMALE: return "assets/player/sailor_F";
+		case MALE: return "assets/player/sailor_M.png";
+		case FEMALE: return "assets/player/sailor_F.png";
 		}
 		return "";
 	}

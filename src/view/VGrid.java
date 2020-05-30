@@ -31,6 +31,7 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage[] player;
 	private BufferedImage border;
 	private BufferedImage escapeBorder;
+	private BufferedImage specialBorder;
 	// Animations
 	private Animation airAnim;
 	private Animation earthAnim;
@@ -65,6 +66,7 @@ public class VGrid extends JPanel implements Observer {
 			}
 			border = ImageIO.read(new File("assets/border.png"));
 			escapeBorder = ImageIO.read(new File("assets/escapeBorder.png"));
+			specialBorder = ImageIO.read(new File("assets/specialBorder.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Failed to load images");
@@ -189,7 +191,7 @@ public class VGrid extends JPanel implements Observer {
 
 		// Border
 		try {
-			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0) {
+			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !Controller.getSpecialcapacity()) {
 				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
@@ -210,6 +212,14 @@ public class VGrid extends JPanel implements Observer {
 				} else {
 				}
 			}
+		}
+		
+		// Special border
+		if(Controller.getSpecialcapacity()) {
+			Zone pilotZone = Controller.getPilotZone();
+			if(pilotZone != null) {
+				g.drawImage(specialBorder, pilotZone.x*zoneWidth, pilotZone.y*zoneHeight, zoneWidth, zoneHeight, this);
+			}		
 		}
 
 		// Player
