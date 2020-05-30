@@ -8,6 +8,7 @@ import model.IslandModel;
 import model.Player;
 import model.Sexe;
 import util.LevelLoader;
+import util.MusicPlayer;
 import view.IslandView;
 
 /**
@@ -26,7 +27,11 @@ public class Game extends JFrame {
 
 	public static void main(String[] args) {		
 		
-		String map = LevelLoader.load(0);
+		// Chargela carte du niveau spécifié
+		String map = LevelLoader.load(3);
+		
+		// Joue la piste audio spécifiée
+		MusicPlayer.play(0);
 		
 		IslandModel model = new IslandModel(map);
 		

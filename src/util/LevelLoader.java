@@ -25,7 +25,7 @@ public class LevelLoader {
 		StringBuilder res = new StringBuilder();
 		try {
 			if (! (0 <= level && level <= nbLevel)) {
-				throw new FileNotFoundException("Illegal level number");
+				throw new FileNotFoundException("Illegal level number for level "+level);
 			}
 			String path = "assets/levels/level"+level;
 			FileReader fileReader = new FileReader(path);
