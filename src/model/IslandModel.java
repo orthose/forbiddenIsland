@@ -250,6 +250,17 @@ public class IslandModel extends Observable {
 		Player player = this.getPlayer(id);
 		return player.canEscape();
 	}
+	
+	/**
+	 * @apiNote Supprime le joueur à déplacer
+	 * s'il doit être sauvé
+	 * @param player: Joueur à déplacer
+	 */
+	private void removePlayerToSave(Player player) {
+		if (player.nbAction <= 0 && this.playersToSave.contains(player)) {
+			this.playersToSave.remove(player);
+		}
+	}
 
 	/**
 	 * @apiNote Permet de déplacer un joueur
@@ -260,6 +271,8 @@ public class IslandModel extends Observable {
 	 */
 	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {	
 		Player player = this.getPlayer(id);
+		// Suppression du joueur à sauver si nécessaire
+		this.removePlayerToSave(player);
 		// Cas particulier du plongeur
 		// pouvant sauter les cases submergées
 		if (player instanceof Diver) {
@@ -291,6 +304,8 @@ public class IslandModel extends Observable {
 	 */
 	public boolean movePlayer(int id, Zone zone) throws Player.InvalidPlayerId {
 		Player player = this.getPlayer(id);
+		// Suppression du joueur à sauver si nécessaire
+		this.removePlayerToSave(player);
 		boolean res = player.movePossibilities.contains(zone);
 		if (res) {
 			player.move(zone);
