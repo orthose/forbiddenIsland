@@ -35,7 +35,11 @@ public class Game extends JFrame {
 	        	   + "***********\n";	
 		
 		IslandModel model = new IslandModel(map);
-		model.setVerbose(true); // Affichage console
+		
+		// Affichage console
+		if (args.length == 1 && "-v".equals(args[0])) {
+			model.setVerbose(true);
+		}
 		
 		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
 		Player p1 = new Player(model, "Alexis", model.getZone(3, 3));

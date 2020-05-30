@@ -32,6 +32,9 @@ remove run.sh, makejar.sh and lib.sh.
 
 	i) ./run.sh
 	ii) ./makejar.sh && ./run.sh
+	
+REMARK: You can use the -v option with
+run.sh to get the console print.
 
 Instructions to compile and execute:
 -----------------------------------
@@ -58,6 +61,9 @@ Instructions to compile and execute:
 4. Execute the project
 
 	java -cp bin forbiddenIsland.Game
+	
+REMARK: You can use the -v option
+to get the console print.
 
 Instructions to create and run a jar file:
 -----------------------------------------
@@ -97,6 +103,9 @@ Instructions to create and run a jar file:
 7. Execute the jar file
 
 	java -jar forbiddenIsland.jar
+	
+REMARK: You can use the -v option
+to get the console print.
 
 WARNING: Notice that the jar file doesn't work if the assets
 directory is not accessible from the current directory.
