@@ -138,6 +138,9 @@ public class IslandModel extends Observable {
 			System.out.println(this+"\n");
 		}
 		// Suppression des joueurs à sauver
+		// c'est une sécurité car ils sont
+		// normalement supprimés dans 
+		// IslandModel::movePlayer()
 		this.playersToSave.clear();
 		return this.currentIdPlayer;
 	}

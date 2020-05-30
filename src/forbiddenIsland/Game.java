@@ -6,6 +6,8 @@ import javax.swing.JTextField;
 import controller.Controller;
 import model.IslandModel;
 import model.Player;
+import model.Sexe;
+import util.LevelLoader;
 import view.IslandView;
 
 /**
@@ -23,16 +25,8 @@ public class Game extends JFrame {
 	}
 
 	public static void main(String[] args) {		
-		String map = "***********\n"
-	        	   + "*****--****\n"
-	        	   + "**~w-W-****\n"
-	        	   + "**--EE--e~*\n"
-	        	   + "*~a-A---~**\n"
-	        	   + "*~~-H--~***\n"
-	        	   + "**--FF--~**\n"
-	        	   + "**~--F--***\n"
-	        	   + "****~-f****\n"
-	        	   + "***********\n";	
+		
+		String map = LevelLoader.load(0);
 		
 		IslandModel model = new IslandModel(map);
 		
@@ -41,8 +35,8 @@ public class Game extends JFrame {
 			model.setVerbose(true);
 		}
 		
-		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
-		Player p1 = new Player(model, "Alexis", model.getZone(3, 3));
+		Player p0 = new Player(model, "Bob", Sexe.MALE);
+		Player p1 = new Player(model, "Alexis", Sexe.MALE);
 		
 		Controller controller = new Controller(model);	
 		
