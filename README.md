@@ -13,79 +13,96 @@ Acknowledgements:
 ----------------
 Maéva Vincent for beautiful players drawing !
 
+Instructions to use bash launcher:
+---------------------------------
+WARNING: The bash launcher works only on a linux system
+with specific requirements. Please don't move and don't
+remove run.sh, makejar.sh and lib.sh.
+
+0. Install OpenJDK
+
+	sudo apt install default-jre
+
+1. Set permissions of bash files
+
+	chmod u+x run.sh makejar.sh
+
+2. Execute the project
+(Choose one way)
+
+	i) ./run.sh
+	ii) ./makejar.sh && ./run.sh
+
 Instructions to compile and execute:
 -----------------------------------
-
 0. Create a directory for the project
 
-mkdir project
-cd project
+	mkdir project
+	cd project
 
 1. Clone the git repository
 (Maybe you need to identify)
 
-git clone https://gitlab.u-psud.fr/maxime.vincent1/forbiddenIsland.git
+	git clone https://gitlab.u-psud.fr/maxime.vincent1/forbiddenIsland.git
 
 2. Create a bin directory
 
-cd forbiddenIsland
-mkdir bin
+	cd forbiddenIsland
+	mkdir bin
 
 3. Compile the project
 (The main class is Game.java)
 
-javac -classpath src src/forbiddenIsland/Game.java -d bin
+	javac -classpath src src/forbiddenIsland/Game.java -d bin
 
 4. Execute the project
 
-java -cp bin forbiddenIsland.Game
+	java -cp bin forbiddenIsland.Game
 
 Instructions to create and run a jar file:
 -----------------------------------------
-
 0. Create a directory for the project
 
-mkdir project
-cd project
+	mkdir project
+	cd project
 
 1. Clone the git repository
 (Maybe you need to identify)
 
-git clone https://gitlab.u-psud.fr/maxime.vincent1/forbiddenIsland.git
+	git clone https://gitlab.u-psud.fr/maxime.vincent1/forbiddenIsland.git
 
 2. Create a bin directory
 
-cd forbiddenIsland
-mkdir bin
+	cd forbiddenIsland
+	mkdir bin
 
 3. Compile the project
 (The main class is Game.java)
 
-javac -classpath src src/forbiddenIsland/Game.java -d bin
+	javac -classpath src src/forbiddenIsland/Game.java -d bin
 
 4. Create the manifest file
 
-cd bin
-echo -e "Main-Class: forbiddenIsland.Game\n" > MANIFEST.MF
+	cd bin
+	echo -e "Main-Class: forbiddenIsland.Game\n" > MANIFEST.MF
 
 5. Create the jar file
 
-jar cvfm forbiddenIsland.jar MANIFEST.MF .
+	jar cvfm forbiddenIsland.jar MANIFEST.MF .
 
 6. Move the jar file in parent directory
 
-mv forbiddenIsland.jar ..
+	mv forbiddenIsland.jar ..
 
 7. Execute the jar file
 
-java -jar forbiddenIsland.jar
+	java -jar forbiddenIsland.jar
 
-IMPORTANT: Notice that the jar file doesn't work if the assets
+WARNING: Notice that the jar file doesn't work if the assets
 directory is not accessible from the current directory.
 
 Instructions to run Junit tests:
 -------------------------------
-
 Junit tests have a graphic interface integrated with Eclipse IDE.
 So you need to open the project with Eclipse IDE and run the files
 in forbiddenIsland/src/test
