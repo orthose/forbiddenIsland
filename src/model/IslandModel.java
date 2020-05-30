@@ -50,13 +50,11 @@ public class IslandModel extends Observable {
 			}
 		}
 	}
-	
+
 	/**
-	 * @apiNote Permet d'enclencher les affichages
-	 * console. Par défaut, les affichages sont
-	 * désactivés.
-	 * @param verbose: booléen à true pour activer
-	 * et false pour désactiver.
+	 * @apiNote Permet d'enclencher les affichages console. Par défaut, les
+	 *          affichages sont désactivés.
+	 * @param verbose: booléen à true pour activer et false pour désactiver.
 	 */
 	public void setVerbose(boolean verbose) {
 		this.verbose = verbose;
@@ -69,12 +67,11 @@ public class IslandModel extends Observable {
 	public int getTurn() {
 		return this.turn;
 	}
-	
+
 	/**
-	 * @apiNote Donne les joueurs à déplacer à la toute fin du tour
-	 * lorsque IslandModel::floodRandom() a été appelée
-	 * @return Liste des joueurs à déplacer pour les sauver
-	 * de la noyade
+	 * @apiNote Donne les joueurs à déplacer à la toute fin du tour lorsque
+	 *          IslandModel::floodRandom() a été appelée
+	 * @return Liste des joueurs à déplacer pour les sauver de la noyade
 	 */
 	public ArrayList<Player> getPlayersToSave() {
 		return new ArrayList<Player>(this.playersToSave);
@@ -91,17 +88,16 @@ public class IslandModel extends Observable {
 			this.currentIdPlayer = IslandModel.rand.nextInt(this.players.size());
 			this.turn++;
 			if (verbose) {
-				System.out.println("id="+this.currentIdPlayer);
-				System.out.println("turn="+this.turn);
+				System.out.println("id=" + this.currentIdPlayer);
+				System.out.println("turn=" + this.turn);
 				try {
 					Player player = this.getPlayer(this.currentIdPlayer);
-					System.out.println(player+" reste "+player.getNbAction()+" action(s)");
-				}
-				catch (InvalidPlayerId e) {
+					System.out.println(player + " reste " + player.getNbAction() + " action(s)");
+				} catch (InvalidPlayerId e) {
 					e.printStackTrace();
 					System.out.println("Error on player Id");
 				}
-				System.out.println(this+"\n");
+				System.out.println(this + "\n");
 			}
 			return this.currentIdPlayer;
 		}
@@ -125,17 +121,16 @@ public class IslandModel extends Observable {
 		this.currentIdPlayer = (this.currentIdPlayer + 1) % this.players.size();
 		this.turn++;
 		if (verbose) {
-			System.out.println("id="+this.currentIdPlayer);
-			System.out.println("turn="+this.turn);
+			System.out.println("id=" + this.currentIdPlayer);
+			System.out.println("turn=" + this.turn);
 			try {
 				Player player = this.getPlayer(this.currentIdPlayer);
-				System.out.println(player+" reste "+player.getNbAction()+" action(s)");
-			}
-			catch (InvalidPlayerId e) {
+				System.out.println(player + " reste " + player.getNbAction() + " action(s)");
+			} catch (InvalidPlayerId e) {
 				e.printStackTrace();
 				System.out.println("Error on player Id");
 			}
-			System.out.println(this+"\n");
+			System.out.println(this + "\n");
 		}
 		// Suppression des joueurs à sauver
 		this.playersToSave.clear();
@@ -146,7 +141,7 @@ public class IslandModel extends Observable {
 	 * @apiNote Permet d'accéder à une zone depuis la vue
 	 * @param x: Coordonnée en x
 	 * @param y: Coordonnée en y
-	 * @return zone aux coordonnées spécifiées
+	 * @return zone aux coordonnées spécifiées si la zone existe sinon null
 	 */
 	public Zone getZone(int x, int y) {
 		return this.zones[x][y];
@@ -183,13 +178,13 @@ public class IslandModel extends Observable {
 		Player player = this.getPlayer(id);
 		return player.position;
 	}
-	
+
 	/**
-	 * @apiNote Donne les zones des déplacements possibles
-	 * pour le joueur courant sans recalculer à chaque appel
+	 * @apiNote Donne les zones des déplacements possibles pour le joueur courant
+	 *          sans recalculer à chaque appel
 	 * @return La liste des zones de déplacements possibles
 	 */
-	public ArrayList<Zone> getMovePossibilitiesCurrentPlayer(){
+	public ArrayList<Zone> getMovePossibilitiesCurrentPlayer() {
 		try {
 			Player player = this.getPlayer(this.currentIdPlayer);
 			return player.movePossibilities;
@@ -202,40 +197,41 @@ public class IslandModel extends Observable {
 		// Normalement inaccessible
 		return null;
 	}
-	
+
 	/**
 	 * Renvoie l'id du joueur courant
+	 * 
 	 * @return l'id du joueur courant
 	 */
 	public int getCurrentIdPlayer() {
 		return this.currentIdPlayer;
 	}
-	
+
 	/**
-	 * @apiNote Donne les zones des déplacements possibles
-	 * pour un joueur spécifique sans recalculer à chaque appel
+	 * @apiNote Donne les zones des déplacements possibles pour un joueur spécifique
+	 *          sans recalculer à chaque appel
 	 * @param id: Id du Joueur
 	 * @return La liste des zones de déplacements possibles
 	 */
-	public ArrayList<Zone> getMovePossibilitiesPlayer(int id){
+	public ArrayList<Zone> getMovePossibilitiesPlayer(int id) {
 		try {
 			Player player = this.getPlayer(id);
 			return player.movePossibilities;
-		}
-		catch (InvalidPlayerId e) {
+		} catch (InvalidPlayerId e) {
 			e.printStackTrace();
 			System.out.println("Error on player Id");
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @apiNote Ajoute un joueur à la partie
 	 * @param player: Joueur à ajouter
 	 */
 	protected void addPlayer(Player player) {
 		this.players.add(player);
-		if (verbose) System.out.println(player+" ajouté");
+		if (verbose)
+			System.out.println(player + " ajouté");
 		super.notifyObservers();
 	}
 
@@ -258,12 +254,12 @@ public class IslandModel extends Observable {
 	 * @return true si déplacement valide false sinon
 	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
 	 */
-	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {	
+	public boolean movePlayer(int id, Move move) throws Player.InvalidPlayerId {
 		Player player = this.getPlayer(id);
 		// Cas particulier du plongeur
 		// pouvant sauter les cases submergées
 		if (player instanceof Diver) {
-			boolean res = ((Diver)player).move(move);
+			boolean res = ((Diver) player).move(move);
 			if (res) {
 				super.notifyObservers();
 			}
@@ -281,10 +277,10 @@ public class IslandModel extends Observable {
 		}
 		return success.value;
 	}
-	
+
 	/**
 	 * @apiNote Surcharge de la méthode plus souple
-	 * @param id: Identifiant du joueur
+	 * @param id:   Identifiant du joueur
 	 * @param zone: Zone sur laquelle déplacer le joueur
 	 * @return true si déplacement réussi false sinon
 	 * @throws Player.InvalidPlayerId: Si le joueur n'existe pas
@@ -352,7 +348,7 @@ public class IslandModel extends Observable {
 			// Inondation de la zone
 			this.zones[x][y].flood();
 			if (verbose) {
-				System.out.println("Zone inondée en ("+x+", "+y+")");
+				System.out.println("Zone inondée en (" + x + ", " + y + ")");
 			}
 			// Si des joueurs sont sur cette zone
 			for (Player player : this.players) {
@@ -361,7 +357,7 @@ public class IslandModel extends Observable {
 					if (player.canEscape()) {
 						this.playersToSave.add(player);
 						if (verbose) {
-							System.out.println(player+" doit s'échapper !");
+							System.out.println(player + " doit s'échapper !");
 						}
 					}
 					// Joueur tué car il ne peut pas s'échapper
@@ -372,7 +368,8 @@ public class IslandModel extends Observable {
 			}
 		}
 		super.notifyObservers();
-		if (verbose) System.out.print("\n");
+		if (verbose)
+			System.out.print("\n");
 	}
 
 	/**
@@ -405,7 +402,7 @@ public class IslandModel extends Observable {
 			if (player.position.isSubmergedLevel() && player.canEscape()) {
 				this.playersToSave.add(player);
 				if (verbose) {
-					System.out.println(player+" doit s'échapper !");
+					System.out.println(player + " doit s'échapper !");
 				}
 			}
 			// Joueur tué s'il n'a pas trouvé de clé et qu'il est piégé
@@ -456,7 +453,8 @@ public class IslandModel extends Observable {
 		}
 		// Tous les artefacts ont été trouvés
 		boolean res = firstCondition && Artefact.allArtefactsFound();
-		if (res && verbose) System.out.println("Le jeu est gagné !");
+		if (res && verbose)
+			System.out.println("Le jeu est gagné !");
 		return res;
 	}
 
@@ -532,7 +530,8 @@ public class IslandModel extends Observable {
 			condition = (!airArtefactFound && airZones == airZonesSubmerged) || (!waterArtefactFound && waterZones == waterZonesSubmerged) || (!earthArtefactFound && earthZones == earthZonesSubmerged)
 					|| (!fireArtefactFound && fireZones == fireZonesSubmerged);
 		}
-		if (condition && verbose) System.out.println("Le jeu est perdu !");
+		if (condition && verbose)
+			System.out.println("Le jeu est perdu !");
 		return condition;
 	}
 
