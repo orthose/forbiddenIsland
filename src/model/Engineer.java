@@ -43,8 +43,8 @@ public class Engineer extends Player {
 	@Override
 	public String pathImage() {
 		switch (super.sexe) {
-		case MALE: return "";
-		case FEMALE: return "";
+		case MALE: return "assets/player/inge_M";
+		case FEMALE: return "assets/player/inge_F";
 		}
 		return "";
 	}

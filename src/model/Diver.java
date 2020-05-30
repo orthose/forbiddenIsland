@@ -91,8 +91,8 @@ public class Diver extends Player {
 	@Override
 	public String pathImage() {
 		switch (super.sexe) {
-		case MALE: return "";
-		case FEMALE: return "";
+		case MALE: return "assets/player/diver_M";
+		case FEMALE: return "assets/player/diver_F";
 		}
 		return "";
 	}
