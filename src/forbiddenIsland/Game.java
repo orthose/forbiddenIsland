@@ -5,7 +5,10 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import controller.Controller;
 import model.IslandModel;
+import model.Pilot;
 import model.Player;
+import model.Sailor;
+import model.Sexe;
 import view.IslandView;
 
 /**
@@ -41,8 +44,8 @@ public class Game extends JFrame {
 			model.setVerbose(true);
 		}
 		
-		Player p0 = new Player(model, "Bob", model.getZone(5, 5));
-		Player p1 = new Player(model, "Alexis", model.getZone(3, 3));
+		Player p0 = new Pilot(model, "Pilot", Sexe.MALE);
+		Player p1 = new Sailor(model, "Alexis", Sexe.FEMALE);
 		
 		Controller controller = new Controller(model);	
 		
