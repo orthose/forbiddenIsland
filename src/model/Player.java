@@ -285,7 +285,8 @@ public class Player {
 	 */
 	public boolean canEscape() {
 		ArrayList<Zone> escapes = new ArrayList<>(this.movePossibilities());
-		return ! (escapes.size() == 1 && escapes.contains(this.position));
+		return ! (escapes.size() == 1 && escapes.contains(this.position))
+			&& escapes.size() > 0;
 	}
 	
 	/**
