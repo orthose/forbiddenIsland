@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import controller.Controller;
 import model.IslandModel;
+import model.Player;
 import model.Player.InvalidPlayerId;
 import model.Zone;
 import util.Observer;
@@ -191,7 +192,7 @@ public class VGrid extends JPanel implements Observer {
 
 		// Border
 		try {
-			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !Controller.getSpecialcapacity()) {
+			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !controller.getSpecialcapacity()) {
 				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
@@ -205,7 +206,7 @@ public class VGrid extends JPanel implements Observer {
 		}
 
 		// Border escape
-		if (Controller.getRunFromDeath()) {
+		if (controller.getRunFromDeath()) {
 			if (model.getMovePossibilitiesPlayer(controller.getCurrentIdPlayer()).contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 				if (!easyDraw) {
 					g.drawImage(escapeBorder, x, y, zoneWidth, zoneHeight, this);
@@ -215,11 +216,26 @@ public class VGrid extends JPanel implements Observer {
 		}
 		
 		// Special border
-		if(Controller.getSpecialcapacity()) {
-			Zone pilotZone = Controller.getPilotZone();
+		if(controller.getSpecialcapacity() || controller.getPilotTurn()) {
+			Zone pilotZone = controller.getSpecialZone();
 			if(pilotZone != null) {
 				g.drawImage(specialBorder, pilotZone.x*zoneWidth, pilotZone.y*zoneHeight, zoneWidth, zoneHeight, this);
 			}		
+		}
+		
+		// Sailor moving border
+		try {
+			if (model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && controller.getSailorMoving()) {
+				if (model.getPlayer(controller.getSailorPlayerId() % model.getNbPlayer()).getMovePossibilities().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+					if (!easyDraw) {
+						g.drawImage(specialBorder, x, y, zoneWidth, zoneHeight, this);
+					} else {
+					}
+				}
+			}
+		} catch (InvalidPlayerId e1) {
+			System.out.println("Error on player ID");
+			e1.printStackTrace();
 		}
 
 		// Player
