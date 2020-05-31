@@ -283,7 +283,7 @@ public class IslandModel extends Observable {
 		}
 		MutableBoolean success = new MutableBoolean(true);
 		Zone newPosition = player.position.neighbour(move, success);
-		if (newPosition.isCrossable()) {
+		if (success.value && newPosition.isCrossable()) {
 			player.move(newPosition);
 		} else {
 			success.value = false;

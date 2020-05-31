@@ -176,29 +176,31 @@ public class Zone {
 			if(this.y > 0) {
 				success.value = true;
 				return m.zones[this.x][this.y - 1];
-			}
+			} break ;
 		case DOWN:
 			if(this.y < this.m.HEIGHT - 1) {
 				success.value = true;
 				return m.zones[this.x][this.y + 1];
-			}
+			} break;
 		case RIGHT:
 			if(this.x < this.m.WIDTH - 1) {
 				success.value = true;
 				return m.zones[this.x + 1][this.y];
-			}
+			} break;
 		case LEFT:
 			if(this.x > 0) {
 				success.value = true;
 				return m.zones[this.x - 1][this.y];
-			}
+			} break;
 		case NONE:
 			success.value = true;
 			return this;
-		default:
-			success.value = false;
-			return this;
 		}
+		// Échec du déplacement car on sort
+		// de la carte on renvoie la case
+		// courante comme résultat
+		success.value = false;
+		return this;
 	}
 	
 	/**
