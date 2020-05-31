@@ -16,8 +16,8 @@ public class IslandView {
 	private JFrame frame;
 
 	// Taille de la fenêtre
-	public static int windowWidth;
-	public static int windowHeight;
+	private static int windowWidth;
+	private static int windowHeight;
 
 	private VGrid grille;
 	// private Controlleur commandes;
@@ -55,5 +55,13 @@ public class IslandView {
 
 	public IslandView(IslandModel model, Controller controller) {
 		this(model, controller, Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+	}
+	
+	public static int getWindowWidth() {
+		return windowWidth;
+	}
+	
+	public static int getWindowHeight() {
+		return windowHeight;
 	}
 }
