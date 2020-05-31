@@ -29,7 +29,12 @@ public class Sailor extends Player {
 	 */
 	public boolean movePlayerSailorPower(int id, Move move) throws InvalidPlayerId {
 		boolean res = (super.m.getPlayer(id) != this && super.m.movePlayer(id, move));
-		if (res) super.nbAction--;
+		if (res) {
+			super.nbAction--;
+			// Compensation de la perte d'une
+			// action du joueur déplacé
+			super.m.getPlayer(id).nbAction++;
+		}
 		return res;
 	}
 	
