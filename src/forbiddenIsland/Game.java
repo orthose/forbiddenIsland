@@ -1,6 +1,8 @@
 package forbiddenIsland;
 
 import java.awt.KeyboardFocusManager;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import controller.Controller;
@@ -28,18 +30,26 @@ public class Game extends JFrame {
 	      manager.addKeyEventDispatcher(controller);
 	}
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
 		
-		// Chargela carte du niveau spécifié
+		// Facilite le traitement de la ligne de commande
+		ArrayList<String> cmd = new ArrayList<String>(args.length);
+		for (int i = 0; i < args.length; i++) {
+			cmd.add(args[i]);
+		}
+		
+		// Charge la carte du niveau spécifié
 		String map = LevelLoader.load(0);
 		
 		// Joue la piste audio spécifiée
-		MusicPlayer.play(0);
+		if (! (cmd.contains("-ns") || cmd.contains("--no-sound"))) {
+			MusicPlayer.play(0);
+		}
 		
 		IslandModel model = new IslandModel(map);
 		
 		// Affichage console
-		if (args.length == 1 && "-v".equals(args[0])) {
+		if (cmd.contains("-v") || cmd.contains("--verbose")) {
 			model.setVerbose(true);
 		}
 		

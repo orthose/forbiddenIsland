@@ -54,8 +54,6 @@ public class LevelLoader {
 			e.printStackTrace();
 			System.out.println("Failed to load level "+level);
 		}
-		System.out.println(res);
-		
 		return res.toString();
 	}
 
