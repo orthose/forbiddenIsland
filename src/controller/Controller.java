@@ -20,9 +20,11 @@ import model.Zone;
 public class Controller implements KeyEventDispatcher {
 
 	private IslandModel m; // Référence au modèle
-	private static boolean runFromDeath = false;
-	private static boolean Specialcapacity = false;
-	private static Zone pilotZone;
+	private boolean runFromDeath;
+	private boolean specialcapacity;
+	private boolean sailorMoving;
+	private Zone specialZone;
+	private int sailorPlayerId;
 	private int currentIdPlayer;
 	private ArrayList<Player> playerInDanger;
 	private int playerInDangerIndex;
@@ -33,6 +35,15 @@ public class Controller implements KeyEventDispatcher {
 	public Controller(IslandModel m) {
 		this.m = m;
 		this.currentIdPlayer = m.nextIdPlayer();
+		try {
+			specialZone = m.getPositionPlayer(currentIdPlayer);
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error width player ID");
+			e.printStackTrace();
+		}
+		this.runFromDeath = false;
+		this.specialcapacity = false;
+		this.sailorPlayerId = -1;
 		this.playerInDangerIndex = 0;
 	}
 
@@ -43,61 +54,81 @@ public class Controller implements KeyEventDispatcher {
 	 */
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
-			// Move
-			try {
-				if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 || runFromDeath) && !Specialcapacity) {
-					// Is moving ?
-					boolean move = move(e);
+			if (!sailorMoving) {
+				// Move
+				try {
+					if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 || runFromDeath) && !specialcapacity) {
+						// Is moving ?
+						boolean move = move(e);
 
-					// Escape from death
-					if (runFromDeath && move) {
-						flee();
+						// Escape from death
+						if (runFromDeath && move) {
+							flee();
+						}
 					}
+				} catch (InvalidPlayerId e2) {
+					System.out.println("Error width player ID");
+					e2.printStackTrace();
 				}
-			} catch (InvalidPlayerId e2) {
-				System.out.println("Error width player ID");
-				e2.printStackTrace();
-			}
 
-			// Dry
-			try {
-				dry(e);
-			} catch (InvalidPlayerId e3) {
-				System.out.println("Error width player ID");
-				e3.printStackTrace();
-			}
+				// Dry
+				try {
+					dry(e);
+				} catch (InvalidPlayerId e3) {
+					System.out.println("Error width player ID");
+					e3.printStackTrace();
+				}
 
-			// Artefact
-			try {
-				artefact(e);
-			} catch (InvalidPlayerId e2) {
-				System.out.println("Error width player ID");
-				e2.printStackTrace();
+				// Artefact
+				try {
+					artefact(e);
+				} catch (InvalidPlayerId e2) {
+					System.out.println("Error width player ID");
+					e2.printStackTrace();
+				}
+
+				// Skip turn && end special capacity
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
+					// Disable special capacity
+					if (specialcapacity) {
+						disableCapacity();
+					}
+					// Skip turn
+					else {
+						endTurn();
+					}
+
+				}
+			} else {
+				try {
+					moveSailor(e);
+				} catch (InvalidPlayerId e1) {
+					System.out.println("Error width player ID");
+					e1.printStackTrace();
+				}
 			}
 
 			// Special capacity
 			try {
 				if (m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) {
 					// Use
-					if (m.getPlayer(currentIdPlayer) instanceof Pilot) {
-						movePilot(e);
+					if (specialcapacity && m.getPlayer(currentIdPlayer) instanceof Sailor) {
+						selectPlayer(e);
 					}
 
 					// Active
 					if (e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
-						if (!Specialcapacity) {
-							// Pilot
-							if (m.getPlayer(currentIdPlayer) instanceof Pilot) {
-								Specialcapacity = true;
-								pilotZone = m.getPositionPlayer(currentIdPlayer);
-
-							}
+						if (!specialcapacity) {
 							// Sailor
-							else if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
-								Specialcapacity = true;
+							if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
+								specialcapacity = true;
 							}
 						} else {
-							Specialcapacity = false;
+							specialcapacity = false;
+						}
+						if(sailorMoving) {
+							sailorMoving = false;
+							specialZone = m.getPositionPlayer(currentIdPlayer);
 						}
 					}
 				}
@@ -106,18 +137,6 @@ public class Controller implements KeyEventDispatcher {
 				e2.printStackTrace();
 			}
 
-			// Skip turn && end special capacity
-			if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
-				// Disable special capacity
-				if (Specialcapacity) {
-					disableCapacity();
-				}
-				// Skip turn
-				else {
-					endTurn();
-				}
-
-			}
 		}
 		return false;
 	}
@@ -126,24 +145,34 @@ public class Controller implements KeyEventDispatcher {
 	 * Fini le tour
 	 */
 	private void endTurn() {
-		// Chercher une clef
 		try {
-			m.findKeyElementPlayer(currentIdPlayer);
+			if (m.getPlayer(currentIdPlayer) instanceof Pilot && !specialZone.equals(m.getPositionPlayer(currentIdPlayer))) {
+				m.getPlayer(currentIdPlayer).move(specialZone);
+			} else {
+				// Chercher une clef
+				m.findKeyElementPlayer(currentIdPlayer);
+
+				// Inondation
+				m.floodRandom();
+				// Liste des joueurs en danger
+				playerInDanger = m.getPlayersToSave();
+				if (playerInDanger.isEmpty()) {
+					// Tour suivant
+					currentIdPlayer = m.nextIdPlayer();
+					// Reset zone
+					specialZone = m.getPositionPlayer(currentIdPlayer);
+					// get new id for sailor zone
+					sailorPlayerId = m.getPlayer(currentIdPlayer).getId();
+					// Disable fleeing
+					runFromDeath = false;
+				} else {
+					currentIdPlayer = playerInDanger.get(0).getId();
+					runFromDeath = true;
+				}
+			}
 		} catch (InvalidPlayerId e1) {
 			e1.printStackTrace();
 			System.out.println("Error on player Id");
-		}
-		// Inondation
-		m.floodRandom();
-		// Liste des joueurs en danger
-		playerInDanger = m.getPlayersToSave();
-		if (playerInDanger.isEmpty()) {
-			// Tour suivant
-			currentIdPlayer = m.nextIdPlayer();
-			runFromDeath = false;
-		} else {
-			currentIdPlayer = playerInDanger.get(0).getId();
-			runFromDeath = true;
 		}
 	}
 
@@ -155,21 +184,40 @@ public class Controller implements KeyEventDispatcher {
 	 * @throws InvalidPlayerId
 	 */
 	private boolean move(KeyEvent e) throws InvalidPlayerId {
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
-			if (m.movePlayer(currentIdPlayer, Move.UP)) {
-				return true;
+		// Pilot not fleeing
+		if (m.getPlayer(currentIdPlayer) instanceof Pilot && !runFromDeath) {
+			Zone tempZone = null;
+			if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
+				tempZone = specialZone.neighbour(Move.UP);
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
+				tempZone = specialZone.neighbour(Move.DOWN);
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+				tempZone = specialZone.neighbour(Move.RIGHT);
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
+				tempZone = specialZone.neighbour(Move.LEFT);
 			}
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
-			if (m.movePlayer(currentIdPlayer, Move.DOWN)) {
-				return true;
+
+			// Affect the new zone if valid
+			if (m.getPlayer(currentIdPlayer).movePossibilities().contains(tempZone)) {
+				specialZone = tempZone;
 			}
-		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
-			if (m.movePlayer(currentIdPlayer, Move.RIGHT)) {
-				return true;
-			}
-		} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
-			if (m.movePlayer(currentIdPlayer, Move.LEFT)) {
-				return true;
+		} else {
+			if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
+				if (m.movePlayer(currentIdPlayer, Move.UP)) {
+					return true;
+				}
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
+				if (m.movePlayer(currentIdPlayer, Move.DOWN)) {
+					return true;
+				}
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+				if (m.movePlayer(currentIdPlayer, Move.RIGHT)) {
+					return true;
+				}
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
+				if (m.movePlayer(currentIdPlayer, Move.LEFT)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -182,7 +230,7 @@ public class Controller implements KeyEventDispatcher {
 	 * @throws InvalidPlayerId
 	 */
 	private void dry(KeyEvent e) throws InvalidPlayerId {
-		if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) && !Specialcapacity) {
+		if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) && !specialcapacity) {
 			try {
 				if (e.getKeyChar() == '5') {
 					m.dryPlayer(currentIdPlayer, Move.NONE);
@@ -209,7 +257,7 @@ public class Controller implements KeyEventDispatcher {
 	 * @throws InvalidPlayerId
 	 */
 	private void artefact(KeyEvent e) throws InvalidPlayerId {
-		if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) && !Specialcapacity) {
+		if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) && !specialcapacity) {
 			try {
 				if (e.getKeyChar() == 'a' || e.getKeyChar() == 'A') {
 					m.findArtefactPlayer(currentIdPlayer);
@@ -229,71 +277,109 @@ public class Controller implements KeyEventDispatcher {
 		if (playerInDangerIndex >= playerInDanger.size()) {
 			runFromDeath = false;
 			currentIdPlayer = m.nextIdPlayer();
+			try {
+				specialZone = m.getPositionPlayer(currentIdPlayer);
+				sailorPlayerId = m.getPlayer(currentIdPlayer).getId();
+			} catch (InvalidPlayerId e) {
+				System.out.println("Error width player ID");
+				e.printStackTrace();
+			}
 		} else {
 			currentIdPlayer = playerInDanger.get(playerInDangerIndex).getId();
 		}
 	}
 
 	/**
-	 * Bouge la zone du pilot
+	 * Selectionne un joueur pour le sailor
 	 * 
 	 * @param e un évenement clavier
 	 * @throws InvalidPlayerId
 	 */
-	private void movePilot(KeyEvent e) throws InvalidPlayerId {
-		Zone tempZone = null;
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
-			tempZone = m.getZone(pilotZone.x, pilotZone.y - 1);
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
-			tempZone = m.getZone(pilotZone.x, pilotZone.y + 1);
-		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
-			tempZone = m.getZone(pilotZone.x + 1, pilotZone.y);
+	private void selectPlayer(KeyEvent e) throws InvalidPlayerId {
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+			sailorPlayerId++;
+			specialZone = m.getPositionPlayer(Math.abs(sailorPlayerId % m.getNbPlayer()));
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
-			tempZone = m.getZone(pilotZone.x - 1, pilotZone.y);
+			sailorPlayerId--;
+			specialZone = m.getPositionPlayer(Math.abs(sailorPlayerId % m.getNbPlayer()));
 		}
 
-		// Affect the new zone if in the map and submerged
-		if (tempZone != null && !tempZone.isSubmergedLevel()) {
-			if(tempZone.x >= 0 && tempZone.x <= m.WIDTH-1 && tempZone.y >= 0 && tempZone.y <= m.HEIGHT-1) {
-				pilotZone = tempZone;
-			}
-		}
 	}
 
 	/**
 	 * Désactive le boolean de la capacité spéciale et active l'effet de la capacité
 	 */
 	private void disableCapacity() {
-		// Pilot
+		// Sailor
 		try {
-			if (m.getPlayer(currentIdPlayer) instanceof Pilot) {
-				m.getPlayer(currentIdPlayer).move(pilotZone);
-			}
-			// Sailor
-			else if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
-
+			if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
+				if (sailorPlayerId != currentIdPlayer) {
+					sailorMoving = true;
+				}
 			}
 		} catch (InvalidPlayerId e1) {
 			System.out.println("Error width player ID");
 			e1.printStackTrace();
 		}
-		Specialcapacity = false;
+		specialcapacity = false;
 	}
 
-	public static boolean getRunFromDeath() {
-		return Controller.runFromDeath;
+	/**
+	 * Déplace le joueur
+	 * 
+	 * @param e un évenement clavier
+	 * @return true le joueur a bouger false sinon
+	 * @throws InvalidPlayerId
+	 */
+	private boolean moveSailor(KeyEvent e) throws InvalidPlayerId {
+		if (m.getPlayer(currentIdPlayer).getNbAction() > 0) {
+			if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyChar() == 'z' || e.getKeyChar() == 'Z') {
+				((Sailor) m.getPlayer(currentIdPlayer)).movePlayerSailorPower(sailorPlayerId % m.getNbPlayer(), Move.UP);
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyChar() == 's' || e.getKeyChar() == 'S') {
+				((Sailor) m.getPlayer(currentIdPlayer)).movePlayerSailorPower(sailorPlayerId % m.getNbPlayer(), Move.DOWN);
+			} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyChar() == 'd' || e.getKeyChar() == 'D') {
+				((Sailor) m.getPlayer(currentIdPlayer)).movePlayerSailorPower(sailorPlayerId % m.getNbPlayer(), Move.RIGHT);
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyChar() == 'q' || e.getKeyChar() == 'Q') {
+				((Sailor) m.getPlayer(currentIdPlayer)).movePlayerSailorPower(sailorPlayerId % m.getNbPlayer(), Move.LEFT);
+			}
+		} else {
+			sailorMoving = false;
+		}
+		return false;
+	}
+
+	public boolean getRunFromDeath() {
+		return this.runFromDeath;
 	}
 
 	public int getCurrentIdPlayer() {
 		return this.currentIdPlayer;
 	}
 
-	public static boolean getSpecialcapacity() {
-		return Controller.Specialcapacity;
+	public boolean getSpecialcapacity() {
+		return this.specialcapacity;
 	}
 
-	public static Zone getPilotZone() {
-		return Controller.pilotZone;
+	public boolean getPilotTurn() {
+		try {
+			return m.getPlayer(currentIdPlayer) instanceof Pilot;
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error width player ID");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public Zone getSpecialZone() {
+		return this.specialZone;
+	}
+
+	public boolean getSailorMoving() {
+		return this.sailorMoving;
+	}
+
+	public int getSailorPlayerId() {
+		return this.sailorPlayerId;
 	}
 
 }
