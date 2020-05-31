@@ -2,6 +2,7 @@ package util;
 
 import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 /**
@@ -12,7 +13,15 @@ import java.io.IOException;
 public class LevelLoader {
 	
 	// Modifier si ajout ou suppression de niveaux
-	final static int nbLevel = 12;
+	final static int nbLevel = nbLevel();
+	
+	/**
+	 * @return Nombre de niveaux
+	 */
+	private static int nbLevel() {
+		File rep = new File("assets/levels");
+		return rep.listFiles().length;	
+	}
 	
 	/**
 	 * @apiNote Charge un niveau

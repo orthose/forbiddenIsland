@@ -16,8 +16,16 @@ import javax.sound.sampled.Clip;
 public class MusicPlayer {
 	
 	// Modifier si ajout ou suppression de musiques
-	final static int nbMusic= 12;
+	final static int nbMusic = nbMusic();
 	private static Clip clip;
+	
+	/**
+	 * @return Nombre de pistes de musique
+	 */
+	private static int nbMusic() {
+		File rep = new File("assets/music");
+		return rep.listFiles().length;	
+	}
 	
 	/**
 	 * @apiNote Lance en boucle la musique
