@@ -9,7 +9,7 @@ if [ ! -d assets ]; then
 fi
 
 # Exécution et compilation
-if [ -f forbiddenIsland.jar ]; then run_jar $1
-elif [ -d bin ]; then run_bin $1
-else compile; run_bin $1
+if [ -f forbiddenIsland.jar ]; then run_jar $@
+elif [ -d bin ]; then run_bin $@
+else compile; run_bin $@
 fi
