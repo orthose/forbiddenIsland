@@ -22,6 +22,23 @@ public class Pilot extends Player {
 	}
 	
 	@Override
+	// Le pilote peut se déplacer sur n'importe quelle zone
+	// qui n'est pas submergée
+	public HashSet<Zone> movePossibilities() {
+		HashSet<Zone> res = new HashSet<Zone>();
+		for (int i = 0; i < super.m.WIDTH; i++) {
+			for (int j = 0; j < super.m.HEIGHT; j++) {
+				Zone zone = super.m.getZone(i, j);
+				if (! zone.isSubmergedLevel()) {
+					res.add(zone);
+				}
+			}
+		}
+		return res;
+	}
+
+	
+	@Override
 	public String pathImage() {
 		switch (super.sexe) {
 		case MALE: return "assets/player/pilot_M.png";
