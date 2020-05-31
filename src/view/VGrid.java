@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import controller.Controller;
 import model.IslandModel;
+import model.Player;
 import model.Player.InvalidPlayerId;
 import model.Zone;
 import util.Observer;
@@ -49,8 +50,8 @@ public class VGrid extends JPanel implements Observer {
 	public VGrid(IslandModel model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
-		this.zoneWidth = IslandView.windowWidth / model.WIDTH;
-		this.zoneHeight = IslandView.windowHeight / model.HEIGHT;
+		this.zoneWidth = IslandView.getWindowWidth() / model.WIDTH;
+		this.zoneHeight = IslandView.getWindowHeight() / model.HEIGHT;
 
 		// Tableau représentant les images des joueurs
 		player = new BufferedImage[model.getNbPlayer()];
@@ -191,7 +192,7 @@ public class VGrid extends JPanel implements Observer {
 
 		// Border
 		try {
-			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !Controller.getSpecialcapacity()) {
+			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !controller.getSpecialcapacity()) {
 				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
@@ -205,7 +206,7 @@ public class VGrid extends JPanel implements Observer {
 		}
 
 		// Border escape
-		if (Controller.getRunFromDeath()) {
+		if (controller.getRunFromDeath()) {
 			if (model.getMovePossibilitiesPlayer(controller.getCurrentIdPlayer()).contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 				if (!easyDraw) {
 					g.drawImage(escapeBorder, x, y, zoneWidth, zoneHeight, this);
@@ -215,11 +216,26 @@ public class VGrid extends JPanel implements Observer {
 		}
 		
 		// Special border
-		if(Controller.getSpecialcapacity()) {
-			Zone pilotZone = Controller.getPilotZone();
+		if(controller.getSpecialcapacity() || controller.getPilotTurn()) {
+			Zone pilotZone = controller.getSpecialZone();
 			if(pilotZone != null) {
 				g.drawImage(specialBorder, pilotZone.x*zoneWidth, pilotZone.y*zoneHeight, zoneWidth, zoneHeight, this);
 			}		
+		}
+		
+		// Sailor moving border
+		try {
+			if (model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && controller.getSailorMoving()) {
+				if (model.getPlayer(controller.getSailorPlayerId() % model.getNbPlayer()).getMovePossibilities().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
+					if (!easyDraw) {
+						g.drawImage(specialBorder, x, y, zoneWidth, zoneHeight, this);
+					} else {
+					}
+				}
+			}
+		} catch (InvalidPlayerId e1) {
+			System.out.println("Error on player ID");
+			e1.printStackTrace();
 		}
 
 		// Player
@@ -238,11 +254,16 @@ public class VGrid extends JPanel implements Observer {
 		}
 	}
 
+	/**
+	 * Dessine tout l'hud
+	 * @param g
+	 */
 	private void hud(Graphics g) {
 		g.setColor(new Color(255, 255, 255));
-		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight / 4));
-		paintTurn(g, zoneWidth / 4, zoneHeight / 4);
-		paintNbAction(g, 2*zoneWidth, zoneHeight / 4);
+		g.setFont(new Font("TimesRoman", Font.PLAIN, IslandView.getWindowWidth() / 32));
+		paintTurn(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
+		paintNbAction(g, 12*IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
+		paintKey(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 12);
 	}
 	
 	/**
@@ -268,6 +289,21 @@ public class VGrid extends JPanel implements Observer {
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
 		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
+	}
+	
+	/**
+	 * Dessine le nombre de tour a une coordonnée specific
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	private void paintKey(Graphics g, int x, int y) {
+		try {
+			g.drawString("Key: " + model.getPlayer(model.getCurrentIdPlayer()).getKeys().toString(), x, y);
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error on Player ID");
+			e.printStackTrace();
+		}
 	}
 
 }
