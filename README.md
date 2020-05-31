@@ -13,6 +13,9 @@ Acknowledgements:
 ----------------
 Maéva Vincent for beautiful players drawing !
 
+The music school of La Ville du Bois for the live
+concert recordings !
+
 Instructions to use bash launcher:
 ---------------------------------
 WARNING: The bash launcher works only on a linux system
