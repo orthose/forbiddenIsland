@@ -1,0 +1,325 @@
+---------------------------------
+Soutenance Projet POGL 02/06/2020
+Maxime Vincent & Baptiste Maquet
+---------------------------------
+
+------------------------------------------
+1. Démonstration des features implémentées
+------------------------------------------
+
+    ---------------------
+    a. Menu de sélection:
+    ---------------------
+    
+        i) Du nombre de joueurs
+        
+        ii) Du nom et sexe des joueurs
+        
+        iii) Du niveau (carte de jeu)
+        
+        iv) Du type de personnage
+    
+    -----------------------------------
+    b. Déroulement d'un tour de joueur:
+    -----------------------------------
+    
+        i) Le joueur courant peut effectuer
+           jusqu'à 3 actions parmi:
+           
+           -> Se déplacer vers une zone adjacente
+           
+           -> Assécher une zone adjacente
+           
+           -> Récupérer un artefact (l'artefact ne peut être
+              récupéré que sur une case spéciale élément et
+              si le joueur est en possession de la clé 
+              correspondant à cet élément)
+           
+           Lorsqu'il a utilisé ses 3 actions ou qu'il
+           a passé son tour, les phases suivantes
+           sont enclenchées.
+           
+        ii) Recherche d'une clé qui peut mener
+            soit à une réussité soit à l'inondation
+            de la zone du joueur.
+            
+        iii) Inondation de 3 zones aléatoires de la carte.
+        
+        iv) Si au cours des deux dernières phases du tour
+            le joueur se retrouve piégé il est tué par noyade,
+            mais s'il est sur une zone submergée et qu'il peut
+            s'échapper une phase spéciale de fuite se déclenche.
+            
+    ----------------------------        
+    c. Déroulement de la partie:
+    ----------------------------
+        
+        -> Les tours des joueurs s'enchaînent. À chaque fin de
+           tour vérification si la partie est gagnée ou perdue.
+           
+        -> On gagne si tous les artefacts ont été trouvés et que
+           tous les joueurs sont sur des héliports.
+           
+        -> On perd si l'un des joueurs se noie, si tous les héliports
+           sont submergés ou que toutes les zones d'obtention d'un
+           artefact pas encore obtenu sont submergées.
+           
+    ------------------------------------------------       
+    d. Des personnages avec des capacités spéciales:
+    ------------------------------------------------
+    
+        -> Le personnage standard n'a pas de pouvoir particulier.
+    
+        -> Le pilote pouvant se déplacer sur n'importe quelle
+           zone non-submergée pour 1 action.
+           
+        -> L'ingénieur peut assécher 2 zones pour 1 action.
+        
+        -> Le navigateur peut déplacer un autre joueur pour 1 action.
+        
+        -> Le plongeur peut traverser une zone submergée pour 1 action.
+        
+    --------------------
+    e. Commandes de jeu:
+    --------------------
+    
+        -> Touches fléchées pour déplacer le joueur 
+           ou les touches Z, Q, S, D.
+        
+        -> Pad numérique et touches 4, 8, 6, 2, 5 pour
+           assécher les zones adjacentes du joueur.
+           
+        -> La touche A pour récupérer un artefact.
+         
+        -> La touche E pour activer le pouvoir spécial
+           de certains joueurs (en particulier le navigateur).
+    
+    ----------------------------    
+    f. Au niveau des graphismes:
+    ----------------------------
+    
+        -> Calcul de la taille des carrés pour
+           l'affichage en fonction de la taille
+           de la carte.
+           
+        -> Affichage du reste d'actions du joueur courant 
+           et du numéro de tour en haut de l'écran de jeu.
+    
+        -> Affichage du niveau d'eau avec teinte de bleu plus ou
+           moins foncée. 
+        
+        -> Les zones normales sont jaunes pour représenter le sable.
+        
+        -> Les zones spéciales sont au nombre de 5:
+        
+            i) L'héliport représenté par un "H"
+            
+            ii) La zone de l'air de recherche d'artefact représentée
+                par une animation de vent.
+                
+            iii) La zone de la terre de recherche d'artefact représentée
+                 par une animation de formes concentriques marrons.
+                 
+            iv) La zone de l'eau de recherche d'artefact représentée
+                par une animation d'oasis.
+                
+            v) La zone de feu de recherche d'artefact représentée
+               par une animation de flammes.
+               
+         -> Toute zone submergée masque le joueur qui est dessus et
+            l'animation de zone spéciale. 
+               
+         -> Affichage des joueurs à partir d'images qui sont des
+            photocopies de dessin, dont l'arrière-plan a été remplacé
+            par de la transparence. Au total 10 dessins ont été produits.
+            
+         -> Affichage des zones possibles de déplacement d'un joueur.
+    
+    --------------------------   
+    g. Autres fonctionnalités:
+    --------------------------
+        
+        -> Recommencer une nouvelle partie sans
+           relancer le programme.
+        
+        -> Lecteur de pistes de musique.
+        
+        -> Options en ligne de commande.
+        
+        -> Lanceurs en script bash pour Linux.
+
+----------------------------------------    
+2. Conception et architecture logicielle
+----------------------------------------       
+    
+    ---------------------
+    a. Structure du code:
+    ---------------------
+    
+        -> Design-pattern MVC (Modèle Vue Contrôleur):
+            
+            i) Le modèle est plutôt conçu pour être souple et adaptable.
+               Il se compose d'une classe princiaple IslandModel qui possède
+               une interface avec les principales méthodes à utiliser depuis
+               l'extérieur. On désigne le joueur par un identifiant de création
+               (qui commence à 0 jusqu'à nombreDeJoueurs - 1). Ainsi on a accès
+               aux méthodes suivantes:
+               
+               Interface principale
+               --------------------
+               
+                    -> IslandModel::movePlayer()
+                    -> IslandModel::dryPlayer()
+                    -> IslandModel::findKeyElementPlayer()
+                    -> IslandModel::findArtefactPlayer()
+                    -> IslandModel::floodRandom()
+                    -> IslandModel::nextIdPlayer()
+                    -> IslandModel::gameIsLost()
+                    -> IslandModel::gameIsWon()
+                    -> IslandModel::getZone()
+                    
+                Méthodes absentes de l'interface principale
+                -------------------------------------------
+                    
+                Mais lorsque les méthodes sont utilisées moins couramment, il peut
+                arriver qu'elles ne soient pas définies dans IslandModel, mais
+                directement dans l'objet concerné. Par exemple, le pouvoir spécial
+                du navigateur est directement défini par Sailor::movePlayerSailorPower().
+                
+                La surcouche des règles de IslandModel
+                --------------------------------------
+                
+                Le modèle est également conçu de manière à ce que les objets utilisés par
+                IslandModel (la classe qui fait le lien entre tous les différents composants
+                du modèle), soient très peu restrictifs. Ainsi, les règles complètes seront
+                davantage décrites dans IslandModel. Un bon exemple de ce principe est la
+                méthode Player::move(Zone zone) qui permet carrément de téléporter un joueur
+                au besoin. C'est ensuite dans IslandModel::movePlayer(int id, Move move) que
+                le déplacement du joueur est limité aux directions UP, DOWN, LEFT, RIGHT.
+                
+                Simplifier l'usage d'une méthode
+                --------------------------------
+                
+                En revanche pour des raisons de praticité d'usage avec le paramètre implicite,
+                nous avons choisi de défini Zone::neighbour(Move move, MutableBoolean success)
+                qui permet d'obtenir une case voisine de la case courante en faisant attention
+                aux bords de la carte. Cela est rendu possible par le fait que Zone garde une
+                référence à IslandModel.
+                
+                Les types énumérés
+                ------------------
+                
+                Nous avons utilisé 3 types énumérés pour simplifier un peu le modèle
+                qui sont NaturalElement, Move et Sexe.
+                
+                Le design-pattern de l'état
+                ---------------------------
+                
+                Nous avons utilisé un design-pattern qui permet d'avoir différents états d'inondation
+                dans la classe Zone via l'attribut Zone::wl de type WaterLevel qui est une classe
+                interne de Zone et qui est abstract. Ainsi les classes filles concrètes de
+                WaterLevel sont NormalLevel, FloodedLevel et SubmergedLevel. Un type énuméré n'aurait
+                pas suffi ici car chacun de ces états implique des méthodes avec un fonctionnement
+                différent. C'est pourquoi ce design-pattern était très adapté.
+                
+                Le design-pattern Observer/Observable
+                ---------------------------------------
+                
+                Un autre design-pattern a été utilisé celui du Observer/Observable qui va avec
+                le MVC. Lorsque l'état de IslandModel est modifié, la classe notifie ses observateurs
+                via l'appel super.notifyObservers(). Les observateurs se mettent alors à jour.
+                
+                Les toString() dans le modèle
+                -----------------------------
+                
+                Les toString() peuvent être à tout moment modifiés à l'aide la classe StringMap.
+                Ils offrent un affichage rudimentaire de la situation de la carte à des fins
+                de débogage. Par ailleurs, l'option -v --verbose du programme permet de profiter
+                de l'affichage console.
+                
+            ii) La vue est chargée d'afficher l'état courant du modèle. IslandView est chargée
+                de gérer les différents composants de la vue. C'est également elle qui doit
+                être instanciée pour que l'affichage graphique s'active. Elle utilise notamment
+                la classe VGrid qui fait dessine à proprement parler entre la grille de zones
+                du modèle. Une autre classe Animation permet de réaliser les animations des
+                zones spéciales. Globalement, elle fait défiler des images les unes à la suite
+                des autres avec un intervalle de temps entre chaque affichage.
+                
+            iii) Le contrôleur est en relation avec le modèle mais n'a pas accès à la vue.
+                 En revanche VGrid utilise à la fois le modèle et le contrôleur.
+                 Le rôle du contrôleur est de définir quelles actions ont les touches
+                 du clavier (nous n'avons pas utilisé la souris) sur le modèle, en fonction
+                 de l'état actuel du modèle. Mais ce n'est pas tout, c'est aussi lui qui définit
+                 le déroulement du tour en appelant dans le bon ordre les méthodes de IslandModel.
+                 Il ne gère pas le nombre d'actions dépensé par les joueurs, ceci est géré en interne
+                 par le modèle dans la classe Player.
+                 
+             iv) La classe principale est Game c'est elle qui instancie les classes IslandModel et
+                 IslandView. C'est le point d'entrée du programme avec la méthode static main().
+                 
+             v) Les ressources sont stockées dans le répertoire assets à l'extérieur des sources.
+                Il contient les ressources graphiques (images), les cartes des niveaux ainsi que
+                les musiques du projet.
+    
+    ----------------------------------------
+    b. Les points faibles de l'architecture:
+    ----------------------------------------
+    
+        -> Java est un langage très verbeux. La création de l'exception Player.InvalidPlayerId
+           semblait judicieuse mais impose de très nombreux try {} catch () {} qui nuisent à la
+           lisibilité du code. Même si nous avons tenté d'améliorer un peu cela.
+    
+    -----------------------
+    c. Les tests unitaires:
+    -----------------------
+    
+        -> Les tests unitaires réalisés avec JUnit concernent uniquement le modèle.
+        
+        -> La classe Zone a été testée dans ZoneTest avec rigueur. Il s'agissait de tester
+           une à une les méthodes proposées par la classe et de vérifier leur bon fonctionnement
+           même dans les cas limites. Mais sans relier la zone avec le modèle. Par exemple, quel
+           est l'effet de submerger une zone déjà submergée ou d'assécher une zone déjà asséchée.
+           
+        -> La plus importante classe de test est IslandModelTest qui totalise 1095 lignes du fait
+           de la grande verbosité des tests. Elle est basée sur le même principe que les tests
+           précédemment décrits. Une méthode de test pour tester une méthode de IslandModel.
+           Tous les cas limites n'ont pas forcément été traités entièrement, mais le programme
+           est assuré d'une certaine fiabilité avec le passage de ces tests. Un exemple de cas
+           limite testé : le déplacement sur les bords de la carte.  
+
+-----------------------
+3. Conclusion du projet
+-----------------------
+
+    -> Projet de taille conséquente > 150 commits 2 branches 150 MB.
+    
+    -> Il pourrait encore être amélioré, en tout cas de nouvelles features
+       pourraient être apportées. Des bogues persistent certainement encore,
+       malgré les tests unitaires.
+       
+    -> Il nous a permis d'expérimenter de nombreux mécanismes et
+       fonctionnalités du langage Java:
+    
+        -> Les classes internes
+        
+        -> Les classes abstraites
+        
+        -> L'héritage et la redéfinition de méthode
+        
+        -> La surcharge de méthode / constructeur
+        
+        -> La bibliothèque Swing
+        
+        -> Les tests unitaires avec JUnit
+        
+     -> D'autres aspects du code comme le design-pattern du MVC
+        était réellement nouveau pour nous. Malgré le fait que
+        cette architecture entraîne un code très verbeux, son usage
+        permet vraiment de séparer les problèmes pour avoir des
+        responsabilités relativement clôturées, ce qui permettrait
+        une maintenance facilitée.
+                    
+     -> Ce fut un vrai plaisir de réaliser ce programme, et de le voir
+        finalement tourner en bout de chaîne. Nous considérons le rendu
+        final comme très satisfaisant.  
+        
