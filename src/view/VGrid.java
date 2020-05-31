@@ -50,8 +50,8 @@ public class VGrid extends JPanel implements Observer {
 	public VGrid(IslandModel model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
-		this.zoneWidth = IslandView.windowWidth / model.WIDTH;
-		this.zoneHeight = IslandView.windowHeight / model.HEIGHT;
+		this.zoneWidth = IslandView.getWindowWidth() / model.WIDTH;
+		this.zoneHeight = IslandView.getWindowHeight() / model.HEIGHT;
 
 		// Tableau représentant les images des joueurs
 		player = new BufferedImage[model.getNbPlayer()];
@@ -254,11 +254,16 @@ public class VGrid extends JPanel implements Observer {
 		}
 	}
 
+	/**
+	 * Dessine tout l'hud
+	 * @param g
+	 */
 	private void hud(Graphics g) {
 		g.setColor(new Color(255, 255, 255));
-		g.setFont(new Font("TimesRoman", Font.PLAIN, zoneHeight / 4));
-		paintTurn(g, zoneWidth / 4, zoneHeight / 4);
-		paintNbAction(g, 2*zoneWidth, zoneHeight / 4);
+		g.setFont(new Font("TimesRoman", Font.PLAIN, IslandView.getWindowWidth() / 32));
+		paintTurn(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
+		paintNbAction(g, 12*IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
+		paintKey(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 12);
 	}
 	
 	/**
@@ -284,6 +289,21 @@ public class VGrid extends JPanel implements Observer {
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
 		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
+	}
+	
+	/**
+	 * Dessine le nombre de tour a une coordonnée specific
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	private void paintKey(Graphics g, int x, int y) {
+		try {
+			g.drawString("Key: " + model.getPlayer(model.getCurrentIdPlayer()).getKeys().toString(), x, y);
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error on Player ID");
+			e.printStackTrace();
+		}
 	}
 
 }
