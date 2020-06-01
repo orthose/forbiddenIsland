@@ -381,6 +381,16 @@ public class Controller implements KeyEventDispatcher {
 			return false;
 		}
 	}
+	
+	public boolean getSailorTurn() {
+		try {
+			return m.getPlayer(currentIdPlayer) instanceof Sailor;
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error width player ID");
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public Zone getSpecialZone() {
 		return this.specialZone;
