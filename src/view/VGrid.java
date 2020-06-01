@@ -35,6 +35,14 @@ public class VGrid extends JPanel implements Observer {
 	private BufferedImage border;
 	private BufferedImage escapeBorder;
 	private BufferedImage specialBorder;
+	private BufferedImage kSailor;
+	private BufferedImage kPilot;
+	private BufferedImage kUsual;
+	private BufferedImage kEscape;
+	private BufferedImage kEndTurn;
+	private BufferedImage kMovingSailor;
+	private BufferedImage kSailorCapacity;
+	private BufferedImage kSelectplayer;
 	// Animations
 	private Animation airAnim;
 	private Animation earthAnim;
@@ -79,6 +87,21 @@ public class VGrid extends JPanel implements Observer {
 			System.out.println("Failed to load images due to bad player ID");
 		}
 
+		// Load keyBinding images
+		try {
+			kSailor = ImageIO.read(new File("assets/keyBinding/kSailor.png"));
+			kPilot = ImageIO.read(new File("assets/keyBinding/kPilot.png"));
+			kUsual = ImageIO.read(new File("assets/keyBinding/kUsual.png"));
+			kEscape = ImageIO.read(new File("assets/keyBinding/kEscape.png"));
+			kEndTurn = ImageIO.read(new File("assets/keyBinding/kEndTurn.png"));
+			kMovingSailor = ImageIO.read(new File("assets/keyBinding/kMovingSailor.png"));
+			kSailorCapacity = ImageIO.read(new File("assets/keyBinding/kSailorCapacity.png"));
+			kSelectplayer = ImageIO.read(new File("assets/keyBinding/kSelectPlayer.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Failed to load keyBinding");
+		}
+
 		// Chargement des animations
 		airAnim = new Animation("assets/animation/air/air");
 		fireAnim = new Animation("assets/animation/fire/fire");
@@ -109,6 +132,9 @@ public class VGrid extends JPanel implements Observer {
 		}
 		player(g);
 		hud(g);
+		if (model.getHelp()) {
+			paintHelp(g, MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 6, 14 * MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 4);
+		}
 	}
 
 	/**
@@ -330,4 +356,61 @@ public class VGrid extends JPanel implements Observer {
 		g.drawString("Artefacts: " + Artefact.getFoundArtefacts().toString(), x, y);
 	}
 
+	/**
+	 * Dessine l'affiche des touches
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 * @param w la largeur
+	 * @param h la hauteur
+	 */
+	private void paintHelp(Graphics g, int x, int y, int w, int h) {
+		try {
+			// Escape
+			if (controller.getRunFromDeath()) {
+				g.drawImage(kEscape, x, y, w, h, this);
+			}
+			// Sailor
+			else if (controller.getSailorTurn()) {
+				if (controller.getSpecialcapacity()) {
+					g.drawImage(kSelectplayer, x, y, w, h, this);
+				} else {
+					if (model.getPlayer(model.getCurrentIdPlayer()).getNbAction() > 0) {
+						if (controller.getSailorMoving()) {
+							g.drawImage(kSailorCapacity, x, y, w, h, this);
+						} else {
+							g.drawImage(kSailor, x, y, w, h, this);
+						}
+					} else {
+						if (controller.getSailorMoving()) {
+							g.drawImage(kMovingSailor, x, y, w, h, this);
+						} else {
+							g.drawImage(kEndTurn, x, y, w, h, this);
+						}
+					}
+				}
+
+			}
+			// Pilot
+			else if (controller.getPilotTurn()) {
+				if (model.getPlayer(model.getCurrentIdPlayer()).getNbAction() > 0) {
+					g.drawImage(kPilot, x, y, w, h, this);
+				} else {
+					g.drawImage(kEndTurn, x, y, w, h, this);
+				}
+			}
+			// Usual
+			else {
+				if (model.getPlayer(model.getCurrentIdPlayer()).getNbAction() > 0) {
+					g.drawImage(kUsual, x, y, w, h, this);
+				} else {
+					g.drawImage(kEndTurn, x, y, w, h, this);
+				}
+			}
+
+		} catch (InvalidPlayerId e) {
+			System.out.println("Error on Player ID");
+			e.printStackTrace();
+		}
+	}
 }
