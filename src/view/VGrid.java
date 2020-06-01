@@ -3,6 +3,7 @@ package view;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -11,10 +12,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import controller.Controller;
+import model.Artefact;
 import model.IslandModel;
 import model.Player;
-import model.Player.InvalidPlayerId;
 import model.Zone;
+import model.Player.InvalidPlayerId;
 import util.Observer;
 
 /**
@@ -50,8 +52,8 @@ public class VGrid extends JPanel implements Observer {
 	public VGrid(IslandModel model, Controller controller) {
 		this.model = model;
 		this.controller = controller;
-		this.zoneWidth = IslandView.getWindowWidth() / model.WIDTH;
-		this.zoneHeight = IslandView.getWindowHeight() / model.HEIGHT;
+		this.zoneWidth = MenuView.getWindowWidth() / model.WIDTH;
+		this.zoneHeight = MenuView.getWindowHeight() / model.HEIGHT;
 
 		// Tableau représentant les images des joueurs
 		player = new BufferedImage[model.getNbPlayer()];
@@ -105,7 +107,7 @@ public class VGrid extends JPanel implements Observer {
 				paint(g, model.getZone(i, j), i * zoneWidth, j * zoneHeight);
 			}
 		}
-
+		player(g);
 		hud(g);
 	}
 
@@ -142,6 +144,7 @@ public class VGrid extends JPanel implements Observer {
 					g.fillRect(x, y, zoneWidth, zoneHeight);
 				}
 			}
+			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
 			// Element
 			switch (z.getNaturalElement()) {
@@ -192,7 +195,7 @@ public class VGrid extends JPanel implements Observer {
 
 		// Border
 		try {
-			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer()  && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !controller.getSpecialcapacity()) {
+			if (controller.getCurrentIdPlayer() == model.getCurrentIdPlayer() && model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && !controller.getSpecialcapacity()) {
 				if (model.getMovePossibilitiesCurrentPlayer().contains(model.getZone(x / zoneWidth, y / zoneHeight))) {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
@@ -214,15 +217,15 @@ public class VGrid extends JPanel implements Observer {
 				}
 			}
 		}
-		
+
 		// Special border
-		if(controller.getSpecialcapacity() || controller.getPilotTurn()) {
+		if (controller.getSpecialcapacity() || controller.getPilotTurn()) {
 			Zone pilotZone = controller.getSpecialZone();
-			if(pilotZone != null) {
-				g.drawImage(specialBorder, pilotZone.x*zoneWidth, pilotZone.y*zoneHeight, zoneWidth, zoneHeight, this);
-			}		
+			if (pilotZone != null) {
+				g.drawImage(specialBorder, pilotZone.x * zoneWidth, pilotZone.y * zoneHeight, zoneWidth, zoneHeight, this);
+			}
 		}
-		
+
 		// Sailor moving border
 		try {
 			if (model.getPlayer(controller.getCurrentIdPlayer()).getNbAction() > 0 && controller.getSailorMoving()) {
@@ -237,7 +240,14 @@ public class VGrid extends JPanel implements Observer {
 			System.out.println("Error on player ID");
 			e1.printStackTrace();
 		}
+	}
 
+	/**
+	 * Dessine les joueur
+	 * 
+	 * @param g un graphic
+	 */
+	private void player(Graphics g) {
 		// Player
 		try {
 			for (int i = 0; i < model.getNbPlayer(); i++) {
@@ -252,20 +262,23 @@ public class VGrid extends JPanel implements Observer {
 			System.out.println("Error on Player ID");
 			e.printStackTrace();
 		}
+
 	}
 
 	/**
 	 * Dessine tout l'hud
-	 * @param g
+	 * 
+	 * @param g un graphic
 	 */
 	private void hud(Graphics g) {
 		g.setColor(new Color(255, 255, 255));
-		g.setFont(new Font("TimesRoman", Font.PLAIN, IslandView.getWindowWidth() / 32));
-		paintTurn(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
-		paintNbAction(g, 12*IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 24);
-		paintKey(g, IslandView.getWindowWidth()/16, IslandView.getWindowHeight() / 12);
+		g.setFont(new Font("TimesRoman", Font.PLAIN, MenuView.getWindowWidth() / 32));
+		paintTurn(g, MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 24);
+		paintNbAction(g, 12 * MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 24);
+		paintKey(g, MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 12);
+		paintArtefact(g, MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 8);
 	}
-	
+
 	/**
 	 * Dessine le nombre d'action restante pour le joueur courant
 	 * 
@@ -284,13 +297,14 @@ public class VGrid extends JPanel implements Observer {
 	/**
 	 * Dessine le nombre de tour a une coordonnée specific
 	 * 
+	 * @param g un graphic
 	 * @param x the x position
 	 * @param y the y position
 	 */
 	private void paintTurn(Graphics g, int x, int y) {
 		g.drawString("Turn: " + Integer.toString(model.getTurn()), x, y);
 	}
-	
+
 	/**
 	 * Dessine le nombre de tour a une coordonnée specific
 	 * 
@@ -299,11 +313,21 @@ public class VGrid extends JPanel implements Observer {
 	 */
 	private void paintKey(Graphics g, int x, int y) {
 		try {
-			g.drawString("Key: " + model.getPlayer(model.getCurrentIdPlayer()).getKeys().toString(), x, y);
+			g.drawString("Keys: " + model.getPlayer(model.getCurrentIdPlayer()).getKeys().toString(), x, y);
 		} catch (InvalidPlayerId e) {
 			System.out.println("Error on Player ID");
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Dessine le nombre de tour a une coordonnée specific
+	 * 
+	 * @param x the x position
+	 * @param y the y position
+	 */
+	private void paintArtefact(Graphics g, int x, int y) {
+		g.drawString("Artefacts: " + Artefact.getFoundArtefacts().toString(), x, y);
 	}
 
 }
