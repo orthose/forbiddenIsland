@@ -181,25 +181,32 @@ public class VGrid extends JPanel implements Observer {
 				if (!easyDraw) {
 					g.drawImage(airAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
-
+					g.setColor(new Color(200, 200, 200));
+					g.fillRect(x + zoneWidth / 4, y + zoneHeight / 4, zoneWidth / 2, zoneHeight / 2);
 				}
 				break;
 			case EARTH:
 				if (!easyDraw) {
 					g.drawImage(earthAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
+					g.setColor(new Color(100, 60, 20));
+					g.fillRect(x + zoneWidth / 4, y + zoneHeight / 4, zoneWidth / 2, zoneHeight / 2);
 				}
 				break;
 			case FIRE:
 				if (!easyDraw) {
 					g.drawImage(fireAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
+					g.setColor(new Color(255, 0, 0));
+					g.fillRect(x + zoneWidth / 4, y + zoneHeight / 4, zoneWidth / 2, zoneHeight / 2);
 				}
 				break;
 			case WATER:
 				if (!easyDraw) {
 					g.drawImage(waterAnim.display(), x, y, zoneWidth, zoneHeight, this);
 				} else {
+					g.setColor(new Color(0, 255, 255));
+					g.fillRect(x + zoneWidth / 4, y + zoneHeight / 4, zoneWidth / 2, zoneHeight / 2);
 				}
 				break;
 			}
@@ -209,6 +216,10 @@ public class VGrid extends JPanel implements Observer {
 				if (!easyDraw) {
 					g.drawImage(heliport, x, y, zoneWidth, zoneHeight, this);
 				} else {
+					g.setColor(new Color(255, 255, 255));
+					g.drawLine(x + zoneWidth / 4, y + zoneHeight / 8, x + zoneWidth / 4, y + 6 * zoneHeight / 4);
+					g.drawLine(x + 3 * zoneWidth / 4, y + zoneHeight / 8, x + 3 * zoneWidth / 4, y + 6 * zoneHeight / 4);
+					g.drawLine(x + zoneWidth / 4, y + zoneHeight / 2, x + 3 * zoneWidth / 4, y + zoneHeight / 2);
 				}
 			}
 		}
@@ -229,6 +240,11 @@ public class VGrid extends JPanel implements Observer {
 					if (!easyDraw) {
 						g.drawImage(border, x, y, zoneWidth, zoneHeight, this);
 					} else {
+						g.setColor(new Color(0, 255, 0));
+						g.drawLine(x, y, x + zoneWidth - 1, y);
+						g.drawLine(x + zoneWidth - 1, y, x + zoneWidth - 1, y + zoneHeight - 1);
+						g.drawLine(x + zoneWidth - 1, y + zoneHeight - 1, x, y + zoneHeight - 1);
+						g.drawLine(x, y + zoneHeight - 1, x, y);
 					}
 				}
 			}
@@ -243,6 +259,11 @@ public class VGrid extends JPanel implements Observer {
 				if (!easyDraw) {
 					g.drawImage(escapeBorder, x, y, zoneWidth, zoneHeight, this);
 				} else {
+					g.setColor(new Color(255, 0, 255));
+					g.drawLine(x, y, x + zoneWidth - 1, y);
+					g.drawLine(x + zoneWidth - 1, y, x + zoneWidth - 1, y + zoneHeight - 1);
+					g.drawLine(x + zoneWidth - 1, y + zoneHeight - 1, x, y + zoneHeight - 1);
+					g.drawLine(x, y + zoneHeight - 1, x, y);
 				}
 			}
 		}
@@ -250,8 +271,18 @@ public class VGrid extends JPanel implements Observer {
 		// Special border
 		if (controller.getSpecialcapacity() || controller.getPilotTurn()) {
 			Zone pilotZone = controller.getSpecialZone();
-			if (pilotZone != null) {
-				g.drawImage(specialBorder, pilotZone.x * zoneWidth, pilotZone.y * zoneHeight, zoneWidth, zoneHeight, this);
+			if (!easyDraw) {
+				if (pilotZone != null) {
+					g.drawImage(specialBorder, pilotZone.x * zoneWidth, pilotZone.y * zoneHeight, zoneWidth, zoneHeight, this);
+				}
+			} else {
+				if (pilotZone != null) {
+					g.setColor(new Color(255, 0, 0));
+					g.drawLine(x, y, x + zoneWidth - 1, y);
+					g.drawLine(x + zoneWidth - 1, y, x + zoneWidth - 1, y + zoneHeight - 1);
+					g.drawLine(x + zoneWidth - 1, y + zoneHeight - 1, x, y + zoneHeight - 1);
+					g.drawLine(x, y + zoneHeight - 1, x, y);
+				}
 			}
 		}
 
@@ -262,6 +293,11 @@ public class VGrid extends JPanel implements Observer {
 					if (!easyDraw) {
 						g.drawImage(specialBorder, x, y, zoneWidth, zoneHeight, this);
 					} else {
+						g.setColor(new Color(255, 0, 0));
+						g.drawLine(x, y, x + zoneWidth - 1, y);
+						g.drawLine(x + zoneWidth - 1, y, x + zoneWidth - 1, y + zoneHeight - 1);
+						g.drawLine(x + zoneWidth - 1, y + zoneHeight - 1, x, y + zoneHeight - 1);
+						g.drawLine(x, y + zoneHeight - 1, x, y);
 					}
 				}
 			}
@@ -284,6 +320,9 @@ public class VGrid extends JPanel implements Observer {
 					if (!easyDraw) {
 						g.drawImage(player[i], model.getPositionPlayer(i).x * zoneWidth, model.getPositionPlayer(i).y * zoneHeight, zoneWidth, zoneHeight, this);
 					} else {
+						g.setFont(new Font("TimesRoman", Font.PLAIN, zoneWidth / 12));
+						g.setColor(new Color(255, 255, 255));
+						g.drawString(model.getPlayer(i).getName(), model.getPositionPlayer(i).x * (zoneWidth - 1) + zoneWidth / 8, model.getPositionPlayer(i).y * (zoneHeight - 1) + zoneHeight / 4 + i * zoneHeight / 8);
 					}
 				}
 			}
@@ -416,9 +455,10 @@ public class VGrid extends JPanel implements Observer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Dessine la fin du jeu en victoire ou en défaite
+	 * 
 	 * @param g un graphique
 	 */
 	public void endGame(Graphics g) {
@@ -437,7 +477,7 @@ public class VGrid extends JPanel implements Observer {
 		}
 		g.setColor(new Color(255, 255, 255));
 		g.setFont(new Font("TimesRoman", Font.PLAIN, MenuView.getWindowWidth() / 24));
-		drawCenteredString("Press Enter to quit ", MenuView.getWindowWidth(), (int)(1.2*MenuView.getWindowHeight()), g);
+		drawCenteredString("Press Enter to quit ", MenuView.getWindowWidth(), (int) (1.2 * MenuView.getWindowHeight()), g);
 	}
 
 	private void drawCenteredString(String s, int w, int h, Graphics g) {
