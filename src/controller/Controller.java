@@ -5,12 +5,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import model.IslandModel;
+import model.Menu;
 import model.Move;
 import model.Pilot;
 import model.Player;
-import model.Player.InvalidPlayerId;
 import model.Sailor;
 import model.Zone;
+import model.Player.InvalidPlayerId;
 
 /**
  * @author maxime et baptiste
@@ -54,6 +55,17 @@ public class Controller implements KeyEventDispatcher {
 	 */
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
+
+			// Help
+			if (e.getKeyChar() == 'h' || e.getKeyChar() == 'H') {
+				if (!m.getHelp()) {
+					m.setHelp(true);
+				} else {
+					m.setHelp(false);
+				}
+
+			}
+			// Action
 			if (!sailorMoving) {
 				// Move
 				try {
@@ -126,7 +138,7 @@ public class Controller implements KeyEventDispatcher {
 						} else {
 							specialcapacity = false;
 						}
-						if(sailorMoving) {
+						if (sailorMoving) {
 							sailorMoving = false;
 							specialZone = m.getPositionPlayer(currentIdPlayer);
 						}
