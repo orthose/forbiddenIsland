@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -11,6 +12,8 @@ import java.util.HashSet;
  */
 public class Pilot extends Player {
 	
+	protected boolean isMovedBySailor;
+	
 	/**
 	 * @apiNote Constructeur à la fois léger et complet
 	 * @param m: Référence au modèle
@@ -19,6 +22,7 @@ public class Pilot extends Player {
 	 */
 	public Pilot(IslandModel m, String name, Sexe sexe) {
 		super(m, name, sexe);
+		this.isMovedBySailor = false;
 	}
 	
 	@Override
@@ -37,6 +41,33 @@ public class Pilot extends Player {
 		return res;
 	}
 	
+	@Override
+	/**
+	 * @apiNote Déplace le joueur vers
+	 * une zone sans vérification
+	 * (permet le téléport)
+	 * @param newPosition: nouvelle position
+	 * du joueur
+	 */
+	public void move(Zone newPosition) {
+		if (this.alive) {
+			this.position = newPosition;
+			// Mise à jour de liste des déplacements possibles
+			if (this.isMovedBySailor) {
+				super.movePossibilities = new ArrayList<Zone>(this.basicMovePossibilities());
+			}
+			else {
+				super.movePossibilities = new ArrayList<Zone>(this.movePossibilities());
+			}
+			// Perd 1 action
+			this.nbAction--;
+			if (this.m.verbose) {
+				System.out.println(this+" déplacé en ("+this.position.x+", "+this.position.y+")");
+				System.out.println(this+" reste "+this.getNbAction()+" action(s)");
+			}
+		}
+	}
+	
 	/**
 	 * @apiNote Donne les déplacements possibles
 	 * basiquement pour un simple joueur
@@ -45,12 +76,8 @@ public class Pilot extends Player {
 	 * possibles
 	 */
 	protected HashSet<Zone> basicMovePossibilities() {
-		for (Zone zone : super.movePossibilities()) {
-			System.out.println(zone.x+" "+zone.y);
-		}
 		return super.movePossibilities();
 	}
-
 	
 	@Override
 	public String pathImage() {

@@ -14,7 +14,7 @@ public class IslandModel extends Observable {
 	public static final Random rand = new Random();
 	public final int WIDTH, HEIGHT;
 	protected Zone[][] zones;
-	private ArrayList<Player> players;
+	protected ArrayList<Player> players;
 	private int currentIdPlayer;
 	private int turn;
 	protected boolean verbose = false;

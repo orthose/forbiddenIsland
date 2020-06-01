@@ -3,7 +3,6 @@ package controller;
 import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
 import forbiddenIsland.Game;
 import model.IslandModel;
 import model.Menu;
@@ -135,9 +134,14 @@ public class Controller implements KeyEventDispatcher {
 								// Sailor
 								if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
 									specialcapacity = true;
+									// Active convenablement le tour du navigateur
+									((Sailor)m.getPlayer(currentIdPlayer)).beginSailorTurn();
 								}
 							} else {
 								specialcapacity = false;
+								//if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
+								//	((Sailor)m.getPlayer(currentIdPlayer)).method();
+								//}
 							}
 							if (sailorMoving) {
 								sailorMoving = false;
@@ -163,8 +167,14 @@ public class Controller implements KeyEventDispatcher {
 	 */
 	private void endTurn() {
 		try {
+			if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
+				// Clôture le tour du navigateur
+				((Sailor)m.getPlayer(currentIdPlayer)).endSailorTurn();
+			}
 			if (m.getPlayer(currentIdPlayer) instanceof Pilot && !specialZone.equals(m.getPositionPlayer(currentIdPlayer))) {
 				m.getPlayer(currentIdPlayer).move(specialZone);
+				// Remettre
+				//((Pilot)m.getPlayer(currentIdPlayer)).bidule();
 			} else {
 				// Chercher une clef
 				m.findKeyElementPlayer(currentIdPlayer);
