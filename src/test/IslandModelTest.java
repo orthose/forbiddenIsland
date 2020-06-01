@@ -1,11 +1,11 @@
 package test;
 
 import model.*;
+import model.Player.InvalidPlayerId;
+
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import org.junit.*;
-
-import model.Player.InvalidPlayerId;
 
 /**
  * @author maxime
