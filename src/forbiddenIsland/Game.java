@@ -52,10 +52,10 @@ public class Game extends JFrame {
 		MenuView vMenu = new MenuView(menu, menuController);
 	}
 
-	public static void iniGame(IslandModel model) {
+	public static void iniGame(IslandModel model, int level) {
 		// Joue la piste audio spécifiée
 		if (!(cmd.contains("-ns") || cmd.contains("--no-sound"))) {
-			MusicPlayer.play(0);
+			MusicPlayer.play(level);
 		}
 
 		// Affichage console

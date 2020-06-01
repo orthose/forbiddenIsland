@@ -78,12 +78,18 @@ public class Diver extends Player {
 	public boolean move(Move move) {
 		MutableBoolean success = new MutableBoolean(false);
 		Zone zone = super.position.neighbour(move, success);
+		System.out.println(success.value);
+		// Traverser zone submergée
 		if (success.value && zone.isSubmergedLevel()) {
 			Zone zonezone = zone.neighbour(move, success);
 			success.value = success.value && zonezone.isCrossable();
 			if (success.value) {
 				super.move(zonezone);
 			}
+		}
+		// Déplacement normal
+		else if (success.value && zone.isCrossable()) {
+			super.move(zone);
 		}
 		return success.value;
 	}

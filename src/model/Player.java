@@ -355,7 +355,8 @@ public class Player {
 			KeyElement key = new KeyElement(NaturalElement.values()[i]);
 			// Si la clé a déjà été trouvée
 			while (this.keyAlreadyFound(key)) {
-				key = new KeyElement(NaturalElement.values()[++i]);
+				i = (i + 1) % 4; // Pour éviter le NONE
+				key = new KeyElement(NaturalElement.values()[i]);
 			}
 			this.keys.add(key);
 			// Perd 1 action
