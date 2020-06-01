@@ -33,6 +33,6 @@ public class KeyElement {
 	
 	@Override
 	public String toString() {
-		return "Clé de "+this.el.name();
+		return this.el.name();
 	}
 }

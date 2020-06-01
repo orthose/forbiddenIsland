@@ -18,7 +18,7 @@ public class Player {
 	private ArrayList<KeyElement> keys;
 	private static ArrayList<Integer> allPlayersId =
 		new ArrayList<Integer>();
-	private float keyLuck = 0.2f; // Dans ]0.0;1.0[
+	private float keyLuck = 0.5f; // Dans ]0.0;1.0[
 	protected ArrayList<Zone> movePossibilities;
 	protected int nbAction;
 	public static final int nbActionMax = 3;
@@ -331,6 +331,21 @@ public class Player {
 	}
 	
 	/**
+	 * @apiNote Vérifie si une clé a déjà été
+	 * trouvée par le joueur
+	 * @param keyFound: Clé à tester
+	 * @return true si déjà trouvée false sinon
+	 */
+	private boolean keyAlreadyFound(KeyElement keyFound) {
+		for (KeyElement key : this.keys) {
+			if (key.getEl() == keyFound.getEl()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * @apiNote Le joueur recherche une clé
 	 * @return true si la clé est trouvée false sinon
 	 */
@@ -338,6 +353,10 @@ public class Player {
 		if (this.canFindKeyElement() && IslandModel.rand.nextFloat() < this.keyLuck) {
 			int i = IslandModel.rand.nextInt(4);
 			KeyElement key = new KeyElement(NaturalElement.values()[i]);
+			// Si la clé a déjà été trouvée
+			while (this.keyAlreadyFound(key)) {
+				key = new KeyElement(NaturalElement.values()[++i]);
+			}
 			this.keys.add(key);
 			// Perd 1 action
 			this.nbAction--;

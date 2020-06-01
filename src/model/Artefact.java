@@ -104,6 +104,6 @@ public class Artefact {
 	
 	@Override
 	public String toString() {
-		return "Artefact de "+this.el.name();
+		return this.el.name();
 	}
 }
