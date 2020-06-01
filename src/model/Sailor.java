@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 /**
  * @author maxime
  * @apiNote Rôle du navigateur pouvant
@@ -28,7 +30,15 @@ public class Sailor extends Player {
 	 * @throws InvalidPlayerId: Si le joueur n'existe pas
 	 */
 	public boolean movePlayerSailorPower(int id, Move move) throws InvalidPlayerId {
-		boolean res = (super.m.getPlayer(id) != this && super.m.movePlayer(id, move));
+		Player player = super.m.getPlayer(id);
+		// Le pilote ne doit pas pouvoir se déplacer
+		// comme habituellement avec son pouvoir
+		// Il faut juste donner changer l'ensemble
+		// des déplacements possibles
+		if (player instanceof Pilot) {
+			player.movePossibilities = new ArrayList<Zone>(((Pilot) player).basicMovePossibilities());
+		}
+		boolean res = (player != this && super.m.movePlayer(id, move));
 		if (res) {
 			super.nbAction--;
 			// Compensation de la perte d'une
