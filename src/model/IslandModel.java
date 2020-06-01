@@ -473,8 +473,11 @@ public class IslandModel extends Observable {
 		}
 		// Tous les artefacts ont été trouvés
 		boolean res = firstCondition && Artefact.allArtefactsFound();
-		if (res && verbose)
+		if (res && verbose) {
 			System.out.println("Le jeu est gagné !");
+			// On coupe l'affichage console
+			this.verbose = false;
+		}
 		return res;
 	}
 
@@ -550,8 +553,11 @@ public class IslandModel extends Observable {
 			condition = (!airArtefactFound && airZones == airZonesSubmerged) || (!waterArtefactFound && waterZones == waterZonesSubmerged) || (!earthArtefactFound && earthZones == earthZonesSubmerged)
 					|| (!fireArtefactFound && fireZones == fireZonesSubmerged);
 		}
-		if (condition && verbose)
+		if (condition && verbose) {
 			System.out.println("Le jeu est perdu !");
+			// On coupe l'affichage console
+			this.verbose = false;
+		}
 		return condition;
 	}
 
