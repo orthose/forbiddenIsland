@@ -93,7 +93,10 @@ Maxime Vincent & Baptiste Maquet
          
         -> La touche E pour activer le pouvoir spécial
            de certains joueurs (en particulier le navigateur).
-    
+           
+        -> La touche Entrer pour passer le tour ou confirmer
+           une action.
+           
     ----------------------------    
     f. Au niveau des graphismes:
     ----------------------------
