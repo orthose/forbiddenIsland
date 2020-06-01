@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+
 import model.Player.InvalidPlayerId;
 import util.Observable;
 
@@ -19,6 +20,7 @@ public class IslandModel extends Observable {
 	private int turn;
 	protected boolean verbose = false;
 	private HashSet<Player> playersToSave;
+	private boolean help;
 
 	/**
 	 * @apiNote Crée une île selon une carte Si une des lignes est de taille
@@ -49,6 +51,7 @@ public class IslandModel extends Observable {
 				this.zones[i][j] = new Zone(this, String.valueOf(line.charAt(i)), i, j);
 			}
 		}
+		this.help = false;
 	}
 
 	/**
@@ -134,7 +137,7 @@ public class IslandModel extends Observable {
 		}
 		// Suppression des joueurs à sauver
 		// c'est une sécurité car ils sont
-		// normalement supprimés dans 
+		// normalement supprimés dans
 		// IslandModel::movePlayer()
 		this.playersToSave.clear();
 		return this.currentIdPlayer;
@@ -249,10 +252,9 @@ public class IslandModel extends Observable {
 		Player player = this.getPlayer(id);
 		return player.canEscape();
 	}
-	
+
 	/**
-	 * @apiNote Supprime le joueur à déplacer
-	 * s'il doit être sauvé
+	 * @apiNote Supprime le joueur à déplacer s'il doit être sauvé
 	 * @param player: Joueur à déplacer
 	 */
 	private void removePlayerToSave(Player player) {
@@ -593,4 +595,20 @@ public class IslandModel extends Observable {
 		Artefact.reset();
 	}
 
+	/**
+	 * Renvoie si l'aide est activé
+	 * 
+	 * @return true si l'aide est acitivé false sinon
+	 */
+	public boolean getHelp() {
+		return this.help;
+	}
+
+	/**
+	 * 
+	 * @param other un boolean qui détermine l'activation du boolean help
+	 */
+	public void setHelp(boolean other) {
+		this.help = other;
+	}
 }
