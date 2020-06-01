@@ -154,7 +154,7 @@ public class Menu extends Observable {
 		if (stage == nbPlayer + 1) {
 			valid = true;
 			MenuView.getFrame().dispose();
-			Game.iniGame(model);
+			Game.iniGame(model, level);
 		}
 		// Ini model
 		if (stage == 1) {
