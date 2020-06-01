@@ -1024,7 +1024,7 @@ public class IslandModelTest {
 	@Test
 	public void diverTest() throws InvalidPlayerId {
 		
-		boolean verbose = false;
+		boolean verbose = true;
 		
 		// Ajout de joueurs au modèle m4
 		// avec positions initialisées aléatoirement
@@ -1089,6 +1089,12 @@ public class IslandModelTest {
 		assertTrue(m4.movePlayer(0, Move.UP));
 		assertTrue(m4.getPositionPlayer(0).equals(m4.getZone(10, 1)));
 		assertEquals(Player.nbActionMax-2, m4.getPlayer(0).getNbAction());
+		if (verbose) System.out.println(m4+"\n");
+		
+		// On déplace en (9, 1) le plongeur
+		assertTrue(m4.movePlayer(0, Move.LEFT));;
+		assertTrue(m4.getPositionPlayer(0).equals(m4.getZone(9, 1)));
+		assertEquals(Player.nbActionMax-3, m4.getPlayer(0).getNbAction());
 		if (verbose) System.out.println(m4+"\n");
 		
 		// Pour ne pas perturber les autres tests
