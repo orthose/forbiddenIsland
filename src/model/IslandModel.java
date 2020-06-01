@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-
 import model.Player.InvalidPlayerId;
 import util.Observable;
 
@@ -24,7 +23,8 @@ public class IslandModel extends Observable {
 
 	/**
 	 * @apiNote Crée une île selon une carte Si une des lignes est de taille
-	 *          différente de la première ligne les lignes suivantes ne sont pas
+	 *          différente de la premi
+	 *          ère ligne les lignes suivantes ne sont pas
 	 *          chargées
 	 * @param map: Carte initiale qui sera chargée Les symboles sont détaillés dans
 	 *             StringMap
