@@ -4,6 +4,7 @@ import java.awt.KeyEventDispatcher;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import forbiddenIsland.Game;
 import model.IslandModel;
 import model.Menu;
 import model.Move;
@@ -55,100 +56,104 @@ public class Controller implements KeyEventDispatcher {
 	 */
 	public boolean dispatchKeyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_PRESSED) {
+			if (!m.gameIsLost() && !m.gameIsWon()) {
+				// Help
+				if (e.getKeyChar() == 'h' || e.getKeyChar() == 'H') {
+					if (!m.getHelp()) {
+						m.setHelp(true);
+					} else {
+						m.setHelp(false);
+					}
 
-			// Help
-			if (e.getKeyChar() == 'h' || e.getKeyChar() == 'H') {
-				if (!m.getHelp()) {
-					m.setHelp(true);
+				}
+				// Action
+				if (!sailorMoving) {
+					// Move
+					try {
+						if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 || runFromDeath) && !specialcapacity) {
+							// Is moving ?
+							boolean move = move(e);
+
+							// Escape from death
+							if (runFromDeath && move) {
+								flee();
+							}
+						}
+					} catch (InvalidPlayerId e2) {
+						System.out.println("Error width player ID");
+						e2.printStackTrace();
+					}
+
+					// Dry
+					try {
+						dry(e);
+					} catch (InvalidPlayerId e3) {
+						System.out.println("Error width player ID");
+						e3.printStackTrace();
+					}
+
+					// Artefact
+					try {
+						artefact(e);
+					} catch (InvalidPlayerId e2) {
+						System.out.println("Error width player ID");
+						e2.printStackTrace();
+					}
+
+					// Skip turn && end special capacity
+					if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
+						// Disable special capacity
+						if (specialcapacity) {
+							disableCapacity();
+						}
+						// Skip turn
+						else {
+							endTurn();
+						}
+
+					}
 				} else {
-					m.setHelp(false);
+					try {
+						moveSailor(e);
+					} catch (InvalidPlayerId e1) {
+						System.out.println("Error width player ID");
+						e1.printStackTrace();
+					}
 				}
 
-			}
-			// Action
-			if (!sailorMoving) {
-				// Move
+				// Special capacity
 				try {
-					if ((m.getPlayer(currentIdPlayer).getNbAction() > 0 || runFromDeath) && !specialcapacity) {
-						// Is moving ?
-						boolean move = move(e);
+					if (m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) {
+						// Use
+						if (specialcapacity && m.getPlayer(currentIdPlayer) instanceof Sailor) {
+							selectPlayer(e);
+						}
 
-						// Escape from death
-						if (runFromDeath && move) {
-							flee();
+						// Active
+						if (e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
+							if (!specialcapacity) {
+								// Sailor
+								if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
+									specialcapacity = true;
+								}
+							} else {
+								specialcapacity = false;
+							}
+							if (sailorMoving) {
+								sailorMoving = false;
+								specialZone = m.getPositionPlayer(currentIdPlayer);
+							}
 						}
 					}
 				} catch (InvalidPlayerId e2) {
 					System.out.println("Error width player ID");
 					e2.printStackTrace();
-				}
-
-				// Dry
-				try {
-					dry(e);
-				} catch (InvalidPlayerId e3) {
-					System.out.println("Error width player ID");
-					e3.printStackTrace();
-				}
-
-				// Artefact
-				try {
-					artefact(e);
-				} catch (InvalidPlayerId e2) {
-					System.out.println("Error width player ID");
-					e2.printStackTrace();
-				}
-
-				// Skip turn && end special capacity
-				if (e.getKeyCode() == KeyEvent.VK_ENTER && !runFromDeath) {
-					// Disable special capacity
-					if (specialcapacity) {
-						disableCapacity();
-					}
-					// Skip turn
-					else {
-						endTurn();
-					}
-
 				}
 			} else {
-				try {
-					moveSailor(e);
-				} catch (InvalidPlayerId e1) {
-					System.out.println("Error width player ID");
-					e1.printStackTrace();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					System.exit(0);
 				}
 			}
-
-			// Special capacity
-			try {
-				if (m.getPlayer(currentIdPlayer).getNbAction() > 0 && !runFromDeath) {
-					// Use
-					if (specialcapacity && m.getPlayer(currentIdPlayer) instanceof Sailor) {
-						selectPlayer(e);
-					}
-
-					// Active
-					if (e.getKeyChar() == 'e' || e.getKeyChar() == 'E') {
-						if (!specialcapacity) {
-							// Sailor
-							if (m.getPlayer(currentIdPlayer) instanceof Sailor) {
-								specialcapacity = true;
-							}
-						} else {
-							specialcapacity = false;
-						}
-						if (sailorMoving) {
-							sailorMoving = false;
-							specialZone = m.getPositionPlayer(currentIdPlayer);
-						}
-					}
-				}
-			} catch (InvalidPlayerId e2) {
-				System.out.println("Error width player ID");
-				e2.printStackTrace();
-			}
-
 		}
 		return false;
 	}
@@ -381,7 +386,7 @@ public class Controller implements KeyEventDispatcher {
 			return false;
 		}
 	}
-	
+
 	public boolean getSailorTurn() {
 		try {
 			return m.getPlayer(currentIdPlayer) instanceof Sailor;
