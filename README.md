@@ -118,3 +118,8 @@ Instructions to run Junit tests:
 Junit tests have a graphic interface integrated with Eclipse IDE.
 So you need to open the project with Eclipse IDE and run the files
 in forbiddenIsland/src/test
+
+Command-line options:
+--------------------
+-v --verbose: Enable console print
+-ns --no-sound: Disable music player

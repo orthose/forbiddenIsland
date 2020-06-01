@@ -11,13 +11,13 @@ end="\033[0m"
 # Lance l'application depuis l'archive jar
 run_jar() {
    echo -e "$vert""Lancement de l'application jar""$end"
-   java -jar forbiddenIsland.jar $1 
+   java -jar forbiddenIsland.jar $@ 
 }
 
 # Lance l'application depuis les fichiers bytecode
 run_bin() {
     echo -e "$vert""Lancement de l'application bytecode""$end"
-    java -classpath bin forbiddenIsland.Game $1
+    java -classpath bin forbiddenIsland.Game $@
 }
 
 # Compile l'application
