@@ -135,6 +135,9 @@ public class VGrid extends JPanel implements Observer {
 		if (model.getHelp()) {
 			paintHelp(g, MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 6, 14 * MenuView.getWindowWidth() / 16, MenuView.getWindowHeight() / 4);
 		}
+		if (model.gameIsLost() || model.gameIsWon()) {
+			endGame(g);
+		}
 	}
 
 	/**
@@ -412,5 +415,35 @@ public class VGrid extends JPanel implements Observer {
 			System.out.println("Error on Player ID");
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Dessine la fin du jeu en victoire ou en défaite
+	 * @param g un graphique
+	 */
+	public void endGame(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+		g2d.setColor(new Color(100, 100, 255));
+		g2d.fillRect(0, 0, MenuView.getWindowWidth(), MenuView.getWindowHeight());
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+		g.setFont(new Font("TimesRoman", Font.BOLD, MenuView.getWindowWidth() / 8));
+		if (model.gameIsLost()) {
+			g.setColor(new Color(255, 50, 50));
+			drawCenteredString("Game is Lost!", MenuView.getWindowWidth(), MenuView.getWindowHeight(), g);
+		} else if (model.gameIsWon()) {
+			g.setColor(new Color(50, 255, 50));
+			drawCenteredString("Game is Won!", MenuView.getWindowWidth(), MenuView.getWindowHeight(), g);
+		}
+		g.setColor(new Color(255, 255, 255));
+		g.setFont(new Font("TimesRoman", Font.PLAIN, MenuView.getWindowWidth() / 24));
+		drawCenteredString("Press Enter to quit ", MenuView.getWindowWidth(), (int)(1.2*MenuView.getWindowHeight()), g);
+	}
+
+	private void drawCenteredString(String s, int w, int h, Graphics g) {
+		FontMetrics fm = g.getFontMetrics();
+		int x = (w - fm.stringWidth(s)) / 2;
+		int y = (fm.getAscent() + (h - (fm.getAscent() + fm.getDescent())) / 2);
+		g.drawString(s, x, y);
 	}
 }
