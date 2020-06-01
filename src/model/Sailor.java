@@ -1,5 +1,7 @@
 package model;
 
+import model.Player.InvalidPlayerId;
+
 /**
  * @author maxime
  * @apiNote Rôle du navigateur pouvant
