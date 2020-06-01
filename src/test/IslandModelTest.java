@@ -544,11 +544,14 @@ public class IslandModelTest {
 			ArrayList<Player> threatenedPlayers = m1.getPlayersToSave();
 			if (verbose) System.out.println(m1+"\n");
 			if (! threatenedPlayers.isEmpty()) {
-			    assertTrue(m1.getPositionPlayer(0).isSubmergeable());
-			    assertTrue(m1.getPositionPlayer(0).isFloodedLevel());
+			    assertTrue(m1.getPositionPlayer(0).isSubmergedLevel());
+			    assertFalse(m1.getPositionPlayer(0).isFloodedLevel());
 				p0.kill();
 				if (verbose) System.out.println(p0.getName() + " was killed !");
 				break;
+			}
+			else {
+				assertFalse(m1.getPositionPlayer(0).isSubmergedLevel());
 			}
 		}
 		
@@ -1021,7 +1024,7 @@ public class IslandModelTest {
 	@Test
 	public void diverTest() throws InvalidPlayerId {
 		
-		boolean verbose = true;
+		boolean verbose = false;
 		
 		// Ajout de joueurs au modèle m4
 		// avec positions initialisées aléatoirement

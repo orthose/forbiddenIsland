@@ -36,6 +36,20 @@ public class Pilot extends Player {
 		}
 		return res;
 	}
+	
+	/**
+	 * @apiNote Donne les déplacements possibles
+	 * basiquement pour un simple joueur
+	 * Cette méthode est utilisée par Sailor
+	 * @return Ensemble des zones de déplacement
+	 * possibles
+	 */
+	protected HashSet<Zone> basicMovePossibilities() {
+		for (Zone zone : super.movePossibilities()) {
+			System.out.println(zone.x+" "+zone.y);
+		}
+		return super.movePossibilities();
+	}
 
 	
 	@Override
