@@ -118,7 +118,7 @@ Maxime Vincent & Baptiste Maquet
            moins foncée. 
         
         -> Les zones normales sont jaunes pour représenter le sable,
-           les textures ont été crée avec la fonction de perlin.
+           les textures ont été crée avec le bruit de perlin.
         
         -> Les zones spéciales sont au nombre de 5:
         
