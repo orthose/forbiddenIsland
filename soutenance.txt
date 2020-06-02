@@ -97,6 +97,9 @@ Maxime Vincent & Baptiste Maquet
         -> La touche Entrer pour passer le tour ou confirmer
            une action.
            
+        -> La touche H pour afficher une aide sur les touches
+           utilisable par le joueur.
+           
     ----------------------------    
     f. Au niveau des graphismes:
     ----------------------------
@@ -111,7 +114,8 @@ Maxime Vincent & Baptiste Maquet
         -> Affichage du niveau d'eau avec teinte de bleu plus ou
            moins foncée. 
         
-        -> Les zones normales sont jaunes pour représenter le sable.
+        -> Les zones normales sont jaunes pour représenter le sable,
+           les textures ont été crée avec la fonction de perlin.
         
         -> Les zones spéciales sont au nombre de 5:
         
