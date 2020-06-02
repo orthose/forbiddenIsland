@@ -144,13 +144,14 @@ Maxime Vincent & Baptiste Maquet
             par de la transparence. Au total 10 dessins ont été produits.
             
          -> Affichage des zones possibles de déplacement d'un joueur.
+         
+         -> Affichage des zone pour les capacité spéciale.
+         
+         -> Animation pour le zone élémentaire.
     
     --------------------------   
     g. Autres fonctionnalités:
     --------------------------
-        
-        -> Recommencer une nouvelle partie sans
-           relancer le programme.
         
         -> Lecteur de pistes de musique.
         
