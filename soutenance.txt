@@ -104,6 +104,9 @@ Maxime Vincent & Baptiste Maquet
     f. Au niveau des graphismes:
     ----------------------------
     
+        -> Taille de la fenêtre en fonction de la taille de
+           l'écran.
+    
         -> Calcul de la taille des carrés pour
            l'affichage en fonction de la taille
            de la carte.
